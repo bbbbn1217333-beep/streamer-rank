@@ -2,56 +2,91 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8" />
-<title>스트리머 점수판</title>
+<title>메이플 스트리머 랭킹</title>
+
+<!-- 폰트 -->
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSans.css" rel="stylesheet">
 
 <style>
 body {
   margin: 0;
   background: transparent;
-  font-family: "Pretendard", "Apple SD Gothic Neo", sans-serif;
-  color: white;
+  font-family: 'Montserrat', sans-serif;
+  color: #fff;
 }
 
 .board {
-  width: 720px;
-  background: rgba(10,10,10,0.85);
-  border-radius: 20px;
-  padding: 16px;
+  width: 760px;
+  background: linear-gradient(180deg, rgba(15,15,20,0.92), rgba(8,8,12,0.92));
+  border-radius: 22px;
+  padding: 18px;
+  box-shadow: 0 0 30px rgba(255,215,100,0.15);
 }
 
 .row {
   display: grid;
-  grid-template-columns: 60px 1.5fr 1fr 1fr 1fr 1.2fr;
+  grid-template-columns: 80px 2fr 1fr 1fr 1fr 1.2fr;
   align-items: center;
-  padding: 10px 12px;
-  margin-bottom: 8px;
-  border-radius: 12px;
-  background: rgba(255,255,255,0.05);
-  transition: background 0.3s;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.06);
+  font-size: 16px;
 }
 
 .header {
+  background: rgba(255,215,120,0.15);
   font-weight: 800;
   font-size: 15px;
-  background: rgba(255,255,255,0.1);
+  color: #ffeaa7;
 }
 
 .rank {
-  font-size: 22px;
   text-align: center;
+  font-size: 22px;
+  font-weight: 800;
 }
 
-.gold { background: linear-gradient(90deg, #ffcc00, #ffb700); color: black; }
-.silver { background: linear-gradient(90deg, #cfd8dc, #b0bec5); color: black; }
-.bronze { background: linear-gradient(90deg, #d7a86e, #b87333); color: black; }
+.name {
+  font-family: 'GmarketSans', sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: -0.3px;
+}
+
+.num {
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.score {
+  text-align: center;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+/* 메달 효과 */
+.gold {
+  background: linear-gradient(90deg, #ffda77, #ffb703);
+  color: #2b1b00;
+}
+.silver {
+  background: linear-gradient(90deg, #e0e0e0, #bfc9ca);
+  color: #1c1c1c;
+}
+.bronze {
+  background: linear-gradient(90deg, #e6b17e, #b87333);
+  color: #2a1600;
+}
 
 .crown {
-  animation: bounce 1.2s infinite;
+  animation: crownBounce 1.3s infinite;
 }
 
-@keyframes bounce {
+@keyframes crownBounce {
   0%,100% { transform: translateY(0); }
-  50% { transform: translateY(-4px); }
+  50% { transform: translateY(-5px); }
 }
 </style>
 </head>
@@ -65,13 +100,13 @@ const SHEET_NAME = "시트1";
 const RANGE = "E11:I15";
 
 const URL = `https://opensheet.elk.sh/${SHEET_ID}/${SHEET_NAME}!${RANGE}`;
-
 const board = document.getElementById("board");
+
 let prevData = "";
 
 function render(data) {
   const json = JSON.stringify(data);
-  if (json === prevData) return; // 변화 없으면 갱신 안 함
+  if (json === prevData) return;
   prevData = json;
 
   board.innerHTML = "";
@@ -80,18 +115,16 @@ function render(data) {
   const header = document.createElement("div");
   header.className = "row header";
   header.innerHTML = `
-    <div>#</div>
-    <div>🎙️스트리머</div>
-    <div>🥊1세트</div>
-    <div>🥊2세트</div>
-    <div>🥊3세트</div>
-    <div>📝최종 점수</div>
+    <div class="rank">순위</div>
+    <div>🎙️ 스트리머</div>
+    <div class="num">🥊1세트</div>
+    <div class="num">🥊2세트</div>
+    <div class="num">🥊3세트</div>
+    <div class="score">📝최종 점수</div>
   `;
   board.appendChild(header);
 
   data.forEach((row, i) => {
-    const score = Number(row["📝최종 점수"]) || 0;
-
     const div = document.createElement("div");
     div.className = "row";
 
@@ -102,15 +135,15 @@ function render(data) {
     const medal =
       i === 0 ? "👑" :
       i === 1 ? "🥈" :
-      i === 2 ? "🥉" : i + 1;
+      i === 2 ? "🥉" : (i + 1);
 
     div.innerHTML = `
       <div class="rank ${i === 0 ? "crown" : ""}">${medal}</div>
-      <div>${row["🎙️스트리머"]}</div>
-      <div>${row["🥊1세트"]}</div>
-      <div>${row["🥊2세트"]}</div>
-      <div>${row["🥊3세트"]}</div>
-      <div><b>${score}</b></div>
+      <div class="name">${row["🎙️스트리머"]}</div>
+      <div class="num">${row["🥊1세트"]}</div>
+      <div class="num">${row["🥊2세트"]}</div>
+      <div class="num">${row["🥊3세트"]}</div>
+      <div class="score">${row["📝최종 점수"]}</div>
     `;
 
     board.appendChild(div);
@@ -132,6 +165,8 @@ setInterval(fetchData, 2000);
 </script>
 </body>
 </html>
+
+
 
 
 
