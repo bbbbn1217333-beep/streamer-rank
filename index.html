@@ -3,13 +3,13 @@ const SHEET_ID = "18F2mJsiSWYbxSl97u4vKEX9pTuEOuoL1WaGE5PB_iJ0";
 const SHEET_NAME = "시트1";
 const RANGE = "E11:I15";
 const board = document.getElementById("board");
-
 let prevData = "";
 
+// 렌더링 함수
 function render(data) {
   if(!data || !data.length){ board.innerHTML="데이터가 없습니다 😶"; return; }
 
-  // 점수 기준 내림차순 정렬
+  // 점수 내림차순 정렬
   data.sort((a,b)=> Number(b["📝최종 점수"]) - Number(a["📝최종 점수"]));
 
   // 순위 계산 (동점 처리)
@@ -21,7 +21,7 @@ function render(data) {
     if(score === lastScore){
       row.rank = rank;
       sameRankCount++;
-    }else{
+    } else {
       rank += sameRankCount;
       row.rank = rank;
       lastScore = score;
@@ -48,6 +48,7 @@ function render(data) {
   `;
   board.appendChild(header);
 
+  // 데이터 행
   data.forEach((row, i)=>{
     const div = document.createElement("div");
     div.className = "row";
@@ -70,6 +71,7 @@ function render(data) {
   });
 }
 
+// 데이터 가져오기
 async function fetchData() {
   const URL = `https://opensheet.elk.sh/${SHEET_ID}/${encodeURIComponent(SHEET_NAME)}!${RANGE}?t=${Date.now()}`;
   try{
@@ -77,7 +79,8 @@ async function fetchData() {
     const data = await res.json();
     render(data);
   }catch(e){
-    console.error(e);
+    console.error("데이터 로드 실패:", e);
+    board.innerHTML = "데이터 로드 실패 😢";
   }
 }
 
@@ -85,6 +88,8 @@ async function fetchData() {
 fetchData();
 setInterval(fetchData, 5000);
 </script>
+
+
 
 
 
