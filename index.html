@@ -2,93 +2,96 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8" />
-<title>실시간 랭킹</title>
+<title>스트리머 점수판</title>
+
 <style>
-  body {
-    margin: 0;
-    background: #0b0b0b;
-    color: #fff;
-    font-family: Pretendard, Apple SD Gothic Neo, sans-serif;
-  }
-  .wrap {
-    width: 100vw;
-    height: 100vh;
-    padding: 24px;
-    box-sizing: border-box;
-  }
-  h1 {
-    margin-bottom: 16px;
-    font-size: 28px;
-    text-align: center;
-  }
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 20px;
-  }
-  th, td {
-    padding: 14px;
-    text-align: center;
-  }
-  th {
-    background: #1a1a1a;
-  }
-  tr:nth-child(even) {
-    background: #141414;
-  }
-  .rank {
-    font-size: 26px;
-  }
-</style>
-</head>
-<body>
-<div class="wrap">
-  <h1>🔥 실시간 순위표 🔥</h1>
-  <table>
-    <thead>
-      <tr>
-        <th>순위</th>
-        <th>스트리머</th>
-        <th>최종 점수</th>
-      </tr>
-    </thead>
-    <tbody id="list"></tbody>
-  </table>
-</div>
+@import url('https://fonts.googleapis.com/css2?family=SUIT:wght@600;800&display=swap');
 
-<script>
-const URL = "https://opensheet.elk.sh/18F2mJsiSWYbxSl97u4vKEX9pTuEOuoL1WaGE5PB_iJ0/%EC%8B%9C%ED%8A%B81";
-
-function loadData() {
-  fetch(URL)
-    .then(res => res.json())
-    .then(data => {
-      // 점수 기준 정렬
-      data.sort((a, b) => b["최종 점수"] - a["최종 점수"]);
-
-      const tbody = document.getElementById("list");
-      tbody.innerHTML = "";
-
-      data.forEach((row, i) => {
-        const medal =
-          i === 0 ? "🥇" :
-          i === 1 ? "🥈" :
-          i === 2 ? "🥉" : i + 1;
-
-        tbody.innerHTML += `
-          <tr>
-            <td class="rank">${medal}</td>
-            <td>${row["스트리머"]}</td>
-            <td>${row["최종 점수"]}</td>
-          </tr>
-        `;
-      });
-    });
+body {
+  margin: 0;
+  background: transparent;
+  font-family: 'SUIT', sans-serif;
 }
 
-// 3초마다 갱신
+.board {
+  width: 420px;
+  padding: 16px;
+  background: rgba(15, 15, 15, 0.85);
+  border-radius: 16px;
+  box-shadow: 0 0 25px rgba(0,0,0,0.6);
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 50px 1fr 90px;
+  align-items: center;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+  border-radius: 12px;
+  background: linear-gradient(145deg, #1c1c1c, #111);
+}
+
+.rank {
+  font-size: 22px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.name {
+  font-size: 18px;
+}
+
+.score {
+  font-size: 20px;
+  font-weight: 800;
+  text-align: right;
+}
+
+.gold { background: linear-gradient(145deg, #ffd700, #b8860b); color:#000; }
+.silver { background: linear-gradient(145deg, #e0e0e0, #a0a0a0); color:#000; }
+.bronze { background: linear-gradient(145deg, #cd7f32, #8b5a2b); color:#000; }
+
+</style>
+</head>
+
+<body>
+<div class="board" id="board"></div>
+
+<script>
+const SHEET_ID = "18F2mJsiSWYbxSl97u4vKEX9pTuEOuoL1WaGE5PB_iJ0";
+const SHEET_NAME = "시트1";
+const RANGE = "E12:I15";
+
+const URL = `https://opensheet.elk.sh/${SHEET_ID}/${SHEET_NAME}!${RANGE}`;
+
+async function loadData() {
+  const res = await fetch(URL);
+  const data = await res.json();
+
+  const board = document.getElementById("board");
+  board.innerHTML = "";
+
+  data.forEach((row, i) => {
+    const div = document.createElement("div");
+    div.className = "row";
+
+    if (i === 0) div.classList.add("gold");
+    if (i === 1) div.classList.add("silver");
+    if (i === 2) div.classList.add("bronze");
+
+    div.innerHTML = `
+      <div class="rank">${i + 1}</div>
+      <div class="name">${row["스트리머"]}</div>
+      <div class="score">${row["최종점수"]}</div>
+    `;
+
+    board.appendChild(div);
+  });
+}
+
 loadData();
-setInterval(loadData, 3000);
+setInterval(loadData, 2000); // 2초마다 실시간 반영
 </script>
 </body>
 </html>
+
