@@ -4,52 +4,80 @@
 <meta charset="UTF-8" />
 <title>메이플 스트리머 랭킹</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSans.css" rel="stylesheet">
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
 
 <style>
+:root {
+  --bg-dark: #1c1c1f;
+  --row-bg: #1c1c1f;
+  --row-hover: #2e2e33;
+  --border-color: #2f2f33;
+  --text-gray: #9e9eb1;
+  --text-white: #f5f5f7;
+  --accent-blue: #5383e8;
+}
+
 body {
   margin: 0;
-  background: transparent;
-  font-family: 'Montserrat', sans-serif;
-  color: #fff;
+  padding: 20px;
+  background-color: transparent; /* OBS 소스용 */
+  font-family: 'Pretendard', sans-serif;
+  color: var(--text-white);
 }
+
 .board {
-  width: 760px;
-  background: linear-gradient(180deg, rgba(15,15,20,0.92), rgba(8,8,12,0.92));
-  border-radius: 22px;
-  padding: 18px;
-  box-shadow: 0 0 30px rgba(255,215,100,0.15);
+  width: 850px; /* 이미지 비율에 맞춰 확장 */
+  background: var(--bg-dark);
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
 }
+
+/* 테이블 레이아웃 구현 */
 .row {
   display: grid;
-  grid-template-columns: 80px 2fr 1fr 1fr 1fr 1.2fr;
+  /* 순위 | 스트리머(자유) | 1세트 | 2세트 | 3세트 | 최종 점수 */
+  grid-template-columns: 60px 1fr 100px 100px 100px 120px;
   align-items: center;
-  padding: 12px 14px;
-  margin-bottom: 10px;
-  border-radius: 14px;
-  background: rgba(255,255,255,0.06);
-  font-size: 16px;
+  border-bottom: 1px solid var(--border-color);
+  transition: background 0.2s;
 }
+
+.row:last-child { border-bottom: none; }
+.row:not(.header):hover { background: var(--row-hover); }
+
+/* 헤더 스타일 */
 .header {
-  background: rgba(255,215,120,0.15);
-  font-weight: 800;
-  font-size: 15px;
-  color: #ffeaa7;
+  background: #1c1c1f;
+  height: 40px;
+  color: var(--text-gray);
+  font-size: 13px;
+  font-weight: 500;
 }
-.rank { text-align: center; font-size: 22px; font-weight: 800; }
-.name { font-family: 'GmarketSans', sans-serif; font-weight: 700; font-size: 18px; letter-spacing: -0.3px; }
-.num { text-align: center; font-variant-numeric: tabular-nums; }
-.score { text-align: center; font-size: 18px; font-weight: 800; }
-.gold { background: linear-gradient(90deg, #ffda77, #ffb703); color: #2b1b00; }
-.silver { background: linear-gradient(90deg, #e0e0e0, #bfc9ca); color: #1c1c1c; }
-.bronze { background: linear-gradient(90deg, #e6b17e, #b87333); color: #2a1600; }
-.crown { animation: crownBounce 1.3s infinite; }
-@keyframes crownBounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+
+/* 데이터 셀 스타일 */
+.cell {
+  padding: 12px 0;
+  text-align: center;
+}
+
+.rank { font-size: 14px; color: var(--text-gray); font-weight: bold; }
+.name { text-align: left; padding-left: 15px; font-weight: 600; color: var(--text-white); }
+.num { color: var(--text-gray); font-size: 14px; }
+.score { color: var(--accent-blue); font-weight: 700; font-size: 16px; }
+
+/* 1, 2, 3위 강조 (이미지 스타일) */
+.row-1 { background: rgba(83, 131, 232, 0.05); }
+
+/* 메달 효과 삭제하고 텍스트 위주로 깔끔하게 변경 가능 */
+.rank-1 { color: #ffb900; }
 </style>
 </head>
 <body>
-<div class="board" id="board">로딩중...</div>
+
+<div class="board" id="board">
+  <div style="padding: 20px; text-align: center; color: #555;">Ranking Data Loading...</div>
+</div>
 
 <script>
 const SHEET_ID = "18F2mJsiSWYbxSl97u4vKEX9pTuEOuoL1WaGE5PB_iJ0";
@@ -61,29 +89,12 @@ let prevData = "";
 
 function render(data) {
   if(!data || !data.length) {
-    board.innerHTML = "데이터가 없습니다 😶";
+    board.innerHTML = "<div style='padding:20px'>데이터가 없습니다 😶</div>";
     return;
   }
 
-  // 점수 내림차순
+  // 데이터 정렬
   data.sort((a,b)=> Number(b["📝최종 점수"]) - Number(a["📝최종 점수"]));
-
-  // 동점 처리
-  let rank = 1;
-  let lastScore = null;
-  let sameRankCount = 0;
-  data.forEach((row,i)=>{
-    const score = Number(row["📝최종 점수"]);
-    if(score === lastScore){
-      row.rank = rank;
-      sameRankCount++;
-    } else {
-      rank += sameRankCount;
-      row.rank = rank;
-      lastScore = score;
-      sameRankCount = 1;
-    }
-  });
 
   const json = JSON.stringify(data);
   if(json === prevData) return;
@@ -91,35 +102,31 @@ function render(data) {
 
   board.innerHTML = "";
 
-  // 헤더
+  // 헤더 생성
   const header = document.createElement("div");
   header.className = "row header";
   header.innerHTML = `
-    <div class="rank">순위</div>
-    <div>🎙️ 스트리머</div>
-    <div class="num">🥊1세트</div>
-    <div class="num">🥊2세트</div>
-    <div class="num">🥊3세트</div>
-    <div class="score">📝최종 점수</div>
+    <div class="cell">순위</div>
+    <div class="cell" style="text-align:left; padding-left:15px;">스트리머</div>
+    <div class="cell">1세트</div>
+    <div class="cell">2세트</div>
+    <div class="cell">3세트</div>
+    <div class="cell">최종 점수</div>
   `;
   board.appendChild(header);
 
-  data.forEach((row,i)=>{
+  data.forEach((row, i) => {
+    const rank = i + 1;
     const div = document.createElement("div");
-    div.className = "row";
-    if(i===0) div.classList.add("gold");
-    if(i===1) div.classList.add("silver");
-    if(i===2) div.classList.add("bronze");
-
-    const medal = row.rank===1?"👑":row.rank===2?"🥈":row.rank===3?"🥉":row.rank;
+    div.className = `row row-${rank}`;
 
     div.innerHTML = `
-      <div class="rank ${row.rank===1?"crown":""}">${medal}</div>
-      <div class="name">${row["🎙️스트리머"]}</div>
-      <div class="num">${row["🥊1세트"]}</div>
-      <div class="num">${row["🥊2세트"]}</div>
-      <div class="num">${row["🥊3세트"]}</div>
-      <div class="score">${row["📝최종 점수"]}</div>
+      <div class="cell rank ${rank <= 3 ? 'rank-'+rank : ''}">${rank}</div>
+      <div class="cell name">${row["🎙️스트리머"]}</div>
+      <div class="cell num">${row["🥊1세트"]}</div>
+      <div class="cell num">${row["🥊2세트"]}</div>
+      <div class="cell num">${row["🥊3세트"]}</div>
+      <div class="cell score">${Number(row["📝최종 점수"]).toLocaleString()}</div>
     `;
     board.appendChild(div);
   });
@@ -133,16 +140,16 @@ async function fetchData() {
     render(data);
   } catch(e) {
     console.error(e);
-    board.innerHTML = "데이터 로드 실패 😢";
+    board.innerHTML = "<div style='padding:20px'>데이터 로드 실패 😢</div>";
   }
 }
 
-// 2초마다 갱신
 fetchData();
-setInterval(fetchData, 2000);
+setInterval(fetchData, 5000); // 부하를 줄이기 위해 5초 권장
 </script>
 </body>
 </html>
+
 
 
 
