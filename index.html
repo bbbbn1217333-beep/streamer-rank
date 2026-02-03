@@ -3,23 +3,26 @@ const SHEET_ID = "18F2mJsiSWYbxSl97u4vKEX9pTuEOuoL1WaGE5PB_iJ0";
 const SHEET_NAME = "시트1";
 const RANGE = "E11:I15";
 const board = document.getElementById("board");
+
 let prevData = "";
 
-// 렌더링 함수
 function render(data) {
-  if(!data || !data.length){ board.innerHTML="데이터가 없습니다 😶"; return; }
+  if (!data || !data.length) {
+    board.innerHTML = "데이터가 없습니다 😶";
+    return;
+  }
 
-  // 점수 내림차순 정렬
-  data.sort((a,b)=> Number(b["📝최종 점수"]) - Number(a["📝최종 점수"]));
+  // 점수 기준 내림차순 정렬
+  data.sort((a,b) => Number(b["📝최종 점수"]) - Number(a["📝최종 점수"]));
 
-  // 순위 계산 (동점 처리)
+  // 동점 처리
   let rank = 1;
   let lastScore = null;
   let sameRankCount = 0;
-  data.forEach((row, i)=>{
+  data.forEach((row, i) => {
     const score = Number(row["📝최종 점수"]);
-    if(score === lastScore){
-      row.rank = rank;
+    if (score === lastScore) {
+      row.rank = rank; 
       sameRankCount++;
     } else {
       rank += sameRankCount;
@@ -30,7 +33,7 @@ function render(data) {
   });
 
   const json = JSON.stringify(data);
-  if(json === prevData) return;
+  if (json === prevData) return;
   prevData = json;
 
   board.innerHTML = "";
@@ -48,46 +51,49 @@ function render(data) {
   `;
   board.appendChild(header);
 
-  // 데이터 행
-  data.forEach((row, i)=>{
+  data.forEach((row, i) => {
     const div = document.createElement("div");
     div.className = "row";
 
-    if(i===0) div.classList.add("gold");
-    if(i===1) div.classList.add("silver");
-    if(i===2) div.classList.add("bronze");
+    if (i === 0) div.classList.add("gold");
+    if (i === 1) div.classList.add("silver");
+    if (i === 2) div.classList.add("bronze");
 
-    const medal = row.rank===1?"👑":row.rank===2?"🥈":row.rank===3?"🥉":row.rank;
+    const medal = row.rank === 1 ? "👑" :
+                  row.rank === 2 ? "🥈" :
+                  row.rank === 3 ? "🥉" : row.rank;
 
     div.innerHTML = `
-      <div class="rank ${row.rank===1?"crown":""}">${medal}</div>
+      <div class="rank ${row.rank === 1 ? "crown" : ""}">${medal}</div>
       <div class="name">${row["🎙️스트리머"]}</div>
       <div class="num">${row["🥊1세트"]}</div>
       <div class="num">${row["🥊2세트"]}</div>
       <div class="num">${row["🥊3세트"]}</div>
       <div class="score">${row["📝최종 점수"]}</div>
     `;
+
     board.appendChild(div);
   });
 }
 
-// 데이터 가져오기
 async function fetchData() {
+  // 캐시 방지용 timestamp
   const URL = `https://opensheet.elk.sh/${SHEET_ID}/${encodeURIComponent(SHEET_NAME)}!${RANGE}?t=${Date.now()}`;
-  try{
+  try {
     const res = await fetch(URL);
     const data = await res.json();
     render(data);
-  }catch(e){
-    console.error("데이터 로드 실패:", e);
-    board.innerHTML = "데이터 로드 실패 😢";
+  } catch (e) {
+    console.error(e);
   }
 }
 
-// 갱신 주기 5초
+// 갱신 주기 2초로 유지 (빠르게)
 fetchData();
-setInterval(fetchData, 5000);
+setInterval(fetchData, 2000);
 </script>
+
+
 
 
 
