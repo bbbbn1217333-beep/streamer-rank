@@ -1,3 +1,56 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<title>메이플 스트리머 랭킹</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSans.css" rel="stylesheet">
+
+<style>
+body {
+  margin: 0;
+  background: transparent;
+  font-family: 'Montserrat', sans-serif;
+  color: #fff;
+}
+.board {
+  width: 760px;
+  background: linear-gradient(180deg, rgba(15,15,20,0.92), rgba(8,8,12,0.92));
+  border-radius: 22px;
+  padding: 18px;
+  box-shadow: 0 0 30px rgba(255,215,100,0.15);
+}
+.row {
+  display: grid;
+  grid-template-columns: 80px 2fr 1fr 1fr 1fr 1.2fr;
+  align-items: center;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.06);
+  font-size: 16px;
+}
+.header {
+  background: rgba(255,215,120,0.15);
+  font-weight: 800;
+  font-size: 15px;
+  color: #ffeaa7;
+}
+.rank { text-align: center; font-size: 22px; font-weight: 800; }
+.name { font-family: 'GmarketSans', sans-serif; font-weight: 700; font-size: 18px; letter-spacing: -0.3px; }
+.num { text-align: center; font-variant-numeric: tabular-nums; }
+.score { text-align: center; font-size: 18px; font-weight: 800; }
+.gold { background: linear-gradient(90deg, #ffda77, #ffb703); color: #2b1b00; }
+.silver { background: linear-gradient(90deg, #e0e0e0, #bfc9ca); color: #1c1c1c; }
+.bronze { background: linear-gradient(90deg, #e6b17e, #b87333); color: #2a1600; }
+.crown { animation: crownBounce 1.3s infinite; }
+@keyframes crownBounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+</style>
+</head>
+<body>
+<div class="board" id="board">로딩중...</div>
+
 <script>
 const SHEET_ID = "18F2mJsiSWYbxSl97u4vKEX9pTuEOuoL1WaGE5PB_iJ0";
 const SHEET_NAME = "시트1";
@@ -6,24 +59,23 @@ const board = document.getElementById("board");
 
 let prevData = "";
 
-// 렌더링 함수
 function render(data) {
-  if (!data || !data.length) {
+  if(!data || !data.length) {
     board.innerHTML = "데이터가 없습니다 😶";
     return;
   }
 
-  // 점수 기준 내림차순 정렬
-  data.sort((a,b) => Number(b["📝최종 점수"]) - Number(a["📝최종 점수"]));
+  // 점수 내림차순
+  data.sort((a,b)=> Number(b["📝최종 점수"]) - Number(a["📝최종 점수"]));
 
   // 동점 처리
   let rank = 1;
   let lastScore = null;
   let sameRankCount = 0;
-  data.forEach((row, i) => {
+  data.forEach((row,i)=>{
     const score = Number(row["📝최종 점수"]);
-    if (score === lastScore) {
-      row.rank = rank; 
+    if(score === lastScore){
+      row.rank = rank;
       sameRankCount++;
     } else {
       rank += sameRankCount;
@@ -34,7 +86,7 @@ function render(data) {
   });
 
   const json = JSON.stringify(data);
-  if (json === prevData) return;
+  if(json === prevData) return;
   prevData = json;
 
   board.innerHTML = "";
@@ -52,47 +104,47 @@ function render(data) {
   `;
   board.appendChild(header);
 
-  data.forEach((row, i) => {
+  data.forEach((row,i)=>{
     const div = document.createElement("div");
     div.className = "row";
+    if(i===0) div.classList.add("gold");
+    if(i===1) div.classList.add("silver");
+    if(i===2) div.classList.add("bronze");
 
-    if (i === 0) div.classList.add("gold");
-    if (i === 1) div.classList.add("silver");
-    if (i === 2) div.classList.add("bronze");
-
-    const medal = row.rank === 1 ? "👑" :
-                  row.rank === 2 ? "🥈" :
-                  row.rank === 3 ? "🥉" : row.rank;
+    const medal = row.rank===1?"👑":row.rank===2?"🥈":row.rank===3?"🥉":row.rank;
 
     div.innerHTML = `
-      <div class="rank ${row.rank === 1 ? "crown" : ""}">${medal}</div>
+      <div class="rank ${row.rank===1?"crown":""}">${medal}</div>
       <div class="name">${row["🎙️스트리머"]}</div>
       <div class="num">${row["🥊1세트"]}</div>
       <div class="num">${row["🥊2세트"]}</div>
       <div class="num">${row["🥊3세트"]}</div>
       <div class="score">${row["📝최종 점수"]}</div>
     `;
-
     board.appendChild(div);
   });
 }
 
-// fetchData
 async function fetchData() {
   const URL = `https://opensheet.elk.sh/${SHEET_ID}/${encodeURIComponent(SHEET_NAME)}!${RANGE}`;
   try {
     const res = await fetch(URL);
     const data = await res.json();
     render(data);
-  } catch (e) {
+  } catch(e) {
     console.error(e);
+    board.innerHTML = "데이터 로드 실패 😢";
   }
 }
 
-// 갱신 주기 2초
+// 2초마다 갱신
 fetchData();
 setInterval(fetchData, 2000);
 </script>
+</body>
+</html>
+
+
 
 
 
