@@ -35,12 +35,13 @@ body {
 
 .row {
   display: grid;
-  grid-template-columns: 60px 1fr 100px 100px 100px 120px;
+  /* 비율 조정: 스트리머 영역을 조금 더 넓게 */
+  grid-template-columns: 60px 1.2fr 100px 100px 100px 120px;
   align-items: center;
   border-bottom: 1px solid var(--border-color);
   transition: background 0.2s;
-  /* 행 높이를 고정하여 이미지가 커져도 표가 늘어나지 않게 합니다 */
-  height: 50px; 
+  /* 행의 최소 높이를 지정하여 이미지가 표 안에 꽉 차게 만듭니다 */
+  min-height: 80px; 
 }
 
 .row:last-child { border-bottom: none; }
@@ -48,53 +49,41 @@ body {
 
 .header {
   background: #1c1c1f;
-  height: 40px;
+  height: 45px;
+  min-height: 45px; /* 헤더는 너무 높지 않게 고정 */
   color: var(--text-gray);
   font-size: 13px;
   font-weight: 500;
 }
 
 .cell {
-  padding: 0; /* 여백 제거로 높이 고정 유지 */
+  padding: 10px 0;
   text-align: center;
 }
 
-.rank { font-size: 14px; color: var(--text-gray); font-weight: bold; }
+.rank { font-size: 16px; color: var(--text-gray); font-weight: bold; }
 
 .name {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 15px;
   padding-left: 15px;
   font-weight: 600;
   color: var(--text-white);
-  /* 이미지가 튀어나와도 다른 요소에 영향을 주지 않도록 설정 */
-  position: relative; 
 }
 
 .avatar {
-  /* 행 높이보다 큰 65px로 설정 */
-  width: 65px;
-  height: 65px;
+  /* 이미지 크기 조절: 여기서 원하는 만큼 키우세요! */
+  width: 70px; 
+  height: 70px;
   object-fit: cover;
   border-radius: 6px;
-  border: 2px solid var(--border-color);
-  background: var(--bg-dark);
-  
-  /* 중요: 이미지를 절대 위치로 띄워 행 높이에 영향을 주지 않게 함 */
-  position: absolute;
-  left: 10px;
-  z-index: 10;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-}
-
-/* 이름 텍스트가 이미지 뒤로 가리지 않게 간격 조정 */
-.name-text {
-  margin-left: 75px; 
+  border: 1px solid var(--border-color);
+  flex-shrink: 0; /* 이미지가 찌그러지지 않게 고정 */
 }
 
 .num { color: var(--text-gray); font-size: 14px; }
-.score { color: var(--accent-blue); font-weight: 700; font-size: 16px; }
+.score { color: var(--accent-blue); font-weight: 700; font-size: 18px; }
 
 .row-1 { background: rgba(83, 131, 232, 0.05); }
 .rank-1 { color: #ffb900; }
@@ -152,7 +141,7 @@ function render(data) {
       <div class="cell name">
         <img src="/images/${name}.png" class="avatar" 
              onerror="this.src='/images/default.png'">
-        <span class="name-text">${name}</span>
+        <span>${name}</span>
       </div>
       <div class="cell num">${row["🥊1세트"]}</div>
       <div class="cell num">${row["🥊2세트"]}</div>
