@@ -1,26 +1,164 @@
-<!DOCTYPE html> <html lang="ko"> <head> <meta charset="UTF-8" /> <title>메이플 스트리머 랭킹</title> <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" /> <style> :root { --bg-dark: #1c1c1f; --row-bg: #1c1c1f; --row-hover: #2e2e33; --border-color: #2f2f33; --text-gray: #9e9eb1; --text-white: #f5f5f7; --accent-blue: #5383e8; } body { margin: 0; padding: 20px; background-color: transparent; /* OBS 소스용 */ font-family: 'Pretendard', sans-serif; color: var(--text-white); } .board { width: 850px; /* 이미지 비율에 맞춰 확장 */ background: var(--bg-dark); border-radius: 4px; overflow: hidden; border: 1px solid var(--border-color); } /* 테이블 레이아웃 구현 */ .row { display: grid; /* 순위 | 스트리머(자유) | 1세트 | 2세트 | 3세트 | 최종 점수 */ grid-template-columns: 60px 1fr 100px 100px 100px 120px; align-items: center; border-bottom: 1px solid var(--border-color); transition: background 0.2s; } .row:last-child { border-bottom: none; } .row:not(.header):hover { background: var(--row-hover); } /* 헤더 스타일 */ .header { background: #1c1c1f; height: 40px; color: var(--text-gray); font-size: 13px; font-weight: 500; } /* 데이터 셀 스타일 */ .cell { padding: 12px 0; text-align: center; } .rank { font-size: 14px; color: var(--text-gray); font-weight: bold; } .name { text-align: left; padding-left: 15px; font-weight: 600; color: var(--text-white); } .num { color: var(--text-gray); font-size: 14px; } .score { color: var(--accent-blue); font-weight: 700; font-size: 16px; } /* 1, 2, 3위 강조 (이미지 스타일) */ .row-1 { background: rgba(83, 131, 232, 0.05); } /* 메달 효과 삭제하고 텍스트 위주로 깔끔하게 변경 가능 */ .rank-1 { color: #ffb900; } </style> </head> <body> <div class="board" id="board"> <div style="padding: 20px; text-align: center; color: #555;">Ranking Data Loading...</div> </div> <script> const SHEET_ID = "18F2mJsiSWYbxSl97u4vKEX9pTuEOuoL1WaGE5PB_iJ0"; const SHEET_NAME = "시트1"; const RANGE = "E11:I15"; const board = document.getElementById("board"); let prevData = ""; function render(data) { if(!data || !data.length) { board.innerHTML = "<div style='padding:20px'>데이터가 없습니다 😶</div>"; return; } // 데이터 정렬 data.sort((a,b)=> Number(b["📝최종 점수"]) - Number(a["📝최종 점수"])); const json = JSON.stringify(data); if(json === prevData) return; prevData = json; board.innerHTML = ""; // 헤더 생성 const header = document.createElement("div"); header.className = "row header"; header.innerHTML = <div class="cell">순위</div> <div class="cell" style="text-align:left; padding-left:15px;">스트리머</div> <div class="cell">1세트</div> <div class="cell">2세트</div> <div class="cell">3세트</div> <div class="cell">최종 점수</div> ; board.appendChild(header); data.forEach((row, i) => { const rank = i + 1; const div = document.createElement("div"); div.className = row row-${rank}; div.innerHTML = <div class="cell rank ${rank <= 3 ? 'rank-'+rank : ''}">${rank}</div> <div class="cell name">${row["🎙️스트리머"]}</div> <div class="cell num">${row["🥊1세트"]}</div> <div class="cell num">${row["🥊2세트"]}</div> <div class="cell num">${row["🥊3세트"]}</div> <div class="cell score">${Number(row["📝최종 점수"]).toLocaleString()}</div> ; board.appendChild(div); }); } async function fetchData() { const URL = https://opensheet.elk.sh/${SHEET_ID}/${encodeURIComponent(SHEET_NAME)}!${RANGE}; try { const res = await fetch(URL); const data = await res.json(); render(data); } catch(e) { console.error(e); board.innerHTML = "<div style='padding:20px'>데이터 로드 실패 😢</div>"; } } fetchData(); setInterval(fetchData, 5000); // 부하를 줄이기 위해 5초 권장 </script> </body> </html>
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<title>메이플 스트리머 랭킹</title>
 
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
 
+<style>
+:root {
+  --bg-dark: #1c1c1f;
+  --row-bg: #1c1c1f;
+  --row-hover: #2e2e33;
+  --border-color: #2f2f33;
+  --text-gray: #9e9eb1;
+  --text-white: #f5f5f7;
+  --accent-blue: #5383e8;
+}
 
+body {
+  margin: 0;
+  padding: 20px;
+  background-color: transparent;
+  font-family: 'Pretendard', sans-serif;
+  color: var(--text-white);
+}
 
+.board {
+  width: 850px;
+  background: var(--bg-dark);
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+}
 
+.row {
+  display: grid;
+  grid-template-columns: 60px 1fr 100px 100px 100px 120px;
+  align-items: center;
+  border-bottom: 1px solid var(--border-color);
+  transition: background 0.2s;
+}
 
+.row:last-child { border-bottom: none; }
+.row:not(.header):hover { background: var(--row-hover); }
 
+.header {
+  background: #1c1c1f;
+  height: 40px;
+  color: var(--text-gray);
+  font-size: 13px;
+  font-weight: 500;
+}
 
+.cell {
+  padding: 12px 0;
+  text-align: center;
+}
 
+.rank { font-size: 14px; color: var(--text-gray); font-weight: bold; }
 
+.name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-left: 15px;
+  font-weight: 600;
+  color: var(--text-white);
+}
 
+.avatar {
+  width: 30px;
+  height: 30px;
+  object-fit: cover;
+  border-radius: 6px; /* 동그랗게 하려면 50% */
+}
 
+.num { color: var(--text-gray); font-size: 14px; }
+.score { color: var(--accent-blue); font-weight: 700; font-size: 16px; }
 
+.row-1 { background: rgba(83, 131, 232, 0.05); }
+.rank-1 { color: #ffb900; }
+</style>
+</head>
+<body>
 
+<div class="board" id="board">
+  <div style="padding: 20px; text-align: center; color: #555;">Ranking Data Loading...</div>
+</div>
 
+<script>
+const SHEET_ID = "18F2mJsiSWYbxSl97u4vKEX9pTuEOuoL1WaGE5PB_iJ0";
+const SHEET_NAME = "시트1";
+const RANGE = "E11:I15";
+const board = document.getElementById("board");
 
+let prevData = "";
 
+function render(data) {
+  if(!data || !data.length) {
+    board.innerHTML = "<div style='padding:20px'>데이터가 없습니다 😶</div>";
+    return;
+  }
 
+  data.sort((a,b)=> Number(b["📝최종 점수"]) - Number(a["📝최종 점수"]));
 
+  const json = JSON.stringify(data);
+  if(json === prevData) return;
+  prevData = json;
 
+  board.innerHTML = "";
 
+  const header = document.createElement("div");
+  header.className = "row header";
+  header.innerHTML = `
+    <div class="cell">순위</div>
+    <div class="cell" style="text-align:left; padding-left:15px;">스트리머</div>
+    <div class="cell">1세트</div>
+    <div class="cell">2세트</div>
+    <div class="cell">3세트</div>
+    <div class="cell">최종 점수</div>
+  `;
+  board.appendChild(header);
 
+  data.forEach((row, i) => {
+    const rank = i + 1;
+    const name = row["🎙️스트리머"];
 
+    const div = document.createElement("div");
+    div.className = `row row-${rank}`;
 
+    div.innerHTML = `
+      <div class="cell rank ${rank <= 3 ? 'rank-'+rank : ''}">${rank}</div>
+      <div class="cell name">
+        <img src="/images/${name}.png" class="avatar" 
+             onerror="this.src='/images/default.png'">
+        ${name}
+      </div>
+      <div class="cell num">${row["🥊1세트"]}</div>
+      <div class="cell num">${row["🥊2세트"]}</div>
+      <div class="cell num">${row["🥊3세트"]}</div>
+      <div class="cell score">${Number(row["📝최종 점수"]).toLocaleString()}</div>
+    `;
+    board.appendChild(div);
+  });
+}
 
+async function fetchData() {
+  const URL = `https://opensheet.elk.sh/${SHEET_ID}/${encodeURIComponent(SHEET_NAME)}!${RANGE}`;
+  try {
+    const res = await fetch(URL);
+    const data = await res.json();
+    render(data);
+  } catch(e) {
+    console.error(e);
+    board.innerHTML = "<div style='padding:20px'>데이터 로드 실패 😢</div>";
+  }
+}
+
+fetchData();
+setInterval(fetchData, 5000);
+</script>
+</body>
+</html>
