@@ -28,8 +28,9 @@ body {
   width: 850px;
   background: var(--bg-dark);
   border-radius: 4px;
-  overflow: visible; /* 🔥 이미지 튀어나오게 */
+  overflow: visible; 
   border: 1px solid var(--border-color);
+  margin-top: 50px; /* 이미지가 위로 튀어나오므로 상단 여백 추가 */
 }
 
 .row {
@@ -38,7 +39,7 @@ body {
   align-items: center;
   border-bottom: 1px solid var(--border-color);
   transition: background 0.2s;
-  height: 60px;            /* 🔥 표 높이 고정 */
+  height: 60px; 
   position: relative;
 }
 
@@ -60,10 +61,9 @@ body {
 
 .rank { font-size: 14px; color: var(--text-gray); font-weight: bold; }
 
-/* 🔥 이름 셀 */
 .name {
   position: relative;
-  padding-left: 120px; /* 🔥 이미지 자리 확보 */
+  padding-left: 120px; 
   font-weight: 600;
   color: var(--text-white);
   text-align: left;
@@ -72,15 +72,17 @@ body {
 .avatar {
   position: absolute;
   left: 15px;
-  top: 20%;              /* 🔥 50% → 40% (위로 이동) */
+  top: 20%; 
   transform: translateY(-50%);
-  width: 110px;          /* 🔥 100 → 110 */
-  height: 110px;         /* 🔥 100 → 110 */
+  width: 110px; 
+  height: 110px; 
   object-fit: cover;
   border-radius: 12px;
   pointer-events: none;
+  z-index: 10;
+  /* 표정이 바뀔 때 부드럽게 전환 */
+  transition: all 0.3s ease-in-out;
 }
-
 
 .num { color: var(--text-gray); font-size: 14px; }
 .score { color: var(--accent-blue); font-weight: 700; font-size: 16px; }
@@ -131,7 +133,23 @@ function render(data) {
 
   data.forEach((row, i) => {
     const rank = i + 1;
-    const name = row["🎙️스트리머"];
+    const name = row["🎙️스트리머"]; // 예: '이라333'
+
+    // 🔥 [파일명 매칭 로직]
+    // 이름이 '이라333'일 때 파일명을 'IRA333'으로 매칭하기 위한 변환
+    // 만약 모든 스트리머가 한글 이름=영문 파일명 매칭이라면 mapping 테이블이 필요할 수 있습니다.
+    // 여기서는 '이라333' 한정으로 예시를 듭니다.
+    let fileNameBase = name === "이라333" ? "IRA333" : name;
+
+    // 🔥 [순위별 이미지 결정 로직]
+    let finalImgName = "";
+    if (rank <= 3) {
+      // 1~3등: 웃는 모습 (IRA333.png)
+      finalImgName = `${fileNameBase}.png`;
+    } else {
+      // 4등 이하: 우는 모습 (IRA333UNHAPPY.png)
+      finalImgName = `${fileNameBase}UNHAPPY.png`;
+    }
 
     const div = document.createElement("div");
     div.className = `row row-${rank}`;
@@ -139,7 +157,7 @@ function render(data) {
     div.innerHTML = `
       <div class="cell rank ${rank <= 3 ? 'rank-'+rank : ''}">${rank}</div>
       <div class="cell name">
-        <img src="/images/${name}.png" class="avatar"
+        <img src="/images/${finalImgName}" class="avatar"
              onerror="this.src='/images/default.png'">
         ${name}
       </div>
@@ -169,6 +187,7 @@ setInterval(fetchData, 5000);
 </script>
 </body>
 </html>
+
 
 
 
