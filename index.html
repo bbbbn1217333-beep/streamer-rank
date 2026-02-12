@@ -157,8 +157,8 @@ if (rank <= 3) {
   div.innerHTML = `
     <div class="cell rank ${rank <= 3 ? 'rank-'+rank : ''}">${rank}</div>
     <div class="cell name">
-      <img src="images/${imgFile}" class="avatar"
-           onerror="this.src='images/default.gif'">
+      <img src="/images/${imgFile}" class="avatar"
+           onerror="this.src='/images/default.GIF'">
       ${name}
     </div>
     <div class="cell num">${row["🥊1세트"]}</div>
@@ -186,6 +186,7 @@ setInterval(fetchData, 5000);
 </script>
 </body>
 </html>
+
 
 
 
