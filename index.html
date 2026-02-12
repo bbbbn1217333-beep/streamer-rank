@@ -18,7 +18,7 @@
 
 body {
   margin: 0;
-  padding: 60px 20px; /* 상단 여백을 충분히 주어 이미지가 안 잘리게 함 */
+  padding: 20px;
   background-color: transparent;
   font-family: 'Pretendard', sans-serif;
   color: var(--text-white);
@@ -28,9 +28,8 @@ body {
   width: 850px;
   background: var(--bg-dark);
   border-radius: 4px;
-  overflow: visible; 
+  overflow: visible; /* 🔥 이미지 튀어나오게 */
   border: 1px solid var(--border-color);
-  margin-top: 50px; 
 }
 
 .row {
@@ -39,7 +38,7 @@ body {
   align-items: center;
   border-bottom: 1px solid var(--border-color);
   transition: background 0.2s;
-  height: 60px; 
+  height: 60px;            /* 🔥 표 높이 고정 */
   position: relative;
 }
 
@@ -55,39 +54,32 @@ body {
 }
 
 .cell {
-  padding: 0;
+  padding: 12px 0;
   text-align: center;
 }
 
 .rank { font-size: 14px; color: var(--text-gray); font-weight: bold; }
 
+/* 🔥 이름 셀 */
 .name {
   position: relative;
-  padding-left: 130px; /* 텍스트가 이미지와 겹치지 않게 충분히 밀기 */
+  padding-left: 120px; /* 🔥 이미지 자리 확보 */
   font-weight: 600;
   color: var(--text-white);
   text-align: left;
 }
 
+/* 🔥 100px 이미지 */
 .avatar {
   position: absolute;
-  left: 10px;
-  /* 원본이 180이든 300이든 화면에선 무조건 120px로 보이게 고정 */
-  width: 120px !important; 
-  height: 120px !important; 
-  
-  /* top 50%와 translateY -50%로 행의 정중앙에 배치 */
+  left: 15px;
   top: 50%;
   transform: translateY(-50%);
-  
-  /* 🔥 핵심: 이미지를 영역에 꽉 채우고 남는 부분은 자름 (비율 유지) */
-  object-fit: cover; 
-  
-  border-radius: 12px;
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 10px;
   pointer-events: none;
-  z-index: 100;
-  background: var(--bg-dark);
-  transition: all 0.3s ease-in-out;
 }
 
 .num { color: var(--text-gray); font-size: 14px; }
@@ -117,7 +109,6 @@ function render(data) {
     return;
   }
 
-  // 데이터 정렬 (최종 점수 기준)
   data.sort((a,b)=> Number(b["📝최종 점수"]) - Number(a["📝최종 점수"]));
 
   const json = JSON.stringify(data);
@@ -130,7 +121,7 @@ function render(data) {
   header.className = "row header";
   header.innerHTML = `
     <div class="cell">순위</div>
-    <div class="cell" style="text-align:left; padding-left:130px;">스트리머</div>
+    <div class="cell" style="text-align:left; padding-left:120px;">스트리머</div>
     <div class="cell">1세트</div>
     <div class="cell">2세트</div>
     <div class="cell">3세트</div>
@@ -142,17 +133,13 @@ function render(data) {
     const rank = i + 1;
     const name = row["🎙️스트리머"];
 
-    // 파일명 매칭 로직
-    let fileNameBase = (name === "이라333") ? "IRA333" : name;
-    let finalImgName = (rank <= 3) ? `${fileNameBase}.png` : `${fileNameBase}UNHAPPY.png`;
-
     const div = document.createElement("div");
     div.className = `row row-${rank}`;
 
     div.innerHTML = `
       <div class="cell rank ${rank <= 3 ? 'rank-'+rank : ''}">${rank}</div>
       <div class="cell name">
-        <img src="/images/${finalImgName}" class="avatar"
+        <img src="/images/${name}.png" class="avatar"
              onerror="this.src='/images/default.png'">
         ${name}
       </div>
@@ -182,16 +169,3 @@ setInterval(fetchData, 5000);
 </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
