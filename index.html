@@ -26,21 +26,21 @@ body {
 }
 
 .board {
-  width: 900px; /* 이미지 크기에 맞춰 전체 너비 확장 */
+  width: 850px;
   background: var(--bg-dark);
-  border-radius: 8px;
+  border-radius: 4px;
   overflow: hidden;
   border: 1px solid var(--border-color);
 }
 
 .row {
   display: grid;
-  /* 순위, 이름, 세트별 점수, 최종 점수 비율 조정 */
-  grid-template-columns: 80px 1.5fr 100px 100px 100px 140px;
+  grid-template-columns: 60px 1fr 100px 100px 100px 120px;
   align-items: center;
   border-bottom: 1px solid var(--border-color);
   transition: background 0.2s;
-  min-height: 85px; /* 이미지 크기에 맞춰 행 높이 증가 */
+  /* 행 높이를 고정하여 이미지가 커져도 표가 늘어나지 않게 합니다 */
+  height: 50px; 
 }
 
 .row:last-child { border-bottom: none; }
@@ -48,50 +48,62 @@ body {
 
 .header {
   background: #1c1c1f;
-  height: 50px;
+  height: 40px;
   color: var(--text-gray);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
 }
 
 .cell {
-  padding: 12px 0;
+  padding: 0; /* 여백 제거로 높이 고정 유지 */
   text-align: center;
 }
 
-.rank { font-size: 18px; color: var(--text-gray); font-weight: bold; }
+.rank { font-size: 14px; color: var(--text-gray); font-weight: bold; }
 
 .name {
   display: flex;
   align-items: center;
-  gap: 15px; /* 이미지와 이름 간격 넓힘 */
-  padding-left: 20px;
+  gap: 12px;
+  padding-left: 15px;
   font-weight: 600;
-  font-size: 18px; /* 이름 크기 확대 */
   color: var(--text-white);
+  /* 이미지가 튀어나와도 다른 요소에 영향을 주지 않도록 설정 */
+  position: relative; 
 }
 
 .avatar {
-  width: 165px;  /* 이미지 크게 키움 */
+  /* 행 높이보다 큰 65px로 설정 */
+  width: 165px;
   height: 165px;
   object-fit: cover;
-  border-radius: 8px;
-  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  border: 2px solid var(--border-color);
+  background: var(--bg-dark);
+  
+  /* 중요: 이미지를 절대 위치로 띄워 행 높이에 영향을 주지 않게 함 */
+  position: absolute;
+  left: 10px;
+  z-index: 10;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
 }
 
-.num { color: var(--text-gray); font-size: 15px; }
-.score { color: var(--accent-blue); font-weight: 700; font-size: 22px; }
+/* 이름 텍스트가 이미지 뒤로 가리지 않게 간격 조정 */
+.name-text {
+  margin-left: 75px; 
+}
+
+.num { color: var(--text-gray); font-size: 14px; }
+.score { color: var(--accent-blue); font-weight: 700; font-size: 16px; }
 
 .row-1 { background: rgba(83, 131, 232, 0.05); }
-.rank-1 { color: #ffb900; font-size: 22px; }
-.rank-2 { color: #c0c0c0; }
-.rank-3 { color: #cd7f32; }
+.rank-1 { color: #ffb900; }
 </style>
 </head>
 <body>
 
 <div class="board" id="board">
-  <div style="padding: 40px; text-align: center; color: var(--text-gray);">Ranking Data Loading...</div>
+  <div style="padding: 20px; text-align: center; color: #555;">Ranking Data Loading...</div>
 </div>
 
 <script>
@@ -104,11 +116,10 @@ let prevData = "";
 
 function render(data) {
   if(!data || !data.length) {
-    board.innerHTML = "<div style='padding:40px; text-align:center;'>데이터가 없습니다 😶</div>";
+    board.innerHTML = "<div style='padding:20px'>데이터가 없습니다 😶</div>";
     return;
   }
 
-  // 최종 점수 기준 내림차순 정렬
   data.sort((a,b)=> Number(b["📝최종 점수"]) - Number(a["📝최종 점수"]));
 
   const json = JSON.stringify(data);
@@ -117,12 +128,11 @@ function render(data) {
 
   board.innerHTML = "";
 
-  // 헤더 생성
   const header = document.createElement("div");
   header.className = "row header";
   header.innerHTML = `
     <div class="cell">순위</div>
-    <div class="cell" style="text-align:left; padding-left:20px;">스트리머</div>
+    <div class="cell" style="text-align:left; padding-left:15px;">스트리머</div>
     <div class="cell">1세트</div>
     <div class="cell">2세트</div>
     <div class="cell">3세트</div>
@@ -130,7 +140,6 @@ function render(data) {
   `;
   board.appendChild(header);
 
-  // 데이터 행 생성
   data.forEach((row, i) => {
     const rank = i + 1;
     const name = row["🎙️스트리머"];
@@ -143,36 +152,34 @@ function render(data) {
       <div class="cell name">
         <img src="/images/${name}.png" class="avatar" 
              onerror="this.src='/images/default.png'">
-        ${name}
+        <span class="name-text">${name}</span>
       </div>
-      <div class="cell num">${row["🥊1세트"] || 0}</div>
-      <div class="cell num">${row["🥊2세트"] || 0}</div>
-      <div class="cell num">${row["🥊3세트"] || 0}</div>
-      <div class="cell score">${Number(row["📝최종 점수"] || 0).toLocaleString()}</div>
+      <div class="cell num">${row["🥊1세트"]}</div>
+      <div class="cell num">${row["🥊2세트"]}</div>
+      <div class="cell num">${row["🥊3세트"]}</div>
+      <div class="cell score">${Number(row["📝최종 점수"]).toLocaleString()}</div>
     `;
     board.appendChild(div);
   });
 }
 
 async function fetchData() {
-  // 사용자의 요청대로 Opensheet API 활용
   const URL = `https://opensheet.elk.sh/${SHEET_ID}/${encodeURIComponent(SHEET_NAME)}!${RANGE}`;
   try {
     const res = await fetch(URL);
-    if(!res.ok) throw new Error("Network response was not ok");
     const data = await res.json();
     render(data);
   } catch(e) {
-    console.error("Fetch Error:", e);
-    board.innerHTML = "<div style='padding:40px; text-align:center;'>데이터 로드 실패 😢<br><small>구글 시트 범위나 권한을 확인해주세요.</small></div>";
+    console.error(e);
+    board.innerHTML = "<div style='padding:20px'>데이터 로드 실패 😢</div>";
   }
 }
 
-// 초기 로드 및 5초 간격 업데이트
 fetchData();
 setInterval(fetchData, 5000);
 </script>
 </body>
 </html>
+
 
 
