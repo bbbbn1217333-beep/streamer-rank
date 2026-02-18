@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="referrer" content="no-referrer">
-<title>이라333배 개맞짱 컨텐츠</title>
+<title>이라333배 메이플 개맞짱 컨텐츠</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
@@ -25,7 +25,7 @@ body { background: transparent; font-family: 'Noto Sans KR', sans-serif; padding
 }
 .header-center {
   display: flex; align-items: center; gap: 8px; flex: 1; justify-content: center;
-  pointer-events: none;   /* ← 이거 추가 */
+  pointer-events: none;
 }
 .header-title {
   font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
@@ -37,7 +37,7 @@ body { background: transparent; font-family: 'Noto Sans KR', sans-serif; padding
 @keyframes punch { from { transform: scale(1) rotate(-15deg); } to { transform: scale(1.2) rotate(10deg); } }
 .header-btns {
   display: flex; align-items: center; gap: 6px; flex-shrink: 0;
-  position: relative; z-index: 20;   /* ← 이거 추가 */
+  position: relative; z-index: 20;
 }
 .lock-btn {
   background: none; border: none; cursor: pointer;
@@ -119,16 +119,36 @@ body { background: transparent; font-family: 'Noto Sans KR', sans-serif; padding
   left: 0; right: 0; height: 1px;
   background: repeating-linear-gradient(90deg, transparent, transparent 10px, rgba(255,200,0,0.12) 10px, rgba(255,200,0,0.12) 18px);
 }
-.track-fill { position: absolute; top: 0; left: 0; height: 100%; border-radius: 5px; transition: width 1s cubic-bezier(0.34,1.3,0.64,1); z-index: 1; }
+.track-fill {
+  position: absolute; top: 0; left: 0; height: 100%; border-radius: 5px;
+  transition: width 1s cubic-bezier(0.34,1.3,0.64,1); z-index: 1;
+}
 .fill-1 { background: linear-gradient(90deg, #c87000, #ffcc00, #ffe680); box-shadow: 0 0 4px rgba(255,180,0,0.5); }
 .fill-2 { background: linear-gradient(90deg, #5a6a7a, #b0bec5); }
 .fill-3 { background: linear-gradient(90deg, #7a3010, #cd7f32); }
 .fill-o { background: linear-gradient(90deg, #3a2800, #6b4200); }
+
+/* 완주 시 1등 게이지: 눈부신 황금색, 한 번만 애니 후 정지 */
+@keyframes goldenFlash {
+  0%   { filter: brightness(1) saturate(1); }
+  40%  { filter: brightness(3) saturate(2.5); }
+  100% { filter: brightness(1.6) saturate(1.8); }
+}
+.fill-1.finish-glow {
+  background: linear-gradient(90deg, #a85000, #ff9900, #ffe566, #ffcc00, #ff9900) !important;
+  box-shadow:
+    0 0 18px 6px rgba(255, 200, 0, 0.95),
+    0 0 40px 14px rgba(255, 140, 0, 0.7),
+    0 0 70px 24px rgba(255, 100, 0, 0.4) !important;
+  animation: goldenFlash 0.8s ease-out 1 forwards !important;
+}
+
 .finish-line { position: absolute; right: 0; top: 0; height: 100%; width: 7px; background: repeating-linear-gradient(90deg, #fff 0px, #fff 2px, #000 2px, #000 4px); border-radius: 0 5px 5px 0; opacity: 0.5; z-index: 2; }
 .runner-icon {
   position: absolute; top: 50%; transform: translate(-50%, -100%);
   width: 32px; height: 32px;
-  z-index: 10; transition: left 1s cubic-bezier(0.34,1.3,0.64,1); pointer-events: none;
+  z-index: 10; pointer-events: none;
+  /* transition 없음: JS easing 애니메이션으로 직접 제어 */
 }
 .runner-icon img {
   position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scaleX(-1);
@@ -142,10 +162,15 @@ body { background: transparent; font-family: 'Noto Sans KR', sans-serif; padding
   animation: bounce 0.8s ease infinite alternate;
 }
 @keyframes bounce { from { transform: translateX(-50%) translateY(0); } to { transform: translateX(-50%) translateY(-3px); } }
+
+/* 완주 시 비우승자 캐릭터 페이드 */
+.avatar-img.frozen { opacity: 0.45; filter: drop-shadow(0 1px 4px rgba(0,0,0,0.6)) grayscale(0.6); }
+.runner-icon.frozen img { opacity: 0.4; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8)) grayscale(0.6); }
+
 .row-divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(107,66,0,0.3), transparent); margin-bottom: 1px; }
 #celebOverlay {
   display: none; position: absolute; inset: 0;
-  pointer-events: none; z-index: 9999; overflow: hidden; border-radius: 10px;
+  pointer-events: none; z-index: 9999; overflow: visible; border-radius: 10px;
 }
 #celebOverlay.active { display: block; }
 #celebOverlay::before { content: ''; position: absolute; inset: 0; background: rgba(0,0,0,0.6); border-radius: 10px; }
@@ -174,6 +199,15 @@ body { background: transparent; font-family: 'Noto Sans KR', sans-serif; padding
   letter-spacing: 2px; white-space: nowrap;
 }
 .particle { position: absolute; pointer-events: none; z-index: 10000; }
+@keyframes flyAway {
+  0%   { transform: translate(0,0) rotate(0deg) scale(1); opacity:1; }
+  25%  { opacity:1; }
+  100% { transform: translate(var(--fx),var(--fy)) rotate(var(--fr)) scale(0.2); opacity:0; }
+}
+.fly-char {
+  position: absolute; pointer-events: none; z-index: 10002;
+  animation: flyAway var(--fd) cubic-bezier(0.15,0,0.5,1) forwards;
+}
 .firework { width: 6px; height: 6px; border-radius: 50%; animation: fwExplode var(--dur) ease-out forwards; }
 @keyframes fwExplode { 0% { transform: translate(0,0) scale(1); opacity:1; } 100% { transform: translate(var(--tx),var(--ty)) scale(0); opacity:0; } }
 .meso { font-size: 16px; animation: mesoFall var(--dur) ease-in forwards; line-height: 1; }
@@ -206,9 +240,9 @@ body { background: transparent; font-family: 'Noto Sans KR', sans-serif; padding
       <button class="lock-btn"   id="lockBtn"   onclick="toggleRound3()">🔒</button>
     </div>
     <div class="header-center">
-      <span class="header-glove">🥊</span>
-      <span class="header-title">이라333배 개맞짱 컨텐츠</span>
-      <span class="header-glove">🥊</span>
+      <span class="header-glove">🤜🏻</span>
+      <span class="header-title">이라333배 메이플 개맞짱 컨텐츠</span>
+      <span class="header-glove">🤛🏻</span>
     </div>
     <div style="width:90px"></div>
   </div>
@@ -287,14 +321,13 @@ function startRunnerAnim(imgEl, name) {
   }, 200);
 }
 
-const SHEET_ID   = "18F2mJsiSWYbxSl97u4vKEX9pTuEOuoL1WaGE5PB_iJ0";
-const SHEET_NAME = "시트1!E11:I18";
-
 let prevJSON = "";
 let round3Revealed = false;
 let celebActive = false;
 let celebTimer = null;
 let currentFirstName = "";
+let finishTriggered = false;
+let finishApplied = false; // ★ 게이지바 한 번만 실행 플래그
 
 function toggleRound3() {
   round3Revealed = !round3Revealed;
@@ -303,27 +336,191 @@ function toggleRound3() {
   document.querySelectorAll(".rs-r3").forEach(el => el.style.display = round3Revealed ? "" : "none");
 }
 
+// JS로 runner-icon left를 easing에 맞춰 직접 애니메이션
+function animateRunnerToEnd(runnerEl, duration) {
+  const startPct = 0; // ★ 항상 0%에서 시작 (게이지바와 완전 동기화)
+  const endPct = 100;
+  const startTime = performance.now();
+  // ease-in (느릿) → ease-out (확 빠름): cubic-bezier 흉내
+  // t를 0~1로 받아서 처음엔 slow, 70% 이후 급가속
+  function easeInExpo(t) {
+    // 0~0.65: 거의 안움직임, 0.65~1: 급가속
+    if (t < 0.65) {
+      return (t / 0.65) * 0.15; // 65% 시간 동안 15%만 이동
+    } else {
+      const t2 = (t - 0.65) / 0.35;
+      return 0.15 + 0.85 * (t2 * t2 * t2); // 나머지 85% 급가속
+    }
+  }
+  function step(now) {
+    const elapsed = now - startTime;
+    const t = Math.min(elapsed / duration, 1);
+    const progress = easeInExpo(t);
+    const currentPct = startPct + (endPct - startPct) * progress;
+    runnerEl.style.left = currentPct + "%";
+    if (t < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+// 게이지바도 JS로 직접 easing 애니메이션
+function animateGaugeFill(fillEl, duration) {
+  const startPct = 0;
+  const endPct = 100;
+  const startTime = performance.now();
+  function easeInExpo(t) {
+    if (t < 0.65) return (t / 0.65) * 0.15;
+    const t2 = (t - 0.65) / 0.35;
+    return 0.15 + 0.85 * (t2 * t2 * t2);
+  }
+  function step(now) {
+    const elapsed = now - startTime;
+    const t = Math.min(elapsed / duration, 1);
+    const progress = easeInExpo(t);
+    fillEl.style.width = (startPct + (endPct - startPct) * progress) + "%";
+    if (t < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+function applyFinishEffects(winnerName) {
+  // ★ 이미 적용됐으면 재실행 안 함
+  if (finishApplied) return;
+  finishApplied = true;
+
+  const fill1 = document.querySelector(".track-fill.fill-1");
+  const firstRunner = document.querySelector(".runner-icon.is-first");
+
+  if (fill1) {
+    // transition 완전히 끄고 0%에서 시작
+    fill1.style.transition = "none";
+    fill1.style.width = "0%";
+    fill1.classList.add("finish-glow");
+    // JS easing 애니메이션으로 게이지 채움 (3초)
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        animateGaugeFill(fill1, 3000);
+      });
+    });
+  }
+
+  // runner도 0%에서 시작해서 게이지바와 완전히 동기화 (3초)
+  if (firstRunner) {
+    firstRunner.style.transition = "none";
+    firstRunner.style.left = "0%";
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        animateRunnerToEnd(firstRunner, 3000);
+      });
+    });
+  }
+
+  // 모든 캐릭터 애니 멈추기
+  Object.keys(activeAnims).forEach(k => {
+    clearInterval(activeAnims[k]);
+    delete activeAnims[k];
+  });
+
+  // 비우승자 페이드
+  document.querySelectorAll(".avatar-img").forEach((el, i) => {
+    if (i !== 0) el.classList.add("frozen");
+  });
+  document.querySelectorAll(".runner-icon").forEach((el, i) => {
+    if (i !== 0) el.classList.add("frozen");
+  });
+
+  // 우승자 avatar만 애니 재시작
+  const winnerAvatar = document.getElementById("avatar_0");
+  if (winnerAvatar && winnerName) startAvatarAnim(winnerAvatar, winnerName, 1);
+}
+
+function clearFinishEffects() {
+  finishTriggered = false;
+  finishApplied = false; // ★ 플래그 초기화
+  document.querySelectorAll(".track-fill").forEach(el => el.classList.remove("finish-glow"));
+  document.querySelectorAll(".avatar-img").forEach(el => el.classList.remove("frozen"));
+  document.querySelectorAll(".runner-icon").forEach(el => el.classList.remove("frozen"));
+}
+
 function triggerFinish() {
-  if (celebActive) { stopCeleb(); return; }
+  if (celebActive) {
+    celebActive = false;
+    clearInterval(window._celebInterval);
+    clearTimeout(celebTimer);
+    document.getElementById("celebOverlay").classList.remove("active");
+    document.getElementById("finishBtn").classList.remove("active");
+    document.getElementById("finishBtn").textContent = "🏆 완주!";
+    document.querySelectorAll(".particle").forEach(p => p.remove());
+    return;
+  }
+
   celebActive = true;
+  finishTriggered = true;
+  finishApplied = false; // ★ 새로 누를 때마다 초기화해서 한 번 실행 보장
   document.getElementById("finishBtn").classList.add("active");
   document.getElementById("finishBtn").textContent = "⏹ 종료";
   document.getElementById("celebWinner").textContent = currentFirstName || "";
   startAvatarAnim(document.getElementById("celebChar"), currentFirstName, 1);
   document.getElementById("celebOverlay").classList.add("active");
+
+  spawnFlyingChars(); // ★ applyFinishEffects 전에 호출해야 avatar src가 살아있음
+  applyFinishEffects(currentFirstName);
   spawnBurst();
   window._celebInterval = setInterval(() => { if (celebActive) spawnBurst(); }, 600);
-  celebTimer = setTimeout(stopCeleb, 15000);
+  celebTimer = setTimeout(() => {
+    celebActive = false;
+    clearInterval(window._celebInterval);
+    document.getElementById("celebOverlay").classList.remove("active");
+    document.getElementById("finishBtn").classList.remove("active");
+    document.getElementById("finishBtn").textContent = "🏆 완주!";
+    document.querySelectorAll(".particle").forEach(p => p.remove());
+  }, 15000);
 }
 
-function stopCeleb() {
-  celebActive = false;
-  clearInterval(window._celebInterval);
-  clearTimeout(celebTimer);
-  document.getElementById("celebOverlay").classList.remove("active");
-  document.getElementById("finishBtn").classList.remove("active");
-  document.getElementById("finishBtn").textContent = "🏆 완주!";
-  document.querySelectorAll(".particle").forEach(p => p.remove());
+function spawnFlyingChars() {
+  const overlay = document.getElementById("celebOverlay");
+  const overlayH = overlay.offsetHeight;
+  const overlayW = overlay.offsetWidth;
+
+  // avatar_1부터 존재하는 것만 전부 수집
+  const targets = [];
+  for (let i = 1; i <= 10; i++) {
+    const el = document.getElementById("avatar_" + i);
+    if (el) targets.push(el);
+  }
+  const count = targets.length;
+  console.log("🚀 날릴 캐릭터 수:", count, targets.map(e => e.dataset.sname));
+  if (count === 0) return;
+
+  targets.forEach((avatarEl, idx) => {
+    // 시작 X: count명을 균등 분산
+    const startX = overlayW * 0.30 + idx * (overlayW * 0.40 / Math.max(count - 1, 1));
+    const startY = overlayH + 80;
+
+    const img = document.createElement("img");
+    img.className = "fly-char";
+    const sname = avatarEl.dataset.sname || "";
+    img.src = sname && STREAMERS[sname]
+      ? buildUrl(sname, "A40", 0, "E03")
+      : avatarEl.src;
+
+    const fx = rand(-30, 30);  // 좌우 이동 최소화
+    const fy = -(overlayH + 250);
+    const fr = rand(-40, 40);
+    const fd = rand(3.0, 4.2);
+    const delay = idx * 0.12;
+
+    img.style.cssText =
+      "left:" + startX + "px;" +
+      "top:" + startY + "px;" +
+      "width:400px;height:400px;" +
+      "object-fit:contain;" +
+      "transform:translate(-50%,-50%) scaleX(-1);" +
+      "animation-delay:" + delay + "s;" +
+      "--fx:" + fx + "px;--fy:" + fy + "px;--fr:" + fr + "deg;--fd:" + fd + "s;";
+    overlay.appendChild(img);
+    setTimeout(() => img.remove(), (fd + delay) * 1000 + 300);
+  });
 }
 
 function rand(min, max) { return Math.random() * (max - min) + min; }
@@ -341,7 +538,7 @@ function spawnBurst() {
       overlay.appendChild(el); setTimeout(() => el.remove(), dur*1000+100);
     }
   });
-  const mesoEmojis = ["🪙","💰","⭐","✨","🌟","💫"];
+  const mesoEmojis = ["🪙","💰","⭐","✨","🌟","💫","💵","🟡","👑","🏆","💛"];
   for (let i = 0; i < Math.floor(rand(6,12)); i++) {
     const el = document.createElement("div"); el.className = "particle meso";
     const dur = rand(1.0,2.0);
@@ -353,7 +550,7 @@ function spawnBurst() {
     const el = document.createElement("div"); el.className = "particle sparkle";
     const dur = rand(0.7,1.4);
     el.style.cssText = "left:"+rand(0,W)+"px;top:"+rand(H*0.1,H*0.7)+"px;--mx:"+rand(-60,60)+"px;--my:"+rand(-60,10)+"px;--dur:"+dur+"s;";
-    el.textContent = ["✨","⭐","💫","🌟"][Math.floor(rand(0,4))];
+    el.textContent = ["✨","⭐","💫","🌟","💵","🟡","👑","🏆","💛","💰","🪙"][Math.floor(rand(0,4))];
     overlay.appendChild(el); setTimeout(() => el.remove(), dur*1000+100);
   }
 }
@@ -375,9 +572,29 @@ function render(data) {
   data.sort((a, b) => Number(b["📝최종 점수"]) - Number(a["📝최종 점수"]));
   data = data.slice(0, 7);
   const json = JSON.stringify(data);
-  if (json === prevJSON) return;
+
+  if (json === prevJSON) {
+    // ★ 데이터 동일 → 게이지 재실행 절대 안 함 (finishApplied가 true면 skip)
+    return;
+  }
+
+  // 수치 바뀌면 완주 효과 해제
+  if (finishTriggered) {
+    clearFinishEffects();
+    if (celebActive) {
+      celebActive = false;
+      clearInterval(window._celebInterval);
+      clearTimeout(celebTimer);
+      document.getElementById("celebOverlay").classList.remove("active");
+      document.getElementById("finishBtn").classList.remove("active");
+      document.getElementById("finishBtn").textContent = "🏆 완주!";
+      document.querySelectorAll(".particle").forEach(p => p.remove());
+    }
+  }
+
   prevJSON = json;
   currentFirstName = data[0]["🎙️스트리머"] || "";
+
   const r1 = getRoundBest(data, "👑1라운드");
   const r2 = getRoundBest(data, "👑2라운드");
   const r3 = getRoundBest(data, "👑3라운드");
@@ -385,12 +602,14 @@ function render(data) {
   document.getElementById("r1winner").innerHTML = '<span class="r-name">'+r1.name+'</span>'+(r1.pt?'<span class="r-pt">'+r1.pt+'pt</span>':'');
   document.getElementById("r2winner").innerHTML = '<span class="r-name">'+r2.name+'</span>'+(r2.pt?'<span class="r-pt">'+r2.pt+'pt</span>':'');
   document.getElementById("r3winner").innerHTML = '<span class="r-name">'+r3.name+'</span>'+(r3.pt?'<span class="r-pt">'+r3.pt+'pt</span>':'');
+
   const maxScore = Math.max(...data.map(r => Number(r["📝최종 점수"]) || 0));
   const rankFillClass  = ["fill-1","fill-2","fill-3","fill-o","fill-o","fill-o","fill-o"];
   const rankBadgeClass = ["rank-1","rank-2","rank-3","rank-other","rank-other","rank-other","rank-other"];
   const section = document.getElementById("raceSection");
   Object.keys(activeAnims).forEach(k => { clearInterval(activeAnims[k]); delete activeAnims[k]; });
   section.innerHTML = "";
+
   data.forEach((row, i) => {
     const rank  = i + 1;
     const name  = row["🎙️스트리머"] || "?";
@@ -405,7 +624,7 @@ function render(data) {
     div.innerHTML =
       '<div class="race-top">'+
         '<div class="rank-badge '+rankBadgeClass[i]+'">'+rank+'</div>'+
-        '<div class="avatar-wrap"><img class="avatar-img" id="avatar_'+i+'" src="" alt=""></div>'+
+        '<div class="avatar-wrap"><img class="avatar-img" id="avatar_'+i+'" data-sname="'+name+'" src="" alt=""></div>'+
         '<div class="name-score">'+
           '<span class="streamer-name">'+name+'</span>'+
           '<span class="score-total">'+total.toLocaleString()+'</span><span class="score-label">pt</span>'+
@@ -435,7 +654,7 @@ function render(data) {
 }
 
 async function fetchData() {
-  const url = "https://script.google.com/macros/s/AKfycbwOCpa65clcNPDIOdkAkO-ZHxmhokuEUmWYTDFcVI3KH-Hws9Wz4c9WMTRQvQJF5jJ6gg/exec/exec?t=" + Date.now();
+  const url = "https://script.google.com/macros/s/AKfycbwOCpa65clcNPDIOdkAkO-ZHxmhokuEUmWYTDFcVI3KH-Hws9Wz4c9WMTRQvQJF5jJ6gg/exec?t=" + Date.now();
   try {
     const res = await fetch(url);
     const data = await res.json();
@@ -450,6 +669,7 @@ setInterval(fetchData, 5000);
 </script>
 </body>
 </html>
+
 
 
 
