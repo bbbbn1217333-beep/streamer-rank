@@ -7,450 +7,104 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
-
-body {
-  background: transparent;
-  font-family: 'Noto Sans KR', sans-serif;
-  padding: 16px;
-  width: 900px;
-}
-
-/* ───── 전체 패널 ───── */
-.panel {
-  background: linear-gradient(160deg, #2a1a00 0%, #3d2600 40%, #2a1a00 100%);
-  border-radius: 12px;
-  border: 3px solid #c88a2a;
-  box-shadow:
-    0 0 0 1px #6b4200,
-    0 0 30px rgba(200,138,42,0.3),
-    inset 0 1px 0 rgba(255,220,100,0.15);
-  overflow: hidden;
-  position: relative;
-}
-
-/* 나무 질감 오버레이 */
-.panel::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: repeating-linear-gradient(
-    90deg,
-    transparent,
-    transparent 120px,
-    rgba(0,0,0,0.04) 120px,
-    rgba(0,0,0,0.04) 121px
-  );
-  pointer-events: none;
-  z-index: 0;
-}
-
-/* ───── 헤더 ───── */
-.header {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  padding: 14px 20px 10px;
-  background: linear-gradient(90deg, transparent, rgba(255,190,50,0.08), transparent);
-  border-bottom: 2px solid #6b4200;
-}
-
-.header-title {
-  font-size: 18px;
-  font-weight: 900;
-  color: #ffe680;
-  text-shadow: 0 0 12px rgba(255,200,0,0.6), 2px 2px 0 rgba(0,0,0,0.6);
-  letter-spacing: 2px;
-}
-
-.header-star { font-size: 16px; animation: punch 0.6s ease infinite alternate; display:inline-block; }
+body { background: transparent; font-family: 'Noto Sans KR', sans-serif; padding: 16px; width: 900px; }
+.panel { background: linear-gradient(160deg, #2a1a00 0%, #3d2600 40%, #2a1a00 100%); border-radius: 12px; border: 3px solid #c88a2a; box-shadow: 0 0 0 1px #6b4200, 0 0 30px rgba(200,138,42,0.3), inset 0 1px 0 rgba(255,220,100,0.15); overflow: hidden; position: relative; }
+.panel::before { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(90deg, transparent, transparent 120px, rgba(0,0,0,0.04) 120px, rgba(0,0,0,0.04) 121px); pointer-events: none; z-index: 0; }
+.header { position: relative; z-index: 1; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 14px 20px 10px; background: linear-gradient(90deg, transparent, rgba(255,190,50,0.08), transparent); border-bottom: 2px solid #6b4200; }
+.header-title { font-size: 18px; font-weight: 900; color: #ffe680; text-shadow: 0 0 12px rgba(255,200,0,0.6), 2px 2px 0 rgba(0,0,0,0.6); letter-spacing: 2px; }
+.header-glove { font-size: 18px; display: inline-block; animation: punch 0.6s ease infinite alternate; }
 @keyframes punch { from { transform: scale(1) rotate(-15deg); } to { transform: scale(1.2) rotate(10deg); } }
-
-/* ───── 라운드 요약 뱃지 ───── */
-.round-summary {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  gap: 8px;
-  padding: 10px 20px;
-  border-bottom: 1px solid rgba(107,66,0,0.6);
-}
-
-.round-badge {
-  flex: 1;
-  background: rgba(0,0,0,0.3);
-  border: 1px solid #6b4200;
-  border-radius: 8px;
-  padding: 6px 10px;
-  text-align: center;
-}
-
-.round-badge .r-label {
-  font-size: 11px;
-  color: #c88a2a;
-  font-weight: 700;
-  letter-spacing: 1px;
-}
-
-.round-badge .r-winner {
-  font-size: 13px;
-  color: #ffe680;
-  font-weight: 700;
-  margin-top: 2px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* ───── 레이스 트랙 ───── */
-.race-section {
-  position: relative;
-  z-index: 1;
-  padding: 16px 20px;
-}
-
-.race-row {
-  margin-bottom: 14px;
-  animation: fadeSlide 0.5s ease both;
-}
+.round-summary { position: relative; z-index: 1; display: flex; gap: 8px; padding: 10px 20px; border-bottom: 1px solid rgba(107,66,0,0.6); }
+.round-badge { flex: 1; background: rgba(0,0,0,0.3); border: 1px solid #6b4200; border-radius: 8px; padding: 6px 10px; text-align: center; }
+.round-badge .r-label { font-size: 11px; color: #c88a2a; font-weight: 700; letter-spacing: 1px; }
+.round-badge .r-winner { font-size: 13px; color: #ffe680; font-weight: 700; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.race-section { position: relative; z-index: 1; padding: 16px 20px; }
+.race-row { margin-bottom: 14px; animation: fadeSlide 0.5s ease both; }
 .race-row:nth-child(1) { animation-delay: 0.0s; }
 .race-row:nth-child(2) { animation-delay: 0.1s; }
 .race-row:nth-child(3) { animation-delay: 0.2s; }
 .race-row:nth-child(4) { animation-delay: 0.3s; }
 .race-row:nth-child(5) { animation-delay: 0.4s; }
-
-@keyframes fadeSlide {
-  from { opacity:0; transform: translateX(-20px); }
-  to   { opacity:1; transform: translateX(0); }
-}
-
-/* 이름 + 아바타 영역 */
-.race-top {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 6px;
-}
-
-.rank-badge {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 13px;
-  font-weight: 900;
-  flex-shrink: 0;
-  border: 2px solid;
-}
+@keyframes fadeSlide { from { opacity:0; transform: translateX(-20px); } to { opacity:1; transform: translateX(0); } }
+.race-top { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.rank-badge { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 900; flex-shrink: 0; border: 2px solid; }
 .rank-1 { background: radial-gradient(circle, #ffe047, #c87000); color: #3a1a00; border-color: #ffcc00; box-shadow: 0 0 10px rgba(255,200,0,0.6); }
 .rank-2 { background: radial-gradient(circle, #d0d8e0, #7a8a99); color: #1a2030; border-color: #b0bec5; }
 .rank-3 { background: radial-gradient(circle, #f0a070, #a04010); color: #2a0800; border-color: #cd7f32; }
 .rank-other { background: rgba(0,0,0,0.4); color: #a09060; border-color: #5a4020; }
-
-.avatar-wrap {
-  width: 90px;
-  height: 90px;
-  flex-shrink: 0;
-  position: relative;
-}
-
-.avatar-wrap img {
-  width: 90px;
-  height: 90px;
-  object-fit: cover;
-  border-radius: 8px;
-  border: 2px solid;
-  display: block;
-}
+.avatar-wrap { width: 90px; height: 90px; flex-shrink: 0; }
+.avatar-wrap img { width: 90px; height: 90px; object-fit: cover; border-radius: 8px; border: 2px solid; display: block; }
 .rank-1-border { border-color: #ffcc00 !important; box-shadow: 0 0 8px rgba(255,200,0,0.7); }
 .rank-2-border { border-color: #b0bec5 !important; }
 .rank-3-border { border-color: #cd7f32 !important; }
 .rank-o-border { border-color: #5a4020 !important; }
-
-.avatar-placeholder {
-  width: 90px; height: 90px;
-  border-radius: 8px;
-  background: rgba(0,0,0,0.3);
-  border: 2px dashed #6b4200;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 22px;
-}
-
-.name-score {
-  flex: 1;
-  min-width: 0;
-}
-
-.streamer-name {
-  font-size: 15px;
-  font-weight: 700;
-  color: #ffe680;
-  text-shadow: 1px 1px 0 rgba(0,0,0,0.7);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.score-total {
-  font-size: 20px;
-  font-weight: 900;
-  color: #fff;
-  text-shadow: 0 0 8px rgba(255,200,0,0.4), 1px 1px 0 rgba(0,0,0,0.8);
-  letter-spacing: -0.5px;
-}
-
-.score-label {
-  font-size: 11px;
-  color: #c88a2a;
-  margin-left: 2px;
-}
-
-/* 라운드별 점수 미니 뱃지 */
-.round-scores {
-  display: flex;
-  gap: 4px;
-  margin-left: auto;
-  flex-shrink: 0;
-}
-.rs-badge {
-  background: rgba(0,0,0,0.4);
-  border: 1px solid #5a4020;
-  border-radius: 5px;
-  padding: 3px 7px;
-  text-align: center;
-  min-width: 44px;
-}
+.avatar-placeholder { width: 90px; height: 90px; border-radius: 8px; background: rgba(0,0,0,0.3); border: 2px dashed #6b4200; display: flex; align-items: center; justify-content: center; font-size: 30px; }
+.name-score { flex: 1; min-width: 0; }
+.streamer-name { font-size: 15px; font-weight: 700; color: #ffe680; text-shadow: 1px 1px 0 rgba(0,0,0,0.7); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.score-total { font-size: 20px; font-weight: 900; color: #fff; text-shadow: 0 0 8px rgba(255,200,0,0.4), 1px 1px 0 rgba(0,0,0,0.8); letter-spacing: -0.5px; }
+.score-label { font-size: 11px; color: #c88a2a; margin-left: 2px; }
+.round-scores { display: flex; gap: 4px; margin-left: auto; flex-shrink: 0; }
+.rs-badge { background: rgba(0,0,0,0.4); border: 1px solid #5a4020; border-radius: 5px; padding: 3px 7px; text-align: center; min-width: 44px; }
 .rs-badge .rs-r { font-size: 9px; color: #a07840; font-weight: 700; }
 .rs-badge .rs-v { font-size: 13px; color: #e8d080; font-weight: 700; }
-
-/* ───── 레이스 트랙 바 ───── */
-.track-wrap {
-  position: relative;
-  height: 60px;
-}
-
-/* 트랙 배경 (도로) */
-.track-bg {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  left: 0;
-  right: 0;
-  height: 18px;
-  background: #1a1008;
-  border-radius: 6px;
-  border: 1px solid #4a3010;
-  overflow: hidden;
-}
-
-/* 도로 점선 */
-.track-bg::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: repeating-linear-gradient(
-    90deg,
-    transparent, transparent 12px,
-    rgba(255,200,0,0.15) 12px, rgba(255,200,0,0.15) 22px
-  );
-}
-
-/* 진행 바 */
-.track-fill {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  border-radius: 6px;
-  transition: width 1s cubic-bezier(0.34,1.3,0.64,1);
-  z-index: 1;
-}
-
+.track-wrap { position: relative; height: 60px; }
+.track-bg { position: absolute; top: 50%; transform: translateY(-50%); left: 0; right: 0; height: 18px; background: #1a1008; border-radius: 6px; border: 1px solid #4a3010; overflow: hidden; }
+.track-bg::after { content: ''; position: absolute; top: 50%; transform: translateY(-50%); left: 0; right: 0; height: 2px; background: repeating-linear-gradient(90deg, transparent, transparent 12px, rgba(255,200,0,0.15) 12px, rgba(255,200,0,0.15) 22px); }
+.track-fill { position: absolute; top: 0; left: 0; height: 100%; border-radius: 6px; transition: width 1s cubic-bezier(0.34,1.3,0.64,1); z-index: 1; }
 .fill-1 { background: linear-gradient(90deg, #c87000, #ffcc00, #ffe680); box-shadow: 0 0 6px rgba(255,180,0,0.6); }
 .fill-2 { background: linear-gradient(90deg, #5a6a7a, #b0bec5); }
 .fill-3 { background: linear-gradient(90deg, #7a3010, #cd7f32); }
 .fill-o { background: linear-gradient(90deg, #3a2800, #6b4200); }
-
-/* 결승선 */
-.finish-line {
-  position: absolute;
-  right: 0;
-  top: 0;
-  height: 100%;
-  width: 12px;
-  background: repeating-linear-gradient(
-    90deg,
-    #fff 0px, #fff 3px,
-    #000 3px, #000 6px
-  );
-  border-radius: 0 6px 6px 0;
-  opacity: 0.6;
-  z-index: 2;
-}
-
-/* 캐릭터 아이콘 (트랙 위 달리는 캐릭터) */
-.runner-icon {
-  position: absolute;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  width: 56px;
-  height: 56px;
-  z-index: 3;
-  transition: left 1s cubic-bezier(0.34,1.3,0.64,1);
-}
-
-.runner-icon img {
-  width: 56px;
-  height: 56px;
-  object-fit: cover;
-  border-radius: 4px;
-  border: 1px solid rgba(255,200,0,0.5);
-  image-rendering: pixelated;
-}
-
-.runner-placeholder {
-  width: 56px; height: 56px;
-  border-radius: 4px;
-  background: rgba(200,138,42,0.3);
-  border: 1px solid #c88a2a;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 14px;
-}
-
-/* 1등 반짝임 */
-.runner-icon.is-first::after {
-  content: '⭐';
-  position: absolute;
-  top: -12px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 10px;
-  animation: bounce 0.8s ease infinite alternate;
-}
-
-@keyframes bounce {
-  from { transform: translateX(-50%) translateY(0); }
-  to   { transform: translateX(-50%) translateY(-3px); }
-}
-
-/* ───── 구분선 ───── */
-.divider {
-  height: 1px;
-  background: linear-gradient(90deg, transparent, #6b4200, transparent);
-  margin: 0 20px;
-  position: relative;
-  z-index: 1;
-}
-
-/* ───── 업데이트 표시 ───── */
-.footer {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  padding: 6px 20px 10px;
-  gap: 6px;
-}
-
-.live-dot {
-  width: 7px; height: 7px;
-  border-radius: 50%;
-  background: #4cff80;
-  box-shadow: 0 0 6px rgba(76,255,128,0.8);
-  animation: pulse 1.5s ease infinite;
-}
-@keyframes pulse {
-  0%,100% { opacity:1; transform:scale(1); }
-  50%      { opacity:0.5; transform:scale(0.8); }
-}
-
-.live-text {
-  font-size: 11px;
-  color: #4cff80;
-  font-weight: 700;
-  letter-spacing: 1px;
-}
-
-.update-time {
-  font-size: 10px;
-  color: #6b5030;
-  margin-left: 6px;
-}
-
-/* ───── 빈 상태 ───── */
-.empty {
-  padding: 40px;
-  text-align: center;
-  color: #6b4200;
-  font-size: 14px;
-  position: relative;
-  z-index: 1;
-}
+.finish-line { position: absolute; right: 0; top: 0; height: 100%; width: 12px; background: repeating-linear-gradient(90deg, #fff 0px, #fff 3px, #000 3px, #000 6px); border-radius: 0 6px 6px 0; opacity: 0.6; z-index: 2; }
+.runner-icon { position: absolute; top: 50%; transform: translate(-50%, -50%); width: 56px; height: 56px; z-index: 3; transition: left 1s cubic-bezier(0.34,1.3,0.64,1); }
+.runner-icon img { width: 56px; height: 56px; object-fit: cover; border-radius: 4px; border: 2px solid rgba(255,200,0,0.5); image-rendering: pixelated; }
+.runner-placeholder { width: 56px; height: 56px; border-radius: 4px; background: rgba(200,138,42,0.3); border: 1px solid #c88a2a; display: flex; align-items: center; justify-content: center; font-size: 22px; }
+.runner-icon.is-first::after { content: '⭐'; position: absolute; top: -14px; left: 50%; transform: translateX(-50%); font-size: 12px; animation: bounce 0.8s ease infinite alternate; }
+@keyframes bounce { from { transform: translateX(-50%) translateY(0); } to { transform: translateX(-50%) translateY(-4px); } }
+.divider { height: 1px; background: linear-gradient(90deg, transparent, #6b4200, transparent); margin: 0 20px; position: relative; z-index: 1; }
+.footer { position: relative; z-index: 1; display: flex; align-items: center; justify-content: flex-end; padding: 6px 20px 10px; gap: 6px; }
+.live-dot { width: 7px; height: 7px; border-radius: 50%; background: #4cff80; box-shadow: 0 0 6px rgba(76,255,128,0.8); animation: pulse 1.5s ease infinite; }
+@keyframes pulse { 0%,100% { opacity:1; transform:scale(1); } 50% { opacity:0.5; transform:scale(0.8); } }
+.live-text { font-size: 11px; color: #4cff80; font-weight: 700; letter-spacing: 1px; }
+.update-time { font-size: 10px; color: #6b5030; margin-left: 6px; }
+.empty { padding: 40px; text-align: center; color: #6b4200; font-size: 14px; position: relative; z-index: 1; }
 </style>
 </head>
 <body>
-
 <div class="panel" id="panel">
   <div class="header">
-    <span class="header-star">🥊</span>
+    <span class="header-glove">🥊</span>
     <span class="header-title">이라333배 개맞짱 컨텐츠</span>
-    <span class="header-star">🥊</span>
+    <span class="header-glove">🥊</span>
   </div>
-
   <div class="round-summary" id="roundSummary" style="display:none">
-    <div class="round-badge">
-      <div class="r-label">🥊 1세트</div>
-      <div class="r-winner" id="r1winner">-</div>
-    </div>
-    <div class="round-badge">
-      <div class="r-label">🥊 2세트</div>
-      <div class="r-winner" id="r2winner">-</div>
-    </div>
-    <div class="round-badge">
-      <div class="r-label">🥊 3세트</div>
-      <div class="r-winner" id="r3winner">-</div>
-    </div>
+    <div class="round-badge"><div class="r-label">🥊 1세트</div><div class="r-winner" id="r1winner">-</div></div>
+    <div class="round-badge"><div class="r-label">🥊 2세트</div><div class="r-winner" id="r2winner">-</div></div>
+    <div class="round-badge"><div class="r-label">🥊 3세트</div><div class="r-winner" id="r3winner">-</div></div>
   </div>
-
   <div class="race-section" id="raceSection">
     <div class="empty">📡 데이터 로딩 중...</div>
   </div>
-
   <div class="divider"></div>
-
   <div class="footer">
     <div class="live-dot"></div>
     <span class="live-text">LIVE</span>
     <span class="update-time" id="updateTime">-</span>
   </div>
 </div>
-
 <script>
 const SHEET_ID   = "18F2mJsiSWYbxSl97u4vKEX9pTuEOuoL1WaGE5PB_iJ0";
-const SHEET_NAME = "시트1";
-const RANGE      = "E11:I15";
-
+const SHEET_NAME = "시트1!E11:I15";
 let prevJSON = "";
 
-// ─── 스트리머 이름 → 이미지 파일명 변환 ───
 function getImgFile(name, rank) {
   if (name === "이라333") {
-    return rank <= 3 ? `/images/default.gif` : `/images/이라333.gif`;
+    return rank <= 3 ? "/images/default.gif" : "/images/이라333.gif";
   }
-  return `/images/default.gif`;
-}${suffix}`;
+  // 다른 스트리머 추가 시 여기에
+  return "/images/default.gif";
 }
 
-// ─── 라운드 1등 찾기 ───
 function getRoundWinner(data, key) {
   if (!data.length) return "-";
   return data.reduce((best, r) =>
@@ -458,7 +112,6 @@ function getRoundWinner(data, key) {
   )["🎙️스트리머"] || "-";
 }
 
-// ─── 렌더 ───
 function render(data) {
   if (!data || !data.length) {
     document.getElementById("raceSection").innerHTML = "<div class='empty'>😶 데이터 없음</div>";
@@ -472,76 +125,69 @@ function render(data) {
   if (json === prevJSON) return;
   prevJSON = json;
 
-  // 최고점수 (100% 기준)
   const maxScore = Math.max(...data.map(r => Number(r["📝최종 점수"]) || 0));
 
-  // 라운드 요약
   document.getElementById("roundSummary").style.display = "flex";
   document.getElementById("r1winner").textContent = getRoundWinner(data, "🥊1세트");
   document.getElementById("r2winner").textContent = getRoundWinner(data, "🥊2세트");
   document.getElementById("r3winner").textContent = getRoundWinner(data, "🥊3세트");
 
-  // 레이스
   const section = document.getElementById("raceSection");
   section.innerHTML = "";
 
-  const rankFillClass = ["fill-1","fill-2","fill-3","fill-o","fill-o"];
-  const rankBadgeClass = ["rank-1","rank-2","rank-3","rank-other","rank-other"];
-  const rankBorderClass = ["rank-1-border","rank-2-border","rank-3-border","rank-o-border","rank-o-border"];
-  const rankLabel = ["1위","2위","3위","4위","5위"];
+  const rankFillClass   = ["fill-1","fill-2","fill-3","fill-o","fill-o","fill-o","fill-o"];
+  const rankBadgeClass  = ["rank-1","rank-2","rank-3","rank-other","rank-other","rank-other","rank-other"];
+  const rankBorderClass = ["rank-1-border","rank-2-border","rank-3-border","rank-o-border","rank-o-border","rank-o-border","rank-o-border"];
 
   data.forEach((row, i) => {
-    const rank    = i + 1;
-    const name    = row["🎙️스트리머"] || "?";
-    const total   = Number(row["📝최종 점수"]) || 0;
-    const s1      = row["🥊1세트"] || "-";
-    const s2      = row["🥊2세트"] || "-";
-    const s3      = row["🥊3세트"] || "-";
-    const isFirst = rank === 1;
-    const pct     = maxScore > 0 ? Math.min(98, Math.max(4, (total / maxScore) * 94)) : 4;
-
+    const rank  = i + 1;
+    const name  = row["🎙️스트리머"] || "?";
+    const total = Number(row["📝최종 점수"]) || 0;
+    const s1    = row["🥊1세트"] || "-";
+    const s2    = row["🥊2세트"] || "-";
+    const s3    = row["🥊3세트"] || "-";
+    const pct   = maxScore > 0 ? Math.min(96, Math.max(4, (total / maxScore) * 92)) : 4;
     const imgFile = getImgFile(name, rank);
-    const imgHtml = `<img src="${imgFile}" onerror="this.parentElement.innerHTML='<div class=\\'runner-placeholder\\'>🧙</div>'" alt="${name}">`;
-    const avatarLargeHtml = `<img src="${imgFile}" class="${rankBorderClass[i]}" onerror="this.parentElement.innerHTML='<div class=\\'avatar-placeholder\\'>🧙</div>'" alt="${name}">`;
 
     const div = document.createElement("div");
     div.className = "race-row";
-    div.innerHTML = `
-      <div class="race-top">
-        <div class="rank-badge ${rankBadgeClass[i]}">${rank}</div>
-        <div class="avatar-wrap">${avatarLargeHtml}</div>
-        <div class="name-score">
-          <div class="streamer-name">${name}</div>
-          <div><span class="score-total">${total.toLocaleString()}</span><span class="score-label">pt</span></div>
-        </div>
-        <div class="round-scores">
-          <div class="rs-badge"><div class="rs-r">1세트</div><div class="rs-v">${s1}</div></div>
-          <div class="rs-badge"><div class="rs-r">2세트</div><div class="rs-v">${s2}</div></div>
-          <div class="rs-badge"><div class="rs-r">3세트</div><div class="rs-v">${s3}</div></div>
-        </div>
-      </div>
-      <div class="track-wrap">
-        <div class="track-bg">
-          <div class="track-fill ${rankFillClass[i]}" style="width:${pct}%"></div>
-          <div class="finish-line"></div>
-        </div>
-        <div class="runner-icon${isFirst ? ' is-first' : ''}" id="runner-${i}" style="left:${pct}%">
-          ${imgHtml}
-        </div>
-      </div>
-    `;
+    div.innerHTML =
+      '<div class="race-top">' +
+        '<div class="rank-badge ' + rankBadgeClass[i] + '">' + rank + '</div>' +
+        '<div class="avatar-wrap">' +
+          '<img src="' + imgFile + '" class="' + rankBorderClass[i] + '" onerror="this.outerHTML=\'<div class=&quot;avatar-placeholder&quot;>🧙</div>\'" alt="' + name + '">' +
+        '</div>' +
+        '<div class="name-score">' +
+          '<div class="streamer-name">' + name + '</div>' +
+          '<div><span class="score-total">' + total.toLocaleString() + '</span><span class="score-label">pt</span></div>' +
+        '</div>' +
+        '<div class="round-scores">' +
+          '<div class="rs-badge"><div class="rs-r">1세트</div><div class="rs-v">' + s1 + '</div></div>' +
+          '<div class="rs-badge"><div class="rs-r">2세트</div><div class="rs-v">' + s2 + '</div></div>' +
+          '<div class="rs-badge"><div class="rs-r">3세트</div><div class="rs-v">' + s3 + '</div></div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="track-wrap">' +
+        '<div class="track-bg">' +
+          '<div class="track-fill ' + rankFillClass[i] + '" style="width:' + pct + '%"></div>' +
+          '<div class="finish-line"></div>' +
+        '</div>' +
+        '<div class="runner-icon' + (rank === 1 ? ' is-first' : '') + '" style="left:' + pct + '%">' +
+          '<img src="' + imgFile + '" onerror="this.outerHTML=\'<div class=&quot;runner-placeholder&quot;>🏃</div>\'" alt="' + name + '">' +
+        '</div>' +
+      '</div>';
     section.appendChild(div);
   });
 
-  // 업데이트 시간
   const now = new Date();
   document.getElementById("updateTime").textContent =
-    `업데이트 ${now.getHours().toString().padStart(2,"0")}:${now.getMinutes().toString().padStart(2,"0")}:${now.getSeconds().toString().padStart(2,"0")}`;
+    "업데이트 " + String(now.getHours()).padStart(2,"0") + ":" +
+    String(now.getMinutes()).padStart(2,"0") + ":" +
+    String(now.getSeconds()).padStart(2,"0");
 }
 
-// ─── 데이터 패치 ───
 async function fetchData() {
-  const url = `https://opensheet.elk.sh/${SHEET_ID}/${encodeURIComponent(SHEET_NAME)}!${RANGE}`;
+  const url = "https://opensheet.elk.sh/" + SHEET_ID + "/" + encodeURIComponent(SHEET_NAME);
   try {
     const res  = await fetch(url);
     const data = await res.json();
