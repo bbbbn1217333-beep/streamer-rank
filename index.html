@@ -67,8 +67,9 @@ body { background: transparent; font-family: 'Noto Sans KR', sans-serif; padding
   border: 1px solid #6b4200; border-radius: 5px;
   padding: 3px 8px; text-align: center;
 }
-.round-badge .r-label { font-size: 10px; color: #c88a2a; font-weight: 700; letter-spacing: 0.5px; }
-.round-badge .r-winner { font-size: 13px; color: #ffe680; font-weight: 900; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.round-badge .r-label { font-size: 11px; color: #c88a2a; font-weight: 700; letter-spacing: 0.5px; }
+.round-badge .r-winner { font-size: 14px; color: #ffe680; font-weight: 900; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.round-badge .r-pt { font-size: 11px; color: #ffd060; font-weight: 700; }
 
 /* 레이스 */
 .race-section { position: relative; z-index: 1; padding: 3px 8px 2px; }
@@ -87,9 +88,9 @@ body { background: transparent; font-family: 'Noto Sans KR', sans-serif; padding
 
 /* 메달 크게 */
 .rank-badge {
-  width: 24px; height: 24px; border-radius: 50%;
+  width: 28px; height: 28px; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  font-size: 12px; font-weight: 900; flex-shrink: 0; border: 2px solid;
+  font-size: 14px; font-weight: 900; flex-shrink: 0; border: 2px solid;
 }
 .rank-1 { background: radial-gradient(circle, #ffe047, #c87000); color: #3a1a00; border-color: #ffcc00; box-shadow: 0 0 8px rgba(255,200,0,0.6); }
 .rank-2 { background: radial-gradient(circle, #d0d8e0, #7a8a99); color: #1a2030; border-color: #b0bec5; }
@@ -108,18 +109,18 @@ body { background: transparent; font-family: 'Noto Sans KR', sans-serif; padding
 /* 이름+점수 */
 .name-score { flex: 1; min-width: 0; display: flex; align-items: center; gap: 6px; }
 .streamer-name {
-  font-size: 14px; font-weight: 900; color: #ffe680;
+  font-size: 16px; font-weight: 900; color: #ffe680;
   text-shadow: 1px 1px 0 rgba(0,0,0,0.8);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px;
 }
-.score-total { font-size: 15px; font-weight: 900; color: #fff; text-shadow: 0 0 6px rgba(255,200,0,0.4); flex-shrink: 0; }
-.score-label { font-size: 10px; color: #c88a2a; margin-left: 1px; }
+.score-total { font-size: 18px; font-weight: 900; color: #fff; text-shadow: 0 0 6px rgba(255,200,0,0.4); flex-shrink: 0; }
+.score-label { font-size: 13px; color: #c88a2a; margin-left: 1px; font-weight: 700; }
 
 /* 라운드 점수 뱃지 */
 .round-scores { display: flex; gap: 3px; margin-left: auto; flex-shrink: 0; }
 .rs-badge { background: rgba(0,0,0,0.4); border: 1px solid #5a4020; border-radius: 4px; padding: 3px 9px; text-align: center; min-width: 52px; }
-.rs-badge .rs-r { font-size: 10px; color: #c88a2a; font-weight: 700; }
-.rs-badge .rs-v { font-size: 16px; color: #ffe680; font-weight: 900; }
+.rs-badge .rs-r { font-size: 11px; color: #c88a2a; font-weight: 700; }
+.rs-badge .rs-v { font-size: 18px; color: #ffe680; font-weight: 900; }
 
 /* 트랙 */
 .track-wrap { position: relative; height: 28px; overflow: visible; }
@@ -213,10 +214,9 @@ body { background: transparent; font-family: 'Noto Sans KR', sans-serif; padding
   display: flex; align-items: center; justify-content: flex-end;
   padding: 2px 10px 4px; gap: 4px;
 }
-.live-dot { width: 5px; height: 5px; border-radius: 50%; background: #4cff80; box-shadow: 0 0 4px rgba(76,255,128,0.8); animation: pulse 1.5s ease infinite; }
+.live-dot { width: 6px; height: 6px; border-radius: 50%; background: #ff4040; box-shadow: 0 0 6px rgba(255,60,60,0.9); animation: pulse 1.5s ease infinite; }
 @keyframes pulse { 0%,100% { opacity:1; transform:scale(1); } 50% { opacity:0.5; transform:scale(0.8); } }
-.live-text { font-size: 9px; color: #4cff80; font-weight: 700; letter-spacing: 1px; }
-.update-time { font-size: 8px; color: #6b5030; margin-left: 3px; }
+.live-text { font-size: 11px; color: #ff4040; font-weight: 900; letter-spacing: 2px; font-family: 'Pretendard', sans-serif; }
 .empty { padding: 14px; text-align: center; color: #6b4200; font-size: 12px; }
 </style>
 </head>
@@ -256,8 +256,7 @@ body { background: transparent; font-family: 'Noto Sans KR', sans-serif; padding
 
   <div class="footer">
     <div class="live-dot"></div>
-    <span class="live-text">LIVE</span>
-    <span class="update-time" id="updateTime">-</span>
+    <span class="live-text">IRA333</span>
   </div>
 </div>
 
@@ -341,9 +340,11 @@ function spawnBurst() {
 
 function getImgFile(name) { return "/images/default.gif"; }
 
-function getRoundWinner(data, key) {
-  if (!data.length) return "-";
-  return data.reduce((best, r) => Number(r[key]) > Number(best[key]) ? r : best)["🎙️스트리머"] || "-";
+function getRoundBest(data, key) {
+  if (!data.length) return { name: "-", pt: "" };
+  const best = data.reduce((b, r) => Number(r[key]) > Number(b[key]) ? r : b);
+  const pt = Number(best[key]);
+  return { name: best["🎙️스트리머"] || "-", pt: pt > 0 ? pt.toLocaleString() + "pt" : "" };
 }
 
 function render(data) {
@@ -365,11 +366,15 @@ function render(data) {
     document.getElementById("celebChar").src = currentFirstImg;
   }
 
-  const maxScore = Math.max(...data.map(r => Number(r["📝최종 점수"]) || 0));
+  const r1 = getRoundBest(data, "🥊1세트");
+  const r2 = getRoundBest(data, "🥊2세트");
+  const r3 = getRoundBest(data, "🥊3세트");
   document.getElementById("roundSummary").style.display = "flex";
-  document.getElementById("r1winner").textContent = getRoundWinner(data, "🥊1세트");
-  document.getElementById("r2winner").textContent = getRoundWinner(data, "🥊2세트");
-  document.getElementById("r3winner").textContent = getRoundWinner(data, "🥊3세트");
+  document.getElementById("r1winner").innerHTML = r1.name + (r1.pt ? '<span class="r-pt"> ' + r1.pt + '</span>' : '');
+  document.getElementById("r2winner").innerHTML = r2.name + (r2.pt ? '<span class="r-pt"> ' + r2.pt + '</span>' : '');
+  document.getElementById("r3winner").innerHTML = r3.name + (r3.pt ? '<span class="r-pt"> ' + r3.pt + '</span>' : '');
+
+  const maxScore = Math.max(...data.map(r => Number(r["📝최종 점수"]) || 0));
 
   const rankFillClass  = ["fill-1","fill-2","fill-3","fill-o","fill-o","fill-o","fill-o"];
   const rankBadgeClass = ["rank-1","rank-2","rank-3","rank-other","rank-other","rank-other","rank-other"];
@@ -421,11 +426,6 @@ function render(data) {
     }
   });
 
-  const now = new Date();
-  document.getElementById("updateTime").textContent =
-    "업데이트 " + String(now.getHours()).padStart(2,"0") + ":" +
-    String(now.getMinutes()).padStart(2,"0") + ":" +
-    String(now.getSeconds()).padStart(2,"0");
 }
 
 async function fetchData() {
@@ -444,6 +444,7 @@ setInterval(fetchData, 5000);
 </script>
 </body>
 </html>
+
 
 
 
