@@ -18,21 +18,28 @@ body { background: transparent; font-family: 'Noto Sans KR', sans-serif; padding
   overflow: hidden;
 }
 
+/* 헤더 */
 .header {
   position: relative; z-index: 1;
   display: flex; align-items: center; justify-content: space-between;
-  padding: 5px 12px;
+  padding: 6px 14px;
   background: linear-gradient(90deg, transparent, rgba(255,190,50,0.07), transparent);
-  border-bottom: 1px solid #6b4200;
+  border-bottom: 2px solid #6b4200;
 }
-.header-title { font-size: 13px; font-weight: 900; color: #ffe680; text-shadow: 0 0 10px rgba(255,200,0,0.5), 1px 1px 0 rgba(0,0,0,0.6); letter-spacing: 2px; }
-.header-glove { font-size: 13px; display: inline-block; animation: punch 0.6s ease infinite alternate; }
+.header-center { display: flex; align-items: center; gap: 8px; flex: 1; justify-content: center; }
+.header-title {
+  font-family: 'Black Han Sans', 'Noto Sans KR', sans-serif;
+  font-size: 20px; font-weight: 900; color: #ffe680;
+  text-shadow: 0 0 12px rgba(255,200,0,0.6), 2px 2px 0 rgba(0,0,0,0.7);
+  letter-spacing: 2px;
+}
+.header-glove { font-size: 20px; display: inline-block; animation: punch 0.6s ease infinite alternate; }
 @keyframes punch { from { transform: scale(1) rotate(-15deg); } to { transform: scale(1.2) rotate(10deg); } }
-.header-btns { display: flex; align-items: center; gap: 6px; }
+.header-btns { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
 
 .lock-btn {
   background: none; border: none; cursor: pointer;
-  font-size: 18px; line-height: 1; padding: 0 2px;
+  font-size: 20px; line-height: 1; padding: 0 2px;
   transition: transform 0.2s;
 }
 .lock-btn:hover { transform: scale(1.2); }
@@ -40,30 +47,32 @@ body { background: transparent; font-family: 'Noto Sans KR', sans-serif; padding
 .finish-btn {
   background: linear-gradient(135deg, #c87000, #ffcc00);
   border: 1px solid #ffe080; border-radius: 5px;
-  color: #3a1a00; font-size: 10px; font-weight: 900;
-  padding: 3px 8px; cursor: pointer;
+  color: #3a1a00; font-size: 11px; font-weight: 900;
+  padding: 4px 10px; cursor: pointer;
   font-family: 'Noto Sans KR', sans-serif;
   transition: all 0.15s; box-shadow: 0 2px 6px rgba(0,0,0,0.4);
 }
 .finish-btn:hover { transform: scale(1.05); }
 .finish-btn.active { background: linear-gradient(135deg, #ff4040, #ff8800); border-color: #ffaaaa; color: #fff; }
 
+/* 라운드 요약 */
 .round-summary {
   position: relative; z-index: 1;
-  display: flex; gap: 4px; padding: 3px 10px;
+  display: flex; gap: 5px; padding: 4px 12px;
   border-bottom: 1px solid rgba(107,66,0,0.5);
 }
 .round-badge {
   flex: 1; background: rgba(0,0,0,0.3);
   border: 1px solid #6b4200; border-radius: 5px;
-  padding: 2px 6px; text-align: center;
+  padding: 3px 8px; text-align: center;
 }
-.round-badge .r-label { font-size: 8px; color: #c88a2a; font-weight: 700; }
-.round-badge .r-winner { font-size: 10px; color: #ffe680; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.round-badge .r-label { font-size: 10px; color: #c88a2a; font-weight: 700; letter-spacing: 0.5px; }
+.round-badge .r-winner { font-size: 13px; color: #ffe680; font-weight: 900; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
+/* 레이스 */
 .race-section { position: relative; z-index: 1; padding: 3px 8px 2px; }
 
-.race-row { margin-bottom: 2px; }
+.race-row { margin-bottom: 1px; }
 @keyframes fadeSlide { from { opacity:0; transform: translateX(-12px); } to { opacity:1; transform: translateX(0); } }
 .race-row:nth-child(1)  { animation: fadeSlide 0.3s 0.00s both; }
 .race-row:nth-child(3)  { animation: fadeSlide 0.3s 0.04s both; }
@@ -73,50 +82,46 @@ body { background: transparent; font-family: 'Noto Sans KR', sans-serif; padding
 .race-row:nth-child(11) { animation: fadeSlide 0.3s 0.20s both; }
 .race-row:nth-child(13) { animation: fadeSlide 0.3s 0.24s both; }
 
-/* race-top: 캐릭터 이미지가 이름 바로 왼쪽에 떠있게 */
-.race-top {
-  display: flex; align-items: center; gap: 6px; margin-bottom: 2px;
-  position: relative;
-}
+.race-top { display: flex; align-items: center; gap: 6px; margin-bottom: 2px; }
 
+/* 메달 크게 */
 .rank-badge {
-  width: 18px; height: 18px; border-radius: 50%;
+  width: 24px; height: 24px; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  font-size: 9px; font-weight: 900; flex-shrink: 0; border: 1px solid;
-  z-index: 2;
+  font-size: 12px; font-weight: 900; flex-shrink: 0; border: 2px solid;
 }
-.rank-1 { background: radial-gradient(circle, #ffe047, #c87000); color: #3a1a00; border-color: #ffcc00; box-shadow: 0 0 6px rgba(255,200,0,0.5); }
+.rank-1 { background: radial-gradient(circle, #ffe047, #c87000); color: #3a1a00; border-color: #ffcc00; box-shadow: 0 0 8px rgba(255,200,0,0.6); }
 .rank-2 { background: radial-gradient(circle, #d0d8e0, #7a8a99); color: #1a2030; border-color: #b0bec5; }
 .rank-3 { background: radial-gradient(circle, #f0a070, #a04010); color: #2a0800; border-color: #cd7f32; }
 .rank-other { background: rgba(0,0,0,0.4); color: #a09060; border-color: #5a4020; }
 
-/* 캐릭터: 네모박스 없이 이미지만, 이름 바로 옆 */
+/* 캐릭터: 네모박스 없이 이미지만 */
 .avatar-img {
-  width: 55px; height: 55px;
-  object-fit: cover;
-  border-radius: 4px;
-  border: none !important;
-  display: block;
-  flex-shrink: 0;
+  width: 50px; height: 50px;
+  object-fit: cover; border-radius: 4px;
+  border: none !important; display: block; flex-shrink: 0;
   image-rendering: pixelated;
   filter: drop-shadow(0 1px 4px rgba(0,0,0,0.6));
 }
 
-.name-score {
-  flex: 1; min-width: 0;
-  display: flex; align-items: center; gap: 5px;
+/* 이름+점수 */
+.name-score { flex: 1; min-width: 0; display: flex; align-items: center; gap: 6px; }
+.streamer-name {
+  font-size: 14px; font-weight: 900; color: #ffe680;
+  text-shadow: 1px 1px 0 rgba(0,0,0,0.8);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px;
 }
-.streamer-name { font-size: 11px; font-weight: 700; color: #ffe680; text-shadow: 1px 1px 0 rgba(0,0,0,0.7); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 130px; }
-.score-total { font-size: 12px; font-weight: 900; color: #fff; text-shadow: 0 0 6px rgba(255,200,0,0.3); flex-shrink: 0; }
-.score-label { font-size: 8px; color: #c88a2a; margin-left: 1px; }
+.score-total { font-size: 15px; font-weight: 900; color: #fff; text-shadow: 0 0 6px rgba(255,200,0,0.4); flex-shrink: 0; }
+.score-label { font-size: 10px; color: #c88a2a; margin-left: 1px; }
 
+/* 라운드 점수 뱃지 */
 .round-scores { display: flex; gap: 3px; margin-left: auto; flex-shrink: 0; }
-.rs-badge { background: rgba(0,0,0,0.4); border: 1px solid #5a4020; border-radius: 4px; padding: 3px 8px; text-align: center; min-width: 46px; }
-.rs-badge .rs-r { font-size: 9px; color: #a07840; font-weight: 700; }
-.rs-badge .rs-v { font-size: 14px; color: #e8d080; font-weight: 700; }
+.rs-badge { background: rgba(0,0,0,0.4); border: 1px solid #5a4020; border-radius: 4px; padding: 3px 9px; text-align: center; min-width: 52px; }
+.rs-badge .rs-r { font-size: 10px; color: #c88a2a; font-weight: 700; }
+.rs-badge .rs-v { font-size: 16px; color: #ffe680; font-weight: 900; }
 
 /* 트랙 */
-.track-wrap { position: relative; height: 32px; overflow: visible; }
+.track-wrap { position: relative; height: 28px; overflow: visible; }
 .track-bg {
   position: absolute; top: 50%; transform: translateY(-50%);
   left: 0; right: 0; height: 9px;
@@ -136,11 +141,11 @@ body { background: transparent; font-family: 'Noto Sans KR', sans-serif; padding
 
 .runner-icon {
   position: absolute; top: 50%; transform: translate(-50%, -50%);
-  width: 32px; height: 32px;
+  width: 28px; height: 28px;
   z-index: 10; transition: left 1s cubic-bezier(0.34,1.3,0.64,1); pointer-events: none;
 }
 .runner-icon img {
-  width: 32px; height: 32px; object-fit: cover;
+  width: 28px; height: 28px; object-fit: cover;
   border-radius: 50%; border: none; background: transparent;
   image-rendering: pixelated;
   filter: drop-shadow(0 1px 3px rgba(0,0,0,0.6));
@@ -152,9 +157,9 @@ body { background: transparent; font-family: 'Noto Sans KR', sans-serif; padding
 }
 @keyframes bounce { from { transform: translateX(-50%) translateY(0); } to { transform: translateX(-50%) translateY(-3px); } }
 
-.row-divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(107,66,0,0.3), transparent); margin-bottom: 2px; }
+.row-divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(107,66,0,0.3), transparent); margin-bottom: 1px; }
 
-/* ===== 완주 이펙트 - 패널 안에만 ===== */
+/* 완주 이펙트 */
 #celebOverlay {
   display: none; position: absolute; inset: 0;
   pointer-events: none; z-index: 9999; overflow: hidden; border-radius: 10px;
@@ -164,7 +169,6 @@ body { background: transparent; font-family: 'Noto Sans KR', sans-serif; padding
   content: ''; position: absolute; inset: 0;
   background: rgba(0,0,0,0.6); border-radius: 10px;
 }
-
 .celeb-box {
   position: absolute; top: 50%; left: 50%;
   transform: translate(-50%, -50%);
@@ -176,22 +180,18 @@ body { background: transparent; font-family: 'Noto Sans KR', sans-serif; padding
   from { transform: translate(-50%, -50%) scale(0.3) rotate(-8deg); opacity: 0; }
   to   { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
 }
-
 .celeb-char {
   width: 120px; height: 120px; object-fit: cover;
-  border-radius: 10px;
-  border: 3px solid #ffcc00;
+  border-radius: 10px; border: 3px solid #ffcc00;
   box-shadow: 0 0 20px rgba(255,200,0,0.9), 0 0 50px rgba(255,150,0,0.5);
   image-rendering: pixelated;
 }
-
 .celeb-title {
   font-family: 'Black Han Sans', 'Noto Sans KR', sans-serif;
   font-size: 46px; font-weight: 900; color: #ffe680;
   text-shadow: 0 0 16px rgba(255,200,0,1), 0 0 32px rgba(255,150,0,0.8), 3px 3px 0 #7a3a00, 5px 5px 0 rgba(0,0,0,0.5);
   letter-spacing: 4px; white-space: nowrap;
 }
-
 .celeb-name {
   font-family: 'Black Han Sans', 'Noto Sans KR', sans-serif;
   font-size: 26px; font-weight: 900; color: #fff;
@@ -201,22 +201,11 @@ body { background: transparent; font-family: 'Noto Sans KR', sans-serif; padding
 
 .particle { position: absolute; pointer-events: none; z-index: 10000; }
 .firework { width: 6px; height: 6px; border-radius: 50%; animation: fwExplode var(--dur) ease-out forwards; }
-@keyframes fwExplode {
-  0%   { transform: translate(0,0) scale(1); opacity: 1; }
-  100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
-}
+@keyframes fwExplode { 0% { transform: translate(0,0) scale(1); opacity:1; } 100% { transform: translate(var(--tx),var(--ty)) scale(0); opacity:0; } }
 .meso { font-size: 16px; animation: mesoFall var(--dur) ease-in forwards; line-height: 1; }
-@keyframes mesoFall {
-  0%   { transform: translateY(0) rotate(0deg) scale(1); opacity: 1; }
-  80%  { opacity: 1; }
-  100% { transform: translateY(var(--fall)) rotate(var(--rot)) scale(0.5); opacity: 0; }
-}
+@keyframes mesoFall { 0% { transform: translateY(0) rotate(0deg) scale(1); opacity:1; } 80% { opacity:1; } 100% { transform: translateY(var(--fall)) rotate(var(--rot)) scale(0.5); opacity:0; } }
 .sparkle { font-size: 12px; animation: sparkleFly var(--dur) ease-out forwards; }
-@keyframes sparkleFly {
-  0%   { transform: translate(0,0) scale(0) rotate(0deg); opacity: 1; }
-  50%  { transform: translate(var(--mx), var(--my)) scale(1.2) rotate(180deg); opacity: 1; }
-  100% { transform: translate(calc(var(--mx)*1.5), calc(var(--my)*1.5 + 30px)) scale(0) rotate(360deg); opacity: 0; }
-}
+@keyframes sparkleFly { 0% { transform: translate(0,0) scale(0) rotate(0deg); opacity:1; } 50% { transform: translate(var(--mx),var(--my)) scale(1.2) rotate(180deg); opacity:1; } 100% { transform: translate(calc(var(--mx)*1.5),calc(var(--my)*1.5 + 30px)) scale(0) rotate(360deg); opacity:0; } }
 
 .footer {
   position: relative; z-index: 1;
@@ -242,12 +231,16 @@ body { background: transparent; font-family: 'Noto Sans KR', sans-serif; padding
   </div>
 
   <div class="header">
-    <span class="header-glove">🥊</span>
-    <span class="header-title">이라333배 개맞짱 컨텐츠</span>
     <div class="header-btns">
       <button class="finish-btn" id="finishBtn" onclick="triggerFinish()">🏆 완주!</button>
       <button class="lock-btn" id="lockBtn" onclick="toggleRound3()">🔒</button>
     </div>
+    <div class="header-center">
+      <span class="header-glove">🥊</span>
+      <span class="header-title">이라333배 개맞짱 컨텐츠</span>
+      <span class="header-glove">🥊</span>
+    </div>
+    <div style="width:90px"></div><!-- 버튼 너비만큼 균형 맞추기 -->
   </div>
 
   <div class="round-summary" id="roundSummary" style="display:none">
@@ -292,7 +285,6 @@ function triggerFinish() {
   document.getElementById("celebWinner").textContent = currentFirstName || "";
   document.getElementById("celebChar").src = currentFirstImg || "";
   document.getElementById("celebOverlay").classList.add("active");
-
   spawnBurst();
   window._celebInterval = setInterval(() => { if (celebActive) spawnBurst(); }, 600);
   celebTimer = setTimeout(stopCeleb, 15000);
@@ -312,14 +304,10 @@ function rand(min, max) { return Math.random() * (max - min) + min; }
 
 function spawnBurst() {
   const overlay = document.getElementById("celebOverlay");
-  const W = overlay.offsetWidth;
-  const H = overlay.offsetHeight;
+  const W = overlay.offsetWidth, H = overlay.offsetHeight;
   const fwColors = ["#ff4040","#ff9900","#ffe040","#40ff80","#40c0ff","#c040ff","#ff40c0","#fff"];
-  const spots = [
-    {x: W*0.15, y: H*0.2}, {x: W*0.5, y: H*0.08},
-    {x: W*0.85, y: H*0.2}, {x: W*rand(0.1,0.9), y: H*rand(0.05,0.3)},
-  ];
-  spots.forEach(spot => {
+  [{x:W*0.15,y:H*0.2},{x:W*0.5,y:H*0.08},{x:W*0.85,y:H*0.2},{x:W*rand(0.1,0.9),y:H*rand(0.05,0.3)}]
+  .forEach(spot => {
     for (let i = 0; i < Math.floor(rand(8,16)); i++) {
       const el = document.createElement("div");
       el.className = "particle firework";
@@ -350,9 +338,7 @@ function spawnBurst() {
   }
 }
 
-function getImgFile(name) {
-  return "/images/default.gif";
-}
+function getImgFile(name) { return "/images/default.gif"; }
 
 function getRoundWinner(data, key) {
   if (!data.length) return "-";
@@ -365,10 +351,8 @@ function render(data) {
     document.getElementById("roundSummary").style.display = "none";
     return;
   }
-
   data.sort((a, b) => Number(b["📝최종 점수"]) - Number(a["📝최종 점수"]));
   data = data.slice(0, 7);
-
   const json = JSON.stringify(data);
   if (json === prevJSON) return;
   prevJSON = json;
@@ -459,6 +443,7 @@ setInterval(fetchData, 5000);
 </script>
 </body>
 </html>
+
 
 
 
