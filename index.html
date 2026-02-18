@@ -2,6 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8" />
+<meta name="referrer" content="no-referrer">
 <title>이라333배 개맞짱 컨텐츠</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
@@ -9,25 +10,23 @@
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { background: transparent; font-family: 'Noto Sans KR', sans-serif; padding: 6px; width: 900px; }
-
 .panel {
   background: linear-gradient(160deg, #2a1a00 0%, #3d2600 40%, #2a1a00 100%);
-  border-radius: 10px;
-  border: 2px solid #c88a2a;
+  border-radius: 10px; border: 2px solid #c88a2a;
   box-shadow: 0 0 0 1px #6b4200, 0 0 24px rgba(200,138,42,0.3), inset 0 1px 0 rgba(255,220,100,0.12);
-  position: relative;
-  overflow: hidden;
+  position: relative; overflow: hidden;
 }
-
-/* 헤더 */
 .header {
-  position: relative; z-index: 1;
+  position: relative; z-index: 10;
   display: flex; align-items: center; justify-content: space-between;
   padding: 6px 14px;
   background: linear-gradient(90deg, transparent, rgba(255,190,50,0.07), transparent);
   border-bottom: 2px solid #6b4200;
 }
-.header-center { display: flex; align-items: center; gap: 8px; flex: 1; justify-content: center; }
+.header-center {
+  display: flex; align-items: center; gap: 8px; flex: 1; justify-content: center;
+  pointer-events: none;   /* ← 이거 추가 */
+}
 .header-title {
   font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
   font-size: 20px; font-weight: 800; color: #ffe680;
@@ -36,15 +35,15 @@ body { background: transparent; font-family: 'Noto Sans KR', sans-serif; padding
 }
 .header-glove { font-size: 20px; display: inline-block; animation: punch 0.6s ease infinite alternate; }
 @keyframes punch { from { transform: scale(1) rotate(-15deg); } to { transform: scale(1.2) rotate(10deg); } }
-.header-btns { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
-
+.header-btns {
+  display: flex; align-items: center; gap: 6px; flex-shrink: 0;
+  position: relative; z-index: 20;   /* ← 이거 추가 */
+}
 .lock-btn {
   background: none; border: none; cursor: pointer;
-  font-size: 20px; line-height: 1; padding: 0 2px;
-  transition: transform 0.2s;
+  font-size: 20px; line-height: 1; padding: 0 2px; transition: transform 0.2s;
 }
 .lock-btn:hover { transform: scale(1.2); }
-
 .finish-btn {
   background: linear-gradient(135deg, #c87000, #ffcc00);
   border: 1px solid #ffe080; border-radius: 5px;
@@ -55,8 +54,6 @@ body { background: transparent; font-family: 'Noto Sans KR', sans-serif; padding
 }
 .finish-btn:hover { transform: scale(1.05); }
 .finish-btn.active { background: linear-gradient(135deg, #ff4040, #ff8800); border-color: #ffaaaa; color: #fff; }
-
-/* 라운드 요약 */
 .round-summary {
   position: relative; z-index: 1;
   display: flex; gap: 5px; padding: 4px 12px;
@@ -67,13 +64,11 @@ body { background: transparent; font-family: 'Noto Sans KR', sans-serif; padding
   border: 1px solid #6b4200; border-radius: 5px;
   padding: 3px 8px; text-align: center;
 }
-.round-badge .r-label { font-size: 11px; color: #c88a2a; font-weight: 700; letter-spacing: 0.5px; }
-.round-badge .r-winner { font-size: 14px; color: #ffe680; font-weight: 900; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.round-badge .r-pt { font-size: 11px; color: #ffd060; font-weight: 700; }
-
-/* 레이스 */
+.round-badge .r-label { font-size: 14px; color: #c88a2a; font-weight: 700; letter-spacing: 0.5px; }
+.round-badge .r-winner { display: flex; align-items: center; justify-content: center; gap: 6px; flex-wrap: wrap; }
+.round-badge .r-name { font-size: 14px; color: #ffe680; font-weight: 900; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 90px; }
+.round-badge .r-pt { font-size: 13px; color: #ffd060; font-weight: 900; white-space: nowrap; }
 .race-section { position: relative; z-index: 1; padding: 3px 8px 2px; }
-
 .race-row { margin-bottom: 1px; }
 @keyframes fadeSlide { from { opacity:0; transform: translateX(-12px); } to { opacity:1; transform: translateX(0); } }
 .race-row:nth-child(1)  { animation: fadeSlide 0.3s 0.00s both; }
@@ -83,10 +78,7 @@ body { background: transparent; font-family: 'Noto Sans KR', sans-serif; padding
 .race-row:nth-child(9)  { animation: fadeSlide 0.3s 0.16s both; }
 .race-row:nth-child(11) { animation: fadeSlide 0.3s 0.20s both; }
 .race-row:nth-child(13) { animation: fadeSlide 0.3s 0.24s both; }
-
 .race-top { display: flex; align-items: center; gap: 6px; margin-bottom: 2px; }
-
-/* 메달 크게 */
 .rank-badge {
   width: 28px; height: 28px; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
@@ -96,17 +88,14 @@ body { background: transparent; font-family: 'Noto Sans KR', sans-serif; padding
 .rank-2 { background: radial-gradient(circle, #d0d8e0, #7a8a99); color: #1a2030; border-color: #b0bec5; }
 .rank-3 { background: radial-gradient(circle, #f0a070, #a04010); color: #2a0800; border-color: #cd7f32; }
 .rank-other { background: rgba(0,0,0,0.4); color: #a09060; border-color: #5a4020; }
-
-/* 캐릭터: 네모박스 없이 이미지만 */
+.avatar-wrap { position: relative; width: 50px; height: 50px; flex-shrink: 0; }
 .avatar-img {
-  width: 50px; height: 50px;
-  object-fit: cover; border-radius: 4px;
-  border: none !important; display: block; flex-shrink: 0;
-  image-rendering: pixelated;
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scaleX(-1);
+  width: 250px; height: 250px; object-fit: contain;
+  image-rendering: auto;
   filter: drop-shadow(0 1px 4px rgba(0,0,0,0.6));
+  z-index: 2;
 }
-
-/* 이름+점수 */
 .name-score { flex: 1; min-width: 0; display: flex; align-items: center; gap: 6px; }
 .streamer-name {
   font-size: 16px; font-weight: 900; color: #ffe680;
@@ -115,14 +104,10 @@ body { background: transparent; font-family: 'Noto Sans KR', sans-serif; padding
 }
 .score-total { font-size: 18px; font-weight: 900; color: #fff; text-shadow: 0 0 6px rgba(255,200,0,0.4); flex-shrink: 0; }
 .score-label { font-size: 13px; color: #c88a2a; margin-left: 1px; font-weight: 700; }
-
-/* 라운드 점수 뱃지 */
 .round-scores { display: flex; gap: 3px; margin-left: auto; flex-shrink: 0; }
 .rs-badge { background: rgba(0,0,0,0.4); border: 1px solid #5a4020; border-radius: 4px; padding: 3px 9px; text-align: center; min-width: 52px; }
 .rs-badge .rs-r { font-size: 11px; color: #c88a2a; font-weight: 700; }
 .rs-badge .rs-v { font-size: 18px; color: #ffe680; font-weight: 900; }
-
-/* 트랙 */
 .track-wrap { position: relative; height: 28px; overflow: visible; }
 .track-bg {
   position: absolute; top: 50%; transform: translateY(-50%);
@@ -140,17 +125,16 @@ body { background: transparent; font-family: 'Noto Sans KR', sans-serif; padding
 .fill-3 { background: linear-gradient(90deg, #7a3010, #cd7f32); }
 .fill-o { background: linear-gradient(90deg, #3a2800, #6b4200); }
 .finish-line { position: absolute; right: 0; top: 0; height: 100%; width: 7px; background: repeating-linear-gradient(90deg, #fff 0px, #fff 2px, #000 2px, #000 4px); border-radius: 0 5px 5px 0; opacity: 0.5; z-index: 2; }
-
 .runner-icon {
-  position: absolute; top: 50%; transform: translate(-50%, -50%);
-  width: 28px; height: 28px;
+  position: absolute; top: 50%; transform: translate(-50%, -100%);
+  width: 32px; height: 32px;
   z-index: 10; transition: left 1s cubic-bezier(0.34,1.3,0.64,1); pointer-events: none;
 }
 .runner-icon img {
-  width: 28px; height: 28px; object-fit: cover;
-  border-radius: 50%; border: none; background: transparent;
-  image-rendering: pixelated;
-  filter: drop-shadow(0 1px 3px rgba(0,0,0,0.6));
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scaleX(-1);
+  width: 180px; height: 180px; object-fit: contain;
+  image-rendering: auto;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8));
 }
 .runner-icon.is-first::after {
   content: '⭐'; position: absolute; top: -9px; left: 50%;
@@ -158,49 +142,37 @@ body { background: transparent; font-family: 'Noto Sans KR', sans-serif; padding
   animation: bounce 0.8s ease infinite alternate;
 }
 @keyframes bounce { from { transform: translateX(-50%) translateY(0); } to { transform: translateX(-50%) translateY(-3px); } }
-
 .row-divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(107,66,0,0.3), transparent); margin-bottom: 1px; }
-
-/* 완주 이펙트 */
 #celebOverlay {
   display: none; position: absolute; inset: 0;
   pointer-events: none; z-index: 9999; overflow: hidden; border-radius: 10px;
 }
 #celebOverlay.active { display: block; }
-#celebOverlay::before {
-  content: ''; position: absolute; inset: 0;
-  background: rgba(0,0,0,0.6); border-radius: 10px;
-}
+#celebOverlay::before { content: ''; position: absolute; inset: 0; background: rgba(0,0,0,0.6); border-radius: 10px; }
 .celeb-box {
   position: absolute; top: 50%; left: 50%;
   transform: translate(-50%, -50%);
-  display: flex; flex-direction: column; align-items: center; gap: 8px;
-  z-index: 10001;
+  display: flex; flex-direction: column; align-items: center; gap: 8px; z-index: 10001;
   animation: boxPop 0.5s cubic-bezier(0.34,1.6,0.64,1) both;
 }
-@keyframes boxPop {
-  from { transform: translate(-50%, -50%) scale(0.3) rotate(-8deg); opacity: 0; }
-  to   { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
-}
+@keyframes boxPop { from { transform: translate(-50%,-50%) scale(0.3) rotate(-8deg); opacity:0; } to { transform: translate(-50%,-50%) scale(1) rotate(0deg); opacity:1; } }
 .celeb-char {
-  width: 180px; height: 180px; object-fit: cover;
-  border-radius: 12px; border: 3px solid #ffcc00;
+  width: 480px; height: 480px; object-fit: contain; border-radius: 12px;
+  transform: scaleX(-1);
+  border: 3px solid #ffcc00;
   box-shadow: 0 0 20px rgba(255,200,0,0.9), 0 0 50px rgba(255,150,0,0.5);
-  image-rendering: pixelated;
+  image-rendering: auto;
 }
 .celeb-title {
-  font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
   font-size: 46px; font-weight: 800; color: #ffe680;
   text-shadow: 0 0 16px rgba(255,200,0,1), 0 0 32px rgba(255,150,0,0.8), 2px 2px 0 #7a3a00, 4px 4px 0 rgba(0,0,0,0.5);
   letter-spacing: 4px; white-space: nowrap;
 }
 .celeb-name {
-  font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
   font-size: 26px; font-weight: 700; color: #fff;
   text-shadow: 0 0 12px rgba(255,220,100,0.9), 2px 2px 0 rgba(0,0,0,0.8);
   letter-spacing: 2px; white-space: nowrap;
 }
-
 .particle { position: absolute; pointer-events: none; z-index: 10000; }
 .firework { width: 6px; height: 6px; border-radius: 50%; animation: fwExplode var(--dur) ease-out forwards; }
 @keyframes fwExplode { 0% { transform: translate(0,0) scale(1); opacity:1; } 100% { transform: translate(var(--tx),var(--ty)) scale(0); opacity:0; } }
@@ -208,7 +180,6 @@ body { background: transparent; font-family: 'Noto Sans KR', sans-serif; padding
 @keyframes mesoFall { 0% { transform: translateY(0) rotate(0deg) scale(1); opacity:1; } 80% { opacity:1; } 100% { transform: translateY(var(--fall)) rotate(var(--rot)) scale(0.5); opacity:0; } }
 .sparkle { font-size: 12px; animation: sparkleFly var(--dur) ease-out forwards; }
 @keyframes sparkleFly { 0% { transform: translate(0,0) scale(0) rotate(0deg); opacity:1; } 50% { transform: translate(var(--mx),var(--my)) scale(1.2) rotate(180deg); opacity:1; } 100% { transform: translate(calc(var(--mx)*1.5),calc(var(--my)*1.5 + 30px)) scale(0) rotate(360deg); opacity:0; } }
-
 .footer {
   position: relative; z-index: 1;
   display: flex; align-items: center; justify-content: flex-end;
@@ -216,13 +187,12 @@ body { background: transparent; font-family: 'Noto Sans KR', sans-serif; padding
 }
 .live-dot { width: 6px; height: 6px; border-radius: 50%; background: #ff4040; box-shadow: 0 0 6px rgba(255,60,60,0.9); animation: pulse 1.5s ease infinite; }
 @keyframes pulse { 0%,100% { opacity:1; transform:scale(1); } 50% { opacity:0.5; transform:scale(0.8); } }
-.live-text { font-size: 11px; color: #ff4040; font-weight: 900; letter-spacing: 2px; font-family: 'Pretendard', sans-serif; }
+.live-text { font-size: 11px; color: #ff4040; font-weight: 900; letter-spacing: 2px; }
 .empty { padding: 14px; text-align: center; color: #6b4200; font-size: 12px; }
 </style>
 </head>
 <body>
 <div class="panel" id="panel">
-
   <div id="celebOverlay">
     <div class="celeb-box">
       <img class="celeb-char" id="celebChar" src="" alt="">
@@ -230,30 +200,26 @@ body { background: transparent; font-family: 'Noto Sans KR', sans-serif; padding
       <div class="celeb-name" id="celebWinner"></div>
     </div>
   </div>
-
   <div class="header">
     <div class="header-btns">
       <button class="finish-btn" id="finishBtn" onclick="triggerFinish()">🏆 완주!</button>
-      <button class="lock-btn" id="lockBtn" onclick="toggleRound3()">🔒</button>
+      <button class="lock-btn"   id="lockBtn"   onclick="toggleRound3()">🔒</button>
     </div>
     <div class="header-center">
       <span class="header-glove">🥊</span>
       <span class="header-title">이라333배 개맞짱 컨텐츠</span>
       <span class="header-glove">🥊</span>
     </div>
-    <div style="width:90px"></div><!-- 버튼 너비만큼 균형 맞추기 -->
+    <div style="width:90px"></div>
   </div>
-
   <div class="round-summary" id="roundSummary" style="display:none">
-    <div class="round-badge"><div class="r-label">🥊 1라운드</div><div class="r-winner" id="r1winner">-</div></div>
-    <div class="round-badge"><div class="r-label">🥊 2라운드</div><div class="r-winner" id="r2winner">-</div></div>
-    <div class="round-badge" id="r3badge" style="display:none"><div class="r-label">🥊 3라운드</div><div class="r-winner" id="r3winner">-</div></div>
+    <div class="round-badge"><div class="r-label">👑1라운드</div><div class="r-winner" id="r1winner">-</div></div>
+    <div class="round-badge"><div class="r-label">👑2라운드</div><div class="r-winner" id="r2winner">-</div></div>
+    <div class="round-badge" id="r3badge" style="display:none"><div class="r-label">👑3라운드</div><div class="r-winner" id="r3winner">-</div></div>
   </div>
-
   <div class="race-section" id="raceSection">
     <div class="empty">📡 데이터 로딩 중...</div>
   </div>
-
   <div class="footer">
     <div class="live-dot"></div>
     <span class="live-text">IRA333</span>
@@ -261,14 +227,74 @@ body { background: transparent; font-family: 'Noto Sans KR', sans-serif; padding
 </div>
 
 <script>
+const STREAMERS = {
+  "이라333": { look: "CGKHHKEDKCJHIGEBGFEEHJPANLIFOMALOPBJCCEBFPOKJHOBBAENJFKGANOOCCBCDFCPFLDEBPFEFDMHGOOELJKIFKDHGKOMPAKOAOPIPECGPLHMGJDCDDCBGMNHFLLPEKBBMDHINJJOMPOBEONFPAFIJOOCDJMKNEIKIBBGDHENPAHPBNODJFCHIDKBEOKHAAMBDDCAFCMEANHPLHOMLNHMJBMFAOAPIDNGNAOBAEFHGCHFABCEFMMEBLHGJBJMDHCOJJAOCBOBIODBNBMOGBKIIMKLGGEAMFAHPFOOFGCLKBEBFFHPNBOMIMMOGMEPGEHMOPEDENKCEBHFGDJMPPCFEOBLHLHGPDMEBOLFCADNBPEAGAPFPJKEEEGNLNNNHILEIDFCFDHOFOHDIFLJIGFCCDGHPCEKDOLEBCLGFCKIEIOOGGHHPEINEFJKFNKBBJFIPAFPBCIEGAGJEEOAFBPJDBPPBNMHOAFIKMEGKMIDKNLCNCNCAEHIONAGBFBGEBDCBPKLDJJAOIBPKFCBLANGMDPEODFGDADAFCKFMLFJGIMCHNHLPEPDLHIADGGJIPHDJHEODMKGJLCHIBEJGPNMMCLJPKBOJBOPPABHCNIGOIPLHFMDOKMIGPEOMJIKAFHIOHNOMCKOAIKGEOAHJCBMMDMPDDJGBIPDEFPEJJIJKICNADBECMCFEGKLJEMOBCCDMMKDIMJDCIHHFNMPIHMMHLANNCDNGOIAPPNNBDIKOMHJOMHCCHEJPKIHHFNDHNMPEGGBMBMJENPKEMAPCCNKOKKJAOAAMIACLIGKFOLIBPNKKJCFDCMJFBCFFOCHJNMMPCLNHGLDGBCDBKOECPCDHOLBFAKKIDJMPNDCFAHHKFLIGLNOKODILHIAMCNEGFLKCDFFHCKGFIHMNDGMFJOHNAGFHCJLJDJDCKCAKMCKMIJFNNPJGMNGHJPKKLGCKJBBOECIJBCEJICCBKEGJNBBGLENDOLGOCBBCKNEEAKEAFIIHBLJLJOEGHJHHHLA", wmotion: "W03" },
+  "나로후닝": { look: "CGOCOFDLOJNBCNAIPPBHEPCGALELJHGACIMKCKDLIGHFGFNENDPLCDDCPLEKBEGLBMDLDGHMNLDPJDLECPBONDCCLGJGPKNHAKKBDGEOGBOIBDAICCIPLCJOCGBPHBHNKPIMILBFDLIEMLHDMPPPILOOCDCHCNCJDMGOKFHDBPNFGHJDPFPGKADIGPPHCAHBKBAGGAKLHHLOGPOBCKGDFLAAPEBOMFLPGGELFKAIGKNJACHNMMLBNJHIEKNGLFIBFFEDCPCMIAAELJNEBIEKODBGEOGJEFFDMLFHKADGFOJIHNNEFPDALBPHAOLGFKHPMODLDACFHENGJEGHLMMLCNJJNJBPAEFGEBIABFIDGJAGPMJENPNOAEMKGEDFDONHAABJAALJMPINMECMLNDDAOFJPIGEPAJEMIEFGNPOAILJLLEBKOBOMBGGKHFCMFHJCPHFLKPEKOEJNFIOLPFBKEFMBDBIGJEBIGMBAGPCNPAOJHHMCKEMMFILJEPFJLLGMHGFAIGGCKKPHGINIDEKPCDECCHHIHIMCIEHHPOHJMJOCDLDOKFHILBAIBAELMAAJAHKCIKGNHKNEGHCGMEGOBAOBDEJOJFONEGCMAABIDHGLMGIKMPAODHKANJOEGHINDAJOMENCPAJMIMLGGFKEFMDGEEAODPLCMFMPOIDJGEFFCHONADDDMBJKEGLELHPFDAGJKDFHLBBABENBKJICGNGEJDOJELAGPJENJLJPCGJPCGNANLFIMPOGKOGNONKBGDEODHLNAPMPPGJKDDAOMNPHMNPCCNGOANPFECKLAHFPKGBIMBMDEDNCJJMIMIKCPCCGNGGIKCBALPBFNPGAFDIGIGCJCGNHGLKLGOHLMCOMLHCFIBIEDDNBFHGDFMKKGDEEOBDGJNJNMBHELAGNKJHFPGFGPJDPCMOLCFLKHMIDAANJIELNLGBLODBEDNAAHCNEDDLOHEOBIAGHPCMNGJAOHHNCDKLPDKJFEJONPJDPMKEJNPGLBHAMJFHINCN", wmotion: "W00" },
+  "진캐":   { look: "OBPKOKNMNPEOKNGEKAJJICKGNJCDKEIOIGEFLLDBLCLPOEHGPBKOJPBDBLOPKMLNAPJKHMLPIMONOKEHDEKFNPCIMJPPIFLFMLGIBIIFPBIMFEMPMPJHMLPKPJGMFPEKBNMHEMKCFCANHNPBGKKMDFJNDPOGPHHHJJBIMLHDHANKHBDFFDADAJJCBKIIPMOJMEBBLKIBIHDHMFLBCJEKLCDMFOGMILOPBKAONMPNEBAFIHJCNHFDIKFBJJKOMNBFLHFHIHNPNIIMKGKENEKEOAKAHIBJFMFPLKJGHFJIJIMKIEIHLGGKGBOFAAIPDHNKOKDGEBEACNBPADCMNAFHHDJEDGGEHMCMDHJKNKHMJMPGANIDIHIFNIAGJKKEJJNMAJCMINPCDGOCPLIFAKOKCGAMHCCLHJPFPNMFJLLNJDJIFDLBJJEKNMDCDHOJDKOINMKEIILMGKNADFLLFHADABFHFKCNCAIBHLFKNKJEFGMDIHKBBFBJJFHDJDHGAMOBBEICDCGHIGLNFHOKFDGPMNIDLDCDKPPLEAMGMLBBMKDLMJDOPEFJLOLLEOJGBPFEJCNGAGNOKDNEKPEBCOGMEFAHCMFHMNPCLJGNIFFBCBHJBLNJOOIKCHEPECGLLGPHNBGLEFMLEECFICIMJODJGHGKIAPILACNBPLNDLACBLDFALEDLIEMBMCKIOKPCEGEGLIAFKFLIALBJDKDGPNMDHONAHABHECJOBJAPMONFDAOKHJPAIJCAKPOMNDLAGOEKBNJNHAMCGCOCDADIEKIKNLBLFOIACIELKEDBACDDIKNNNBPEAJJBDPPBAGMCLELFPDHAEDEGOBOIJIMIBCDMFKJDFCCHDEGGCAGNBKPCHBMEKPEDAGDJCIFBFMJAPIEDLOEHJPKBNHFGCBAJNNBGBJINHOLKEGGGJIHBJBIGCKDEFEICAAAIMDCAPGMJHJBLMBJAGGBJPALOOLCKPHLIGIKMFLLCMELDFELBNKPDFIMFCGLCBMAHAOGFAJBDEGD", wmotion: "W00" },
+  "팡이요": { look: "AHFMCHNACDDFCMOMICDHNKFEAFKOCLPFDIIJJPDFNPDDBFHEHCBPOAMFAENNFGBMFJELMPIOHCBGKMEIJPIFLAPGHBGMHJAJAGEDGPAKMCLAKNEJCMEPCEJKFHMJJONPGKJBDADGBJBACDBCFCGLFNJNPDADNDCBMAECGKMFNNFGOEFOFONOJEBIFELNBJIFKDHGBPPKMFANLONIHEGMIGMAJCLGKAOBLJDAFEDEAMHDGCFDDLJOEIOKDPNFEPPMOJGHOLDOCNLAHMJBFPKOLIDJPELGLFEBFLAGPIIIFPJCJLDJMIGJLJGHKHJKPAOPGEMOFKNGECGNJKBDANGJOHCOBDJLNOLALAIENFNCLFEPJOAKLBIFBEFGMKEJMAPIJKKCOKJAFBBPKBNHBEAOAPHMHBCOFLGFFMMPHFLPDFGALCOJHAAHCJPLPGGINFAOFPPIAMCHCMDKIMLEMJGMJNLMOMPPPMKAAJPLGABOLEHKCKJMIDHFMIGPGDPFPDJLONKCFGGELEFGIBPIEOFJLMLMJBIBPJECDFIEDGLCPEPOEJKMMOEOEGJJEIOBEDKFIDEEJOMIAKFMGIHNEHNFMFOKLLNPLIGKPJBAPLKDFGKKJFLMBNGKOOLGMJCAKDEOOPLKGDJLEIOELADEFKGLJLIJDGOMAGALCOGJMGLFGGPJHLBKJONFAMOCMHJODGLNIBJPAPMFNMNHNCJJFFIJKJMGIDGODGIGEHGKBFBACGFPGHEJFPKFCIMCIOEDBBIDJKDMEDIOAKJMHEDHOOGMPGBINJMEMGCNAPOJFMECFAEIDLMMHLPKOJLMCBHOBIHMACELJCGAEIGHLCGIJCHGFPJIJDAODNJBOHECFPCCILKBBOGLPEMOJMJLFNNPEAANMGKCJPOGBCBHDOOAJJAPGIKCDCEKHAAFMBPIBJBJNEPGHENKOBMCABFAHAELNGPNNGPIPLKAOKLGFDDKAFHKBGABIAOOHIFLGANNAHPEDBKNOLLJHOGOIHBKEEPFBJBH", wmotion: "W02" },
+  "일어나": { look: "OFOCBAJFNGHKJNNMMAMJNJOPADPCKMFGKJAOHJACIFBCFJCIBGJMPLCLAOLPFHOBOFALAAMPFPMILMCNBJPDFFJIACOIGKKIAEHJMMCJOHHEJJOBKHBKKJBLFEBOLCDDADFMPDHDODACALIMCEFKOMCMCIMKLOIENKKNHJEPNHHIEEHCOICJGOMPOOAHEOLILMAJNPEGADMJPMCGFKJJFDHNNFMLFOIAEBAMJMKNGMADILLGEOKJBOLCBBOOAGHOACHJPKIPKOKCJPBCGPCJMJMAPJLFALHHIDIOFMNAKCKLAIPBPDFOJCGJMKDICCEPMPFJMBCDMJGGAPCAPEPAKELGFAIGFKLGJLBMEHNKEOPEMAGHCDLPMMIPIPFJMNJHLEDBFNOCLIABLLMGOGHNFDMOKAFONBOEPMLPLNABJOHMJHLJEBICFGLDFJFINJIOEILNDILOAJDCPLOCDNINIECADENGBCDCAFLBHNFONDMGHILKKNMHNKIJGAKDEMBPHMDKKPPCHGNOLCHEGMCDJKDJAAFEHEKLBPONDAECKOODNPOMCBKEDJBALGFDBGAEDDOBIGDDPDHANJMBEMCCOHDDBCIKBDEKONBFGAJPBBDAMHMDBMBABGNGOCLMELLNGIOFHNLCNFGFEOMBBLOLEALMIFIIEPHJFLJHKFMNOPPDGBAKEIGMNLDPKJKOHBDFMHHFEEIPIPHOGDJIOPEIKKOJOGKAKCNHKNHMHJMEJFKLIKKICOLDMPHDHMDOBCJCLMLMKMHAFKGAALKAENODBPPKDIKFBBBCCPGJLGCOHOGJDLHMDHDBCAGPJEEOHICOAKDOHCDEMEJJGGDGDBKMNIIGGLDPMLHJAIKAOIBELOLDDJBIEGDPMADPCIFGBGDCNAPNBHOPGNBNDPAJEMFECIDNCOPEFFCMFIIEFDHHAIIFBEIINPIOEJCLPNDGGPJBDNIOOKILGLAOOGJKIFNDOKJPCAHDFBKGADNPHNFDOIGOPGPGNBMLBAIBENANGPEL", wmotion: "W01" },
+  "세글자": { look: "EFBAJENHLMCBEJPKBNNIDKACLKGBJOFLJOJLBEPIHEKBFCBMCDIGGBICHCFMOMBGMMAKBFOOFLKJBBAIEIPHJPDDOIGBBJCHAMJGGFJPIBNEAIOFMKPAAMOJOPPDBEPCMNLHCKDGMECBMJBNCAKLIOKJNCKFELGCIPPAAHAFCMEPAGKDIABINABNAIGICLGMMBIOPLGJGLEEDDKFIHFCBGHMMDGKODGDKLALENFFLNCAMABKFDPBFEJGDPOMLCCIMPIFDDEGNMAGHEKPMMCOLHKJGAONDBCMKJCOFNDJCDENPBJALLPBFFKOCPLFIBBLBMMNJONLLPJEMFCAKCIIBENOEJBGABFKPIEJEKCKICHJKFAHGPOBCGCGKOJCPHJLEKEFDIPHNKLKNMJAEEMDCMCNHOHHEIMBIPPJEPDPFLKIPDOACDECILLGBFOMAALCOGONJOAGMEAKEAPOBPAAKCFGHGEIDFNGKFPNKAIDFPJHEHJEOPIGLNBPCKOMHABKFOHBDEACJMPLPBOIDCKDPEGGOBBKEHGOIOLGGMLLNICNFLNOKEFNNFPMNFMDEHDFFDNGBNDNPGBLDPBADPKECHKFHAONAJJPIAKCHLFPHMNJBEPLJCHPBEEAFLKLJINELFHAAACGPMEACAJFOIONHHEPCBNLBLDGJGEJILNLDAJAFENJDOLOCPHDIELIBJEHHCGMDFJBLIGFMGDHHKGPEABNIPGJEEDKFHJFPJAJABAHNFIMHJCKKCCPGIABHHANLNAKOOBKFCKKBIKILDBFDEDGOJEKEGFKFFOMJLICFPMAEIGKBEPIPEFLMGOBGOJOIPGMLKCGHLNBDECMDPAPJJMCKEOKPAHIGHIFNKKAECADIMHCIGKIICPKIKLLFDJODACDHHKPKGFECPBOFFPAPMHODNPDHIEMABLCNOBNHEPOGANNHHGGGKPJOFLLCDKNBFCDKOBDCNOOMBOECGKJFDGIIIPJEACCNMMGGOFOHLDCFMKNGOFCACABGBOGDDFJ", wmotion: "W00" },
+  "식중땐": { look: "HOGJJHPOPPDFAOEBJJODANKNBLPKGLKHHMGNLFKLLGDPIKCJOEDDMPCPALIBLIEADMBILKEICPOCONOMFIBHBBFCAPOMLNBKKFEDDLLKGNJCABJIGKIKCEKLDJFKGFDONAFNACKCFDNDGGKNHEGBKGMKNAJOFADOJGFGHPMIALNGKNGOCMAHFGPPIELPPGODMLAPOBAKDMHENNNHDIFEIHJLHEIPJDNKBAJLKBBIJGGKMOAMKHKLMPPDKAOHDGBGCFHGIONELNHDNKINEOGOLIJIJLPMPCPABBNHIAENJFCGLHLMJINIMIMHFPLNLMKDFPDDIGMHNBBDDOAIDHNGHEGFAOADKKGGDNPBGDMMOKAPCKILDLMDCAOMMMJCFBLMNGHELOMLMLNMADAJDFHLIOBOIIHEOHLBICNPMDBKCLDOHEKNNOOFIJKMFBFECCGLINADNCMHMCGAEPFGNIOFDFHEHGHCNIOACHNGGJJILCEOPAAHHELODDBFEFMJADMEDAIKPOOCIHJFLHOPBLIHIIJBOKKAGOFIAGMDOKEBFOHIAPHDMFDNAEFBFILDOFPOBIKBNJICEOKFHAKOCKOGPDKHNGDMMBEFNIGMCHHMLLNALIAMDCOGLHPHIOPONKLHEJIELNEGNJBKPCEAKNLKNBEKHLCBMABFHECGHDKDFMKEIEIDABOBOIOFMMHMOBHIEMAIACEILIPIEAHAPNHJAHLIMBGGNBAPKDJMBGLHBPHBJLMAPNEBFJOBBLCOOALDIMCKLLPJNKOJCDILHCLALNCKLCDOPJOHHKHKGJGNMGJDLGICNGOMGNICKCPCFILOLGAMJIGDFGACDFDFBEEAJKPDBGMEAHGAPIJCKEHDFLPPBMOBAKPKLDONBKIEHEIDOEGNDOHJCDHBOFCMNKBGPIMLBGAAGNHDKGGMBFOPMNPBPJAENNOJDLCMFJFOGPMHHGABLGOEPJIDBNIDBCCHIPDNPDCPACBFFPBLPMOGIEOJLDEDGDADPIHOIEHHMHKE", wmotion: "W01" },
+};
+
+const BASE = "https://open.api.nexon.com/static/maplestory/character/look/";
+
+function buildUrl(name, action, frame, emotion) {
+  const s = STREAMERS[name];
+  if (!s) return "";
+  return BASE + s.look + "?wmotion=" + s.wmotion + "&action=" + action + "." + frame + "&emotion=" + emotion + "&width=800&height=800";
+}
+
+const RANK_ANIM = {
+  cheer: { action: "A05", emotion: "E09", frames: 2 },
+  smile: { action: "A05", emotion: "E02", frames: 2 },
+  angry: { action: "A05", emotion: "E04", frames: 2 },
+  grave: { action: "A40", emotion: "E03", frames: 4 },
+};
+
+function rankToKey(rank) {
+  if (rank === 1) return "cheer";
+  if (rank <= 3)  return "smile";
+  if (rank <= 6)  return "angry";
+  return "grave";
+}
+
+const activeAnims = {};
+
+function startAvatarAnim(imgEl, name, rank) {
+  if (activeAnims[name]) { clearInterval(activeAnims[name]); delete activeAnims[name]; }
+  if (!STREAMERS[name]) { imgEl.style.display = "none"; return; }
+  const anim = RANK_ANIM[rankToKey(rank)];
+  let frame = 0;
+  imgEl.src = buildUrl(name, anim.action, frame, anim.emotion);
+  frame = (frame + 1) % anim.frames;
+  activeAnims[name] = setInterval(() => {
+    imgEl.src = buildUrl(name, anim.action, frame, anim.emotion);
+    frame = (frame + 1) % anim.frames;
+  }, 300);
+}
+
+function startRunnerAnim(imgEl, name) {
+  const key = "runner_" + name;
+  if (activeAnims[key]) { clearInterval(activeAnims[key]); delete activeAnims[key]; }
+  if (!STREAMERS[name]) { imgEl.style.display = "none"; return; }
+  let frame = 0;
+  imgEl.src = buildUrl(name, "A02", frame, "E00");
+  frame = (frame + 1) % 4;
+  activeAnims[key] = setInterval(() => {
+    imgEl.src = buildUrl(name, "A02", frame, "E00");
+    frame = (frame + 1) % 4;
+  }, 200);
+}
+
 const SHEET_ID   = "18F2mJsiSWYbxSl97u4vKEX9pTuEOuoL1WaGE5PB_iJ0";
 const SHEET_NAME = "시트1!E11:I18";
+
 let prevJSON = "";
 let round3Revealed = false;
 let celebActive = false;
 let celebTimer = null;
 let currentFirstName = "";
-let currentFirstImg = "";
 
 function toggleRound3() {
   round3Revealed = !round3Revealed;
@@ -283,7 +309,7 @@ function triggerFinish() {
   document.getElementById("finishBtn").classList.add("active");
   document.getElementById("finishBtn").textContent = "⏹ 종료";
   document.getElementById("celebWinner").textContent = currentFirstName || "";
-  document.getElementById("celebChar").src = currentFirstImg || "";
+  startAvatarAnim(document.getElementById("celebChar"), currentFirstName, 1);
   document.getElementById("celebOverlay").classList.add("active");
   spawnBurst();
   window._celebInterval = setInterval(() => { if (celebActive) spawnBurst(); }, 600);
@@ -309,42 +335,35 @@ function spawnBurst() {
   [{x:W*0.15,y:H*0.2},{x:W*0.5,y:H*0.08},{x:W*0.85,y:H*0.2},{x:W*rand(0.1,0.9),y:H*rand(0.05,0.3)}]
   .forEach(spot => {
     for (let i = 0; i < Math.floor(rand(8,16)); i++) {
-      const el = document.createElement("div");
-      el.className = "particle firework";
+      const el = document.createElement("div"); el.className = "particle firework";
       const angle = rand(0,360)*Math.PI/180, dist = rand(30,100), dur = rand(0.5,1.1);
-      el.style.cssText = `left:${spot.x}px;top:${spot.y}px;background:${fwColors[Math.floor(rand(0,fwColors.length))]};--tx:${Math.cos(angle)*dist}px;--ty:${Math.sin(angle)*dist}px;--dur:${dur}s;width:${rand(3,7)}px;height:${rand(3,7)}px;`;
-      overlay.appendChild(el);
-      setTimeout(() => el.remove(), dur*1000+100);
+      el.style.cssText = "left:"+spot.x+"px;top:"+spot.y+"px;background:"+fwColors[Math.floor(rand(0,fwColors.length))]+";--tx:"+Math.cos(angle)*dist+"px;--ty:"+Math.sin(angle)*dist+"px;--dur:"+dur+"s;width:"+rand(3,7)+"px;height:"+rand(3,7)+"px;";
+      overlay.appendChild(el); setTimeout(() => el.remove(), dur*1000+100);
     }
   });
   const mesoEmojis = ["🪙","💰","⭐","✨","🌟","💫"];
   for (let i = 0; i < Math.floor(rand(6,12)); i++) {
-    const el = document.createElement("div");
-    el.className = "particle meso";
+    const el = document.createElement("div"); el.className = "particle meso";
     const dur = rand(1.0,2.0);
-    el.style.cssText = `left:${rand(0,W)}px;top:-16px;--fall:${rand(H*0.5,H*0.95)}px;--rot:${rand(-360,360)}deg;--dur:${dur}s;animation-delay:${rand(0,0.3)}s;`;
+    el.style.cssText = "left:"+rand(0,W)+"px;top:-16px;--fall:"+rand(H*0.5,H*0.95)+"px;--rot:"+rand(-360,360)+"deg;--dur:"+dur+"s;animation-delay:"+rand(0,0.3)+"s;";
     el.textContent = mesoEmojis[Math.floor(rand(0,mesoEmojis.length))];
-    overlay.appendChild(el);
-    setTimeout(() => el.remove(), (dur+0.4)*1000);
+    overlay.appendChild(el); setTimeout(() => el.remove(), (dur+0.4)*1000);
   }
   for (let i = 0; i < Math.floor(rand(4,8)); i++) {
-    const el = document.createElement("div");
-    el.className = "particle sparkle";
+    const el = document.createElement("div"); el.className = "particle sparkle";
     const dur = rand(0.7,1.4);
-    el.style.cssText = `left:${rand(0,W)}px;top:${rand(H*0.1,H*0.7)}px;--mx:${rand(-60,60)}px;--my:${rand(-60,10)}px;--dur:${dur}s;`;
+    el.style.cssText = "left:"+rand(0,W)+"px;top:"+rand(H*0.1,H*0.7)+"px;--mx:"+rand(-60,60)+"px;--my:"+rand(-60,10)+"px;--dur:"+dur+"s;";
     el.textContent = ["✨","⭐","💫","🌟"][Math.floor(rand(0,4))];
-    overlay.appendChild(el);
-    setTimeout(() => el.remove(), dur*1000+100);
+    overlay.appendChild(el); setTimeout(() => el.remove(), dur*1000+100);
   }
 }
 
-function getImgFile(name) { return "/images/default.gif"; }
-
 function getRoundBest(data, key) {
-  if (!data.length) return { name: "-", pt: "" };
-  const best = data.reduce((b, r) => Number(r[key]) > Number(b[key]) ? r : b);
+  const valid = data.filter(r => r[key] && r[key] !== "-" && !isNaN(Number(r[key])));
+  if (!valid.length) return { name: "-", pt: "" };
+  const best = valid.reduce((b, r) => Number(r[key]) > Number(b[key]) ? r : b);
   const pt = Number(best[key]);
-  return { name: best["🎙️스트리머"] || "-", pt: pt > 0 ? pt.toLocaleString() + "pt" : "" };
+  return { name: best["🎙️스트리머"] || "-", pt: pt > 0 ? pt.toLocaleString() : "" };
 }
 
 function render(data) {
@@ -358,74 +377,61 @@ function render(data) {
   const json = JSON.stringify(data);
   if (json === prevJSON) return;
   prevJSON = json;
-
   currentFirstName = data[0]["🎙️스트리머"] || "";
-  currentFirstImg  = getImgFile(currentFirstName);
-  if (celebActive) {
-    document.getElementById("celebWinner").textContent = currentFirstName;
-    document.getElementById("celebChar").src = currentFirstImg;
-  }
-
-  const r1 = getRoundBest(data, "🥊1세트");
-  const r2 = getRoundBest(data, "🥊2세트");
-  const r3 = getRoundBest(data, "🥊3세트");
+  const r1 = getRoundBest(data, "👑1라운드");
+  const r2 = getRoundBest(data, "👑2라운드");
+  const r3 = getRoundBest(data, "👑3라운드");
   document.getElementById("roundSummary").style.display = "flex";
-  document.getElementById("r1winner").innerHTML = r1.name + (r1.pt ? '<span class="r-pt"> ' + r1.pt + '</span>' : '');
-  document.getElementById("r2winner").innerHTML = r2.name + (r2.pt ? '<span class="r-pt"> ' + r2.pt + '</span>' : '');
-  document.getElementById("r3winner").innerHTML = r3.name + (r3.pt ? '<span class="r-pt"> ' + r3.pt + '</span>' : '');
-
+  document.getElementById("r1winner").innerHTML = '<span class="r-name">'+r1.name+'</span>'+(r1.pt?'<span class="r-pt">'+r1.pt+'pt</span>':'');
+  document.getElementById("r2winner").innerHTML = '<span class="r-name">'+r2.name+'</span>'+(r2.pt?'<span class="r-pt">'+r2.pt+'pt</span>':'');
+  document.getElementById("r3winner").innerHTML = '<span class="r-name">'+r3.name+'</span>'+(r3.pt?'<span class="r-pt">'+r3.pt+'pt</span>':'');
   const maxScore = Math.max(...data.map(r => Number(r["📝최종 점수"]) || 0));
-
   const rankFillClass  = ["fill-1","fill-2","fill-3","fill-o","fill-o","fill-o","fill-o"];
   const rankBadgeClass = ["rank-1","rank-2","rank-3","rank-other","rank-other","rank-other","rank-other"];
   const section = document.getElementById("raceSection");
+  Object.keys(activeAnims).forEach(k => { clearInterval(activeAnims[k]); delete activeAnims[k]; });
   section.innerHTML = "";
-
   data.forEach((row, i) => {
     const rank  = i + 1;
     const name  = row["🎙️스트리머"] || "?";
     const total = Number(row["📝최종 점수"]) || 0;
-    const s1    = row["🥊1세트"] || "-";
-    const s2    = row["🥊2세트"] || "-";
-    const s3    = row["🥊3세트"] || "-";
-    const pct   = maxScore > 0 ? Math.min(93, Math.max(5, (total/maxScore)*88)) : 5;
-    const img   = getImgFile(name);
-    const r3d   = round3Revealed ? "" : "display:none";
-
+    const s1 = row["👑1라운드"] || "-";
+    const s2 = row["👑2라운드"] || "-";
+    const s3 = row["👑3라운드"] || "-";
+    const pct = maxScore > 0 ? Math.min(93, Math.max(5, (total/maxScore)*88)) : 5;
+    const r3d = round3Revealed ? "" : "display:none";
     const div = document.createElement("div");
     div.className = "race-row";
     div.innerHTML =
-      '<div class="race-top">' +
-        '<div class="rank-badge ' + rankBadgeClass[i] + '">' + rank + '</div>' +
-        '<img class="avatar-img" src="' + img + '" onerror="this.style.display=\'none\'" alt="">' +
-        '<div class="name-score">' +
-          '<span class="streamer-name">' + name + '</span>' +
-          '<span class="score-total">' + total.toLocaleString() + '</span><span class="score-label">pt</span>' +
-        '</div>' +
-        '<div class="round-scores">' +
-          '<div class="rs-badge"><div class="rs-r">1라운드</div><div class="rs-v">' + s1 + '</div></div>' +
-          '<div class="rs-badge"><div class="rs-r">2라운드</div><div class="rs-v">' + s2 + '</div></div>' +
-          '<div class="rs-badge rs-r3" style="' + r3d + '"><div class="rs-r">3라운드</div><div class="rs-v">' + s3 + '</div></div>' +
-        '</div>' +
-      '</div>' +
-      '<div class="track-wrap">' +
-        '<div class="track-bg">' +
-          '<div class="track-fill ' + rankFillClass[i] + '" style="width:' + pct + '%"></div>' +
-          '<div class="finish-line"></div>' +
-        '</div>' +
-        '<div class="runner-icon' + (rank===1?' is-first':'') + '" style="left:' + pct + '%">' +
-          '<img src="' + img + '" onerror="this.style.display=\'none\'" alt="">' +
-        '</div>' +
+      '<div class="race-top">'+
+        '<div class="rank-badge '+rankBadgeClass[i]+'">'+rank+'</div>'+
+        '<div class="avatar-wrap"><img class="avatar-img" id="avatar_'+i+'" src="" alt=""></div>'+
+        '<div class="name-score">'+
+          '<span class="streamer-name">'+name+'</span>'+
+          '<span class="score-total">'+total.toLocaleString()+'</span><span class="score-label">pt</span>'+
+        '</div>'+
+        '<div class="round-scores">'+
+          '<div class="rs-badge"><div class="rs-r">👑1라운드</div><div class="rs-v">'+s1+'</div></div>'+
+          '<div class="rs-badge"><div class="rs-r">👑2라운드</div><div class="rs-v">'+s2+'</div></div>'+
+          '<div class="rs-badge rs-r3" style="'+r3d+'"><div class="rs-r">👑3라운드</div><div class="rs-v">'+s3+'</div></div>'+
+        '</div>'+
+      '</div>'+
+      '<div class="track-wrap">'+
+        '<div class="track-bg">'+
+          '<div class="track-fill '+rankFillClass[i]+'" style="width:'+pct+'%"></div>'+
+          '<div class="finish-line"></div>'+
+        '</div>'+
+        '<div class="runner-icon'+(rank===1?' is-first':'')+'" style="left:'+pct+'%">'+
+          '<img id="runner_'+i+'" src="" alt="">'+
+        '</div>'+
       '</div>';
-
     section.appendChild(div);
     if (i < data.length-1) {
-      const hr = document.createElement("div");
-      hr.className = "row-divider";
-      section.appendChild(hr);
+      const hr = document.createElement("div"); hr.className = "row-divider"; section.appendChild(hr);
     }
+    startAvatarAnim(document.getElementById("avatar_"+i), name, rank);
+    startRunnerAnim(document.getElementById("runner_"+i), name);
   });
-
 }
 
 async function fetchData() {
@@ -444,6 +450,8 @@ setInterval(fetchData, 5000);
 </script>
 </body>
 </html>
+
+
 
 
 
