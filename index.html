@@ -14,31 +14,54 @@ body { background: transparent; font-family: 'Noto Sans KR', sans-serif; padding
   border-radius: 10px;
   border: 2px solid #c88a2a;
   box-shadow: 0 0 0 1px #6b4200, 0 0 24px rgba(200,138,42,0.3), inset 0 1px 0 rgba(255,220,100,0.12);
-  overflow: hidden;
+  overflow: visible;
   position: relative;
 }
 
-/* 헤더 */
 .header {
   position: relative; z-index: 1;
   display: flex; align-items: center; justify-content: space-between;
   padding: 5px 12px;
   background: linear-gradient(90deg, transparent, rgba(255,190,50,0.07), transparent);
   border-bottom: 1px solid #6b4200;
+  border-radius: 8px 8px 0 0;
 }
 .header-title { font-size: 13px; font-weight: 900; color: #ffe680; text-shadow: 0 0 10px rgba(255,200,0,0.5), 1px 1px 0 rgba(0,0,0,0.6); letter-spacing: 2px; }
 .header-glove { font-size: 13px; display: inline-block; animation: punch 0.6s ease infinite alternate; }
 @keyframes punch { from { transform: scale(1) rotate(-15deg); } to { transform: scale(1.2) rotate(10deg); } }
 
+.header-btns { display: flex; align-items: center; gap: 6px; }
+
 /* 자물쇠 버튼 */
 .lock-btn {
   background: none; border: none; cursor: pointer;
-  font-size: 18px; line-height: 1;
-  padding: 0 2px;
+  font-size: 18px; line-height: 1; padding: 0 2px;
   transition: transform 0.2s;
   filter: drop-shadow(0 0 4px rgba(255,200,0,0.3));
 }
 .lock-btn:hover { transform: scale(1.2); }
+
+/* 완주 버튼 */
+.finish-btn {
+  background: linear-gradient(135deg, #c87000, #ffcc00);
+  border: 1px solid #ffe080;
+  border-radius: 5px;
+  color: #3a1a00;
+  font-size: 10px; font-weight: 900;
+  padding: 3px 8px;
+  cursor: pointer;
+  font-family: 'Noto Sans KR', sans-serif;
+  letter-spacing: 0.5px;
+  transition: all 0.15s;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+}
+.finish-btn:hover { transform: scale(1.05); box-shadow: 0 0 10px rgba(255,200,0,0.5); }
+.finish-btn:active { transform: scale(0.97); }
+.finish-btn.active {
+  background: linear-gradient(135deg, #ff4040, #ff8800);
+  border-color: #ffaaaa;
+  color: #fff;
+}
 
 /* 라운드 요약 */
 .round-summary {
@@ -55,10 +78,10 @@ body { background: transparent; font-family: 'Noto Sans KR', sans-serif; padding
 .round-badge .r-label { font-size: 8px; color: #c88a2a; font-weight: 700; letter-spacing: 0.5px; }
 .round-badge .r-winner { font-size: 10px; color: #ffe680; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-/* 메인 레이스 영역 */
+/* 메인 레이스 */
 .race-section { position: relative; z-index: 1; padding: 4px 8px 2px; }
 
-.race-row { margin-bottom: 3px; }
+.race-row { margin-bottom: 3px; position: relative; }
 @keyframes fadeSlide { from { opacity:0; transform: translateX(-12px); } to { opacity:1; transform: translateX(0); } }
 .race-row:nth-child(1)  { animation: fadeSlide 0.35s 0.00s both; }
 .race-row:nth-child(3)  { animation: fadeSlide 0.35s 0.05s both; }
@@ -68,11 +91,7 @@ body { background: transparent; font-family: 'Noto Sans KR', sans-serif; padding
 .race-row:nth-child(11) { animation: fadeSlide 0.35s 0.25s both; }
 .race-row:nth-child(13) { animation: fadeSlide 0.35s 0.30s both; }
 
-/* 상단: 순위+이름+점수+라운드점수 */
-.race-top {
-  display: flex; align-items: center; gap: 5px;
-  margin-bottom: 1px;
-}
+.race-top { display: flex; align-items: center; gap: 5px; margin-bottom: 1px; }
 
 .rank-badge {
   width: 18px; height: 18px; border-radius: 50%;
@@ -84,8 +103,8 @@ body { background: transparent; font-family: 'Noto Sans KR', sans-serif; padding
 .rank-3 { background: radial-gradient(circle, #f0a070, #a04010); color: #2a0800; border-color: #cd7f32; }
 .rank-other { background: rgba(0,0,0,0.4); color: #a09060; border-color: #5a4020; }
 
-.avatar-wrap { width: 24px; height: 24px; flex-shrink: 0; }
-.avatar-wrap img { width: 24px; height: 24px; object-fit: cover; border-radius: 3px; border: 1px solid; display: block; }
+.avatar-wrap { width: 120px; height: 120px; flex-shrink: 0; }
+.avatar-wrap img { width: 120px; height: 120px; object-fit: cover; border-radius: 3px; border: 1px solid; display: block; }
 .rank-1-border { border-color: #ffcc00 !important; box-shadow: 0 0 4px rgba(255,200,0,0.6); }
 .rank-2-border { border-color: #b0bec5 !important; }
 .rank-3-border { border-color: #cd7f32 !important; }
@@ -103,16 +122,11 @@ body { background: transparent; font-family: 'Noto Sans KR', sans-serif; padding
 .rs-badge .rs-v { font-size: 9px; color: #e8d080; font-weight: 700; }
 
 /* 트랙 */
-.track-wrap {
-  position: relative;
-  height: 44px; /* 캐릭터가 위아래로 넘쳐도 괜찮게 overflow visible */
-  overflow: visible;
-}
+.track-wrap { position: relative; height: 44px; overflow: visible; }
 .track-bg {
   position: absolute; top: 50%; transform: translateY(-50%);
   left: 0; right: 0; height: 10px;
-  background: #1a1008; border-radius: 5px; border: 1px solid #4a3010;
-  overflow: hidden;
+  background: #1a1008; border-radius: 5px; border: 1px solid #4a3010; overflow: hidden;
 }
 .track-bg::after {
   content: ''; position: absolute; top: 50%; transform: translateY(-50%);
@@ -126,22 +140,17 @@ body { background: transparent; font-family: 'Noto Sans KR', sans-serif; padding
 .fill-o { background: linear-gradient(90deg, #3a2800, #6b4200); }
 .finish-line { position: absolute; right: 0; top: 0; height: 100%; width: 7px; background: repeating-linear-gradient(90deg, #fff 0px, #fff 2px, #000 2px, #000 4px); border-radius: 0 5px 5px 0; opacity: 0.5; z-index: 2; }
 
-/* 캐릭터: 네모칸 없음, gif만 원형 마스크 */
 .runner-icon {
   position: absolute; top: 50%; transform: translate(-50%, -50%);
-  width: 40px; height: 40px;
+  width: 120px; height: 120px;
   z-index: 10;
   transition: left 1s cubic-bezier(0.34,1.3,0.64,1);
   pointer-events: none;
 }
 .runner-icon img {
-  width: 40px; height: 40px;
-  object-fit: cover;
-  border-radius: 50%;
-  border: none;
-  background: transparent;
+  width: 120px; height: 120px; object-fit: cover;
+  border-radius: 50%; border: none; background: transparent;
   image-rendering: pixelated;
-  /* 네모칸 제거: 배경 없음, 테두리 없음 */
 }
 .runner-icon.is-first::after {
   content: '⭐'; position: absolute; top: -10px; left: 50%;
@@ -149,6 +158,85 @@ body { background: transparent; font-family: 'Noto Sans KR', sans-serif; padding
   animation: bounce 0.8s ease infinite alternate;
 }
 @keyframes bounce { from { transform: translateX(-50%) translateY(0); } to { transform: translateX(-50%) translateY(-3px); } }
+
+/* ===== 완주 이펙트 오버레이 ===== */
+#celebOverlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  overflow: hidden;
+}
+#celebOverlay.active { display: block; }
+
+/* 1등 확정 텍스트 */
+.celeb-text {
+  position: absolute;
+  top: 38%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 52px;
+  font-weight: 900;
+  color: #ffe680;
+  text-shadow:
+    0 0 20px rgba(255,200,0,1),
+    0 0 40px rgba(255,150,0,0.8),
+    3px 3px 0 #7a3a00,
+    6px 6px 0 rgba(0,0,0,0.5);
+  animation: textPop 0.5s cubic-bezier(0.34,1.6,0.64,1) both;
+  white-space: nowrap;
+  text-align: center;
+  z-index: 10001;
+}
+.celeb-winner {
+  display: block;
+  font-size: 30px;
+  color: #fff;
+  text-shadow: 0 0 10px rgba(255,220,100,0.8), 2px 2px 0 rgba(0,0,0,0.6);
+  margin-top: 6px;
+}
+@keyframes textPop {
+  from { transform: translate(-50%, -50%) scale(0.2) rotate(-10deg); opacity: 0; }
+  to   { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
+}
+
+/* 파티클 공통 */
+.particle { position: absolute; pointer-events: none; z-index: 10000; }
+
+/* 폭죽 */
+.firework {
+  width: 6px; height: 6px; border-radius: 50%;
+  animation: fwExplode var(--dur) ease-out forwards;
+}
+@keyframes fwExplode {
+  0%   { transform: translate(0,0) scale(1); opacity: 1; }
+  100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
+}
+
+/* 메소 (동전) */
+.meso {
+  font-size: 18px;
+  animation: mesoFall var(--dur) ease-in forwards;
+  line-height: 1;
+}
+@keyframes mesoFall {
+  0%   { transform: translateY(0) rotate(0deg) scale(1); opacity: 1; }
+  80%  { opacity: 1; }
+  100% { transform: translateY(var(--fall)) rotate(var(--rot)) scale(0.6); opacity: 0; }
+}
+
+/* 반짝이 */
+.sparkle {
+  font-size: 14px;
+  animation: sparkleFly var(--dur) ease-out forwards;
+}
+@keyframes sparkleFly {
+  0%   { transform: translate(0,0) scale(0) rotate(0deg); opacity: 1; }
+  50%  { transform: translate(var(--mx), var(--my)) scale(1.2) rotate(180deg); opacity: 1; }
+  100% { transform: translate(calc(var(--mx)*1.5), calc(var(--my)*1.5 + 40px)) scale(0) rotate(360deg); opacity: 0; }
+}
 
 .row-divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(107,66,0,0.3), transparent); margin-bottom: 3px; }
 
@@ -165,11 +253,23 @@ body { background: transparent; font-family: 'Noto Sans KR', sans-serif; padding
 </style>
 </head>
 <body>
+
+<!-- 완주 이펙트 오버레이 -->
+<div id="celebOverlay">
+  <div class="celeb-text" id="celebText">
+    🏆 1등 확정! 🏆
+    <span class="celeb-winner" id="celebWinner"></span>
+  </div>
+</div>
+
 <div class="panel" id="panel">
   <div class="header">
     <span class="header-glove">🥊</span>
     <span class="header-title">이라333배 개맞짱 컨텐츠</span>
-    <button class="lock-btn" id="lockBtn" onclick="toggleRound3()" title="3라운드 공개/숨김">🔒</button>
+    <div class="header-btns">
+      <button class="finish-btn" id="finishBtn" onclick="triggerFinish()">🏆 완주!</button>
+      <button class="lock-btn" id="lockBtn" onclick="toggleRound3()" title="3라운드 공개/숨김">🔒</button>
+    </div>
   </div>
 
   <div class="round-summary" id="roundSummary" style="display:none">
@@ -194,7 +294,11 @@ const SHEET_ID   = "18F2mJsiSWYbxSl97u4vKEX9pTuEOuoL1WaGE5PB_iJ0";
 const SHEET_NAME = "시트1!E12:I18";
 let prevJSON = "";
 let round3Revealed = false;
+let celebActive = false;
+let celebTimer = null;
+let currentFirstName = "";
 
+// ===== 자물쇠 =====
 function toggleRound3() {
   round3Revealed = !round3Revealed;
   const btn = document.getElementById("lockBtn");
@@ -210,6 +314,125 @@ function toggleRound3() {
   }
 }
 
+// ===== 완주 이펙트 =====
+function triggerFinish() {
+  if (celebActive) {
+    stopCeleb();
+    return;
+  }
+  celebActive = true;
+  document.getElementById("finishBtn").classList.add("active");
+  document.getElementById("finishBtn").textContent = "⏹ 종료";
+
+  // 1등 이름 표시
+  document.getElementById("celebWinner").textContent = currentFirstName || "";
+  document.getElementById("celebText").style.display = "";
+
+  const overlay = document.getElementById("celebOverlay");
+  overlay.classList.add("active");
+
+  // 폭죽 + 메소 반복 발사
+  spawnBurst();
+  const interval = setInterval(() => {
+    if (!celebActive) { clearInterval(interval); return; }
+    spawnBurst();
+  }, 600);
+
+  // 저장해뒀다가 stopCeleb에서 클리어
+  window._celebInterval = interval;
+
+  // 15초 후 자동 종료
+  celebTimer = setTimeout(stopCeleb, 15000);
+}
+
+function stopCeleb() {
+  celebActive = false;
+  clearInterval(window._celebInterval);
+  clearTimeout(celebTimer);
+  document.getElementById("celebOverlay").classList.remove("active");
+  document.getElementById("finishBtn").classList.remove("active");
+  document.getElementById("finishBtn").textContent = "🏆 완주!";
+  // 파티클 전부 제거
+  document.querySelectorAll(".particle").forEach(p => p.remove());
+}
+
+function rand(min, max) { return Math.random() * (max - min) + min; }
+
+function spawnBurst() {
+  const overlay = document.getElementById("celebOverlay");
+  const W = window.innerWidth;
+  const H = window.innerHeight;
+
+  // 폭죽 여러 군데
+  const fwColors = ["#ff4040","#ff9900","#ffe040","#40ff80","#40c0ff","#c040ff","#ff40c0","#ffffff"];
+  const spots = [
+    { x: W * 0.2, y: H * 0.25 },
+    { x: W * 0.5, y: H * 0.15 },
+    { x: W * 0.8, y: H * 0.25 },
+    { x: W * rand(0.1, 0.9), y: H * rand(0.1, 0.4) },
+  ];
+
+  spots.forEach(spot => {
+    const count = Math.floor(rand(10, 20));
+    for (let i = 0; i < count; i++) {
+      const el = document.createElement("div");
+      el.className = "particle firework";
+      const angle = rand(0, 360) * Math.PI / 180;
+      const dist  = rand(40, 130);
+      const dur   = rand(0.6, 1.2);
+      el.style.cssText = `
+        left: ${spot.x}px; top: ${spot.y}px;
+        background: ${fwColors[Math.floor(rand(0, fwColors.length))]};
+        --tx: ${Math.cos(angle) * dist}px;
+        --ty: ${Math.sin(angle) * dist}px;
+        --dur: ${dur}s;
+        width: ${rand(4,8)}px; height: ${rand(4,8)}px;
+      `;
+      overlay.appendChild(el);
+      setTimeout(() => el.remove(), dur * 1000 + 100);
+    }
+  });
+
+  // 메소 비 (상단에서 아래로)
+  const mesoEmojis = ["🪙","💰","💵","⭐","✨","🌟"];
+  const mesoCount = Math.floor(rand(8, 16));
+  for (let i = 0; i < mesoCount; i++) {
+    const el = document.createElement("div");
+    el.className = "particle meso";
+    const x   = rand(0, W);
+    const dur  = rand(1.2, 2.2);
+    const fall = rand(H * 0.5, H * 0.9);
+    el.style.cssText = `
+      left: ${x}px; top: ${-20}px;
+      --fall: ${fall}px;
+      --rot: ${rand(-360, 360)}deg;
+      --dur: ${dur}s;
+      animation-delay: ${rand(0, 0.4)}s;
+    `;
+    el.textContent = mesoEmojis[Math.floor(rand(0, mesoEmojis.length))];
+    overlay.appendChild(el);
+    setTimeout(() => el.remove(), (dur + 0.5) * 1000);
+  }
+
+  // 반짝이
+  const sparkCount = Math.floor(rand(6, 12));
+  for (let i = 0; i < sparkCount; i++) {
+    const el = document.createElement("div");
+    el.className = "particle sparkle";
+    const dur = rand(0.8, 1.6);
+    el.style.cssText = `
+      left: ${rand(0, W)}px; top: ${rand(H * 0.1, H * 0.7)}px;
+      --mx: ${rand(-80, 80)}px;
+      --my: ${rand(-80, 20)}px;
+      --dur: ${dur}s;
+    `;
+    el.textContent = ["✨","⭐","💫","🌟"][Math.floor(rand(0,4))];
+    overlay.appendChild(el);
+    setTimeout(() => el.remove(), dur * 1000 + 100);
+  }
+}
+
+// ===== 데이터 =====
 function getImgFile(name, rank) {
   if (name === "이라333") return rank <= 3 ? "/images/default.gif" : "/images/이라333.gif";
   return "/images/default.gif";
@@ -233,6 +456,12 @@ function render(data) {
   const json = JSON.stringify(data);
   if (json === prevJSON) return;
   prevJSON = json;
+
+  // 1등 이름 업데이트
+  currentFirstName = data[0]["🎙️스트리머"] || "";
+  if (celebActive) {
+    document.getElementById("celebWinner").textContent = currentFirstName;
+  }
 
   const maxScore = Math.max(...data.map(r => Number(r["📝최종 점수"]) || 0));
 
@@ -320,6 +549,7 @@ setInterval(fetchData, 5000);
 </script>
 </body>
 </html>
+
 
 
 
