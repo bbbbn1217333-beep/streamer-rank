@@ -109,6 +109,92 @@ body { background: transparent; font-family: 'Noto Sans KR', sans-serif; padding
 .rs-badge { background: rgba(0,0,0,0.4); border: 1px solid #5a2020; border-radius: 4px; padding: 1px 7px; text-align: center; min-width: 46px; }
 .rs-badge .rs-r { font-size: 11px; color: #c82a2a; font-weight: 700; }
 .rs-badge .rs-v { font-size: 18px; color: #ffb3b3; font-weight: 900; }
+
+/* ── 3라운드 뱃지 임팩트 이펙트 (GPU 가속) ── */
+.rs-badge.rs-r3 {
+  position: relative;
+  will-change: transform, opacity;
+  overflow: hidden;
+}
+
+@keyframes r3FlyIn {
+  0%   { transform: translateX(80px) scale(1.8); opacity: 0; filter: blur(4px) brightness(4); }
+  45%  { transform: translateX(-5px) scale(0.93); opacity: 1; filter: blur(0) brightness(2.5); }
+  62%  { transform: translateX(3px) scale(1.06); filter: brightness(1.8); }
+  78%  { transform: translateX(-1px) scale(0.98); filter: brightness(1.3); }
+  90%  { transform: translateX(1px) scale(1.01); }
+  100% { transform: translateX(0) scale(1); filter: brightness(1); }
+}
+
+@keyframes r3Flash {
+  0%   { background: rgba(255,60,60,0.8);  border-color: #fff;    box-shadow: 0 0 20px 6px rgba(255,50,50,0.9), 0 0 40px 12px rgba(200,0,0,0.6); }
+  25%  { background: rgba(150,0,0,0.7);    border-color: #ff8080; box-shadow: 0 0 14px 4px rgba(255,40,40,0.7); }
+  60%  { background: rgba(70,0,0,0.55);    border-color: #ff3333; box-shadow: 0 0 10px 3px rgba(255,30,30,0.55); }
+  100% { background: rgba(45,0,0,0.5);     border-color: #ff1f1f; box-shadow: 0 0 7px 2px rgba(255,20,20,0.45), inset 0 0 8px rgba(255,20,20,0.12); }
+}
+
+.rs-badge.rs-r3.r3-impact::before {
+  content: '';
+  position: absolute; left: -10%; right: -10%; top: -2px;
+  height: 110%;
+  background: linear-gradient(180deg,
+    rgba(255,100,100,0.0) 0%,
+    rgba(255,80,80,0.5)  45%,
+    rgba(255,200,200,0.9) 50%,
+    rgba(255,80,80,0.5)  55%,
+    rgba(255,100,100,0.0) 100%
+  );
+  transform: translateY(-100%);
+  animation: r3Sweep 0.35s ease-out forwards;
+  z-index: 5; pointer-events: none;
+}
+@keyframes r3Sweep {
+  from { transform: translateY(-100%); }
+  to   { transform: translateY(200%); }
+}
+
+@keyframes r3TextPop {
+  0%   { opacity:0; transform:scale(0.4); filter:blur(3px); }
+  55%  { opacity:1; transform:scale(1.2); filter:blur(0); }
+  80%  { transform:scale(0.96); }
+  100% { transform:scale(1); opacity:1; }
+}
+
+.rs-badge.rs-r3.r3-impact {
+  animation: r3FlyIn 0.5s cubic-bezier(0.22,1,0.36,1) forwards,
+             r3Flash 0.7s 0.12s ease forwards;
+}
+.rs-badge.rs-r3.r3-impact .rs-r { animation: r3TextPop 0.38s 0.18s cubic-bezier(0.34,1.6,0.64,1) both; }
+.rs-badge.rs-r3.r3-impact .rs-v { animation: r3TextPop 0.42s 0.25s cubic-bezier(0.34,1.6,0.64,1) both; }
+
+@keyframes r3Sizzle {
+  0%,100% { box-shadow: 0 0 7px 2px rgba(255,25,25,0.45), inset 0 0 8px rgba(255,20,20,0.12); }
+  40%     { box-shadow: 0 0 11px 3px rgba(255,50,50,0.65), inset 0 0 12px rgba(255,40,40,0.2); }
+}
+.rs-badge.rs-r3.r3-done {
+  border-color: #ff1f1f;
+  background: rgba(45,0,0,0.5);
+  animation: r3Sizzle 2.2s ease-in-out infinite;
+}
+.rs-badge.rs-r3.r3-done .rs-r { color: #ff5050; }
+.rs-badge.rs-r3.r3-done .rs-v { color: #ffd5d5; text-shadow: 0 0 7px rgba(255,70,70,0.65); }
+
+@keyframes r3BadgeHeaderIn {
+  0%   { transform: scaleX(0); opacity:0; filter: blur(4px) brightness(4); }
+  50%  { transform: scaleX(1.08); opacity:1; filter: brightness(2.5); }
+  70%  { transform: scaleX(0.97); filter: brightness(1.6); }
+  85%  { transform: scaleX(1.02); }
+  100% { transform: scaleX(1); filter: brightness(1); }
+}
+#r3badge.r3-header-in {
+  animation: r3BadgeHeaderIn 0.55s cubic-bezier(0.22,1,0.36,1) forwards,
+             r3Flash 0.65s 0.12s ease forwards;
+}
+#r3badge.r3-header-done {
+  border-color: #ff1f1f !important;
+  animation: r3Sizzle 2.5s ease-in-out infinite !important;
+}
+#r3badge.r3-header-done .r-label { color: #ff5050; text-shadow: 0 0 8px rgba(255,50,50,0.6); }
 .track-wrap { position: relative; height: 18px; overflow: visible; }
 .track-bg {
   position: absolute; top: 50%; transform: translateY(-50%);
@@ -229,10 +315,455 @@ body { background: transparent; font-family: 'Noto Sans KR', sans-serif; padding
 @keyframes pulse { 0%,100% { opacity:1; transform:scale(1); } 50% { opacity:0.5; transform:scale(0.8); } }
 .live-text { font-size: 11px; color: #ff4040; font-weight: 900; letter-spacing: 2px; }
 .empty { padding: 14px; text-align: center; color: #6b0000; font-size: 12px; }
+
+/* ==============================
+   히든 라운드 컷씬 스타일
+============================== */
+#hiddenCutscene {
+  display: none;
+  position: absolute;
+  inset: 0;
+  z-index: 99999;
+  pointer-events: none;
+  overflow: hidden;
+  border-radius: 10px;
+}
+#hiddenCutscene.active {
+  display: block;
+}
+
+/* 어둠 배경 */
+.cs-backdrop {
+  position: absolute; inset: 0;
+  background: #000;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+#hiddenCutscene.active .cs-backdrop {
+  opacity: 1;
+}
+
+/* 영화 letterbox 바 */
+.cs-bar-top, .cs-bar-bottom {
+  position: absolute; left: 0; right: 0;
+  background: #000;
+  height: 0;
+  transition: height 0.5s cubic-bezier(0.77,0,0.18,1);
+  z-index: 2;
+}
+.cs-bar-top { top: 0; }
+.cs-bar-bottom { bottom: 0; }
+#hiddenCutscene.bars-in .cs-bar-top,
+#hiddenCutscene.bars-in .cs-bar-bottom {
+  height: 18vh;
+}
+
+/* 균열 SVG 레이어 */
+.cs-cracks {
+  position: absolute; inset: 0;
+  z-index: 3;
+  opacity: 0;
+}
+.cs-cracks.show {
+  animation: crackReveal 0.6s ease-out forwards;
+}
+@keyframes crackReveal {
+  0%   { opacity: 0; filter: brightness(3); }
+  30%  { opacity: 1; filter: brightness(2); }
+  100% { opacity: 1; filter: brightness(1); }
+}
+
+/* 경고 비프 라인 */
+.cs-scanline {
+  position: absolute; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #ff2222, #ff8888, #ff2222, transparent);
+  box-shadow: 0 0 12px rgba(255,30,30,0.8);
+  top: 50%;
+  opacity: 0;
+  z-index: 4;
+  transform: scaleX(0);
+}
+.cs-scanline.show {
+  animation: scanlineExpand 0.5s 0.1s cubic-bezier(0.22,1,0.36,1) forwards;
+}
+@keyframes scanlineExpand {
+  0%   { opacity:1; transform: scaleX(0); }
+  70%  { opacity:1; transform: scaleX(1.05); }
+  100% { opacity:0.7; transform: scaleX(1); }
+}
+
+/* 메인 컨텐츠 박스 */
+.cs-content {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%) scale(0.95);
+  z-index: 10;
+  display: flex; flex-direction: column; align-items: center; gap: 12px;
+  width: 100%;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ??? 텍스트 -> 3라운드 전환 */
+.cs-mystery {
+  font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+  font-size: 20px; font-weight: 900; letter-spacing: 8px;
+  color: #ff3333;
+  text-shadow: 0 0 20px rgba(255,50,50,1), 0 0 40px rgba(255,0,0,0.6);
+  text-transform: uppercase;
+  position: relative;
+}
+
+.cs-title-wrap {
+  position: relative; display: flex; align-items: center; justify-content: center;
+}
+
+/* 메인 타이틀 */
+.cs-main-title {
+  font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+  font-size: clamp(30px, 7vw, 56px);
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: 6px;
+  line-height: 1;
+  text-align: center;
+  opacity: 0;
+  clip-path: inset(0 100% 0 0);
+}
+.cs-main-title.reveal {
+  animation: titleWipe 0.8s 0.1s cubic-bezier(0.77,0,0.18,1) forwards;
+}
+@keyframes titleWipe {
+  0%   { opacity:1; clip-path: inset(0 100% 0 0); }
+  100% { opacity:1; clip-path: inset(0 0% 0 0); }
+}
+
+/* 글로우 강조 */
+.cs-main-title span.highlight {
+  color: #ff3333;
+  text-shadow:
+    0 0 10px rgba(255,50,50,1),
+    0 0 30px rgba(255,0,0,0.9),
+    0 0 60px rgba(200,0,0,0.6),
+    2px 2px 0 #7a0000;
+}
+
+/* ── 글자별 불꽃 소환 이펙트 ── */
+.cs-char-wrap {
+  display: inline-flex; align-items: flex-end; justify-content: center;
+  gap: 2px; flex-wrap: nowrap;
+}
+
+.cs-char {
+  display: inline-block;
+  font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+  font-size: clamp(28px, 6.5vw, 52px);
+  font-weight: 900;
+  line-height: 1;
+  opacity: 0;
+  will-change: transform, opacity, filter;
+}
+
+/* 일반 글자: 흰색 */
+.cs-char.white {
+  color: #fff;
+  text-shadow: 0 0 10px rgba(255,255,255,0.4);
+}
+
+/* 강조 글자(3라운드): 불꽃 빨강 */
+.cs-char.fire {
+  color: #ff3333;
+  text-shadow:
+    0 0 8px #ff0000,
+    0 0 20px rgba(255,50,0,0.9),
+    0 0 40px rgba(200,0,0,0.6);
+}
+
+/* 솟구치며 등장 */
+@keyframes charRise {
+  0%   {
+    opacity: 0;
+    transform: translateY(40px) rotate(var(--tilt)) scale(0.3);
+    filter: blur(6px) brightness(6);
+    text-shadow: 0 0 30px #ff4400, 0 0 60px #ff0000;
+  }
+  35%  {
+    opacity: 1;
+    transform: translateY(-10px) rotate(calc(var(--tilt) * -0.4)) scale(1.25);
+    filter: blur(1px) brightness(3);
+  }
+  55%  {
+    transform: translateY(4px) rotate(calc(var(--tilt) * 0.1)) scale(0.95);
+    filter: blur(0) brightness(1.8);
+  }
+  72%  {
+    transform: translateY(-3px) scale(1.05);
+    filter: brightness(1.4);
+  }
+  88%  { transform: translateY(1px) scale(0.99); filter: brightness(1.1); }
+  100% { transform: translateY(0) rotate(0deg) scale(1); opacity: 1; filter: brightness(1); }
+}
+
+/* 강조 글자는 더 화끈하게 추가 잔광 */
+@keyframes charFireSettle {
+  0%   { text-shadow: 0 0 30px #ff2200, 0 0 60px #ff0000, 0 0 90px rgba(255,50,0,0.8); }
+  40%  { text-shadow: 0 0 16px #ff3300, 0 0 32px rgba(255,50,0,0.7), 0 0 60px rgba(200,0,0,0.5); }
+  100% {
+    text-shadow:
+      0 0 8px #ff0000,
+      0 0 20px rgba(255,50,0,0.9),
+      0 0 40px rgba(200,0,0,0.6);
+  }
+}
+
+.cs-char.fire.risen {
+  animation: charFireSettle 0.8s ease forwards;
+}
+
+/* 불씨 파티클 (CSS only, ::after pseudo) */
+.cs-char.fire::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 50%;
+  width: 4px; height: 4px;
+  background: #ff6600;
+  border-radius: 50%;
+  transform: translateX(-50%) translateY(0);
+  opacity: 0;
+  pointer-events: none;
+}
+.cs-char.fire.sparking::after {
+  animation: emberFloat 0.6s ease-out forwards;
+}
+@keyframes emberFloat {
+  0%   { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateX(calc(-50% + var(--ex,0px))) translateY(-30px) scale(0.2); }
+}
+
+/* 서브 설명 */
+.cs-subtitle {
+  font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+  font-size: 30px; font-weight: 700; letter-spacing: 4px;
+  color: #ffaaaa;
+  text-shadow: 0 0 10px rgba(255,100,100,0.8);
+  opacity: 0;
+  transform: translateY(6px);
+}
+
+/* 타이핑 커서 */
+.cs-cursor {
+  display: inline-block;
+  width: 2px; height: 1em; vertical-align: middle;
+  background: #ff3333;
+  animation: blink 0.6s step-end infinite;
+  margin-left: 2px;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+/* 빛 폭발 */
+.cs-burst {
+  position: absolute; inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  opacity: 0;
+}
+.cs-burst.explode {
+  animation: burstFlash 0.7s ease-out forwards;
+}
+@keyframes burstFlash {
+  0%   { opacity:1; background: radial-gradient(circle at 50% 50%, rgba(255,80,80,0.95) 0%, rgba(200,0,0,0.7) 30%, transparent 70%); }
+  40%  { opacity:0.6; }
+  100% { opacity:0; background: radial-gradient(circle at 50% 50%, transparent 0%, transparent 100%); }
+}
+
+/* 수평 빔 */
+.cs-beams {
+  position: absolute; inset: 0; z-index: 6; pointer-events: none; overflow: hidden;
+}
+.cs-beam {
+  position: absolute; top: 50%; left: 50%;
+  width: 120%; height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(255,80,80,0.9), rgba(255,200,200,1), rgba(255,80,80,0.9), transparent);
+  transform-origin: center;
+  opacity: 0;
+}
+.cs-beam.shoot {
+  animation: beamShoot 0.6s ease-out forwards;
+}
+@keyframes beamShoot {
+  0%   { opacity:1; transform: translate(-50%, -50%) scaleX(0) rotate(var(--angle)); }
+  60%  { opacity:0.8; transform: translate(-50%, -50%) scaleX(1) rotate(var(--angle)); }
+  100% { opacity:0; transform: translate(-50%, -50%) scaleX(1.2) rotate(var(--angle)); }
+}
+
+/* 파티클 별 */
+.cs-star {
+  position: absolute; z-index: 8;
+  font-size: 16px;
+  pointer-events: none;
+  animation: starFly var(--dur) ease-out forwards;
+}
+@keyframes starFly {
+  0%   { opacity:1; transform: translate(0,0) scale(0) rotate(0deg); }
+  30%  { opacity:1; transform: translate(var(--sx), var(--sy)) scale(1.4) rotate(180deg); }
+  100% { opacity:0; transform: translate(calc(var(--sx)*1.8), calc(var(--sy)*1.8 + 40px)) scale(0) rotate(360deg); }
+}
+
+/* 글리치 효과 */
+@keyframes glitch1 {
+  0%,100% { clip-path: inset(0 0 95% 0); transform: translate(-2px, 0); }
+  50%      { clip-path: inset(30% 0 50% 0); transform: translate(2px, 0); }
+}
+@keyframes glitch2 {
+  0%,100% { clip-path: inset(60% 0 10% 0); transform: translate(2px, 0); }
+  50%      { clip-path: inset(80% 0 5% 0); transform: translate(-2px, 0); }
+}
+.cs-glitch {
+  position: relative;
+}
+.cs-glitch::before,
+.cs-glitch::after {
+  content: attr(data-text);
+  position: absolute; top: 0; left: 0; width: 100%;
+  opacity: 0;
+}
+.cs-glitch.glitching::before {
+  color: #ff0040; opacity: 0.7;
+  animation: glitch1 0.15s steps(2) 3;
+}
+.cs-glitch.glitching::after {
+  color: #00ffff; opacity: 0.4;
+  animation: glitch2 0.15s steps(2) 3;
+}
+
+/* 잠금해제 아이콘 */
+.cs-lock-icon {
+  font-size: 40px;
+  display: block;
+  animation: lockShake 0.5s ease forwards;
+  opacity: 0;
+}
+.cs-lock-icon.show {
+  opacity: 1;
+}
+@keyframes lockShake {
+  0%   { transform: scale(0) rotate(-30deg); opacity:0; }
+  50%  { transform: scale(1.3) rotate(10deg); opacity:1; }
+  70%  { transform: scale(0.9) rotate(-5deg); }
+  100% { transform: scale(1) rotate(0deg); opacity:1; }
+}
+
+/* 경고 텍스트 타이핑 */
+.cs-warning {
+  font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+  font-size: 20px; font-weight: 700; letter-spacing: 3px;
+  color: #ff6666; opacity: 0;
+  text-transform: uppercase;
+}
+.cs-warning.show {
+  animation: warnFade 0.3s ease forwards;
+}
+@keyframes warnFade { to { opacity:0.7; } }
+
+/* 히든 뱃지 */
+.cs-hidden-badge {
+  background: linear-gradient(135deg, #2a0000, #5a0000);
+  border: 2px solid #ff3333;
+  border-radius: 8px;
+  padding: 6px 24px;
+  box-shadow: 0 0 20px rgba(255,50,50,0.5), inset 0 1px 0 rgba(255,100,100,0.2);
+  opacity: 0;
+}
+.cs-hidden-badge.show {
+  animation: badgePop 0.5s 0.8s cubic-bezier(0.34,1.6,0.64,1) forwards;
+}
+@keyframes badgePop {
+  from { opacity:0; transform: scale(0.5) rotate(-5deg); }
+  to   { opacity:1; transform: scale(1) rotate(0deg); }
+}
+.cs-hidden-badge-text {
+  font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+  font-size: 20px; font-weight: 900; letter-spacing: 5px;
+  color: #ffaaaa;
+  text-shadow: 0 0 8px rgba(255,100,100,0.8);
+}
+
+/* 화면 진동 */
+@keyframes screenShake {
+  0%,100% { transform: translate(0,0); }
+  15% { transform: translate(-4px, 2px); }
+  30% { transform: translate(4px, -3px); }
+  45% { transform: translate(-3px, 3px); }
+  60% { transform: translate(3px, -2px); }
+  75% { transform: translate(-2px, 2px); }
+  90% { transform: translate(2px, -1px); }
+}
+.panel.shaking {
+  animation: screenShake 0.5s ease forwards;
+}
+
+/* 최종 페이드아웃 */
+.cs-fadeout {
+  position: absolute; inset: 0; z-index: 20;
+  background: #000; opacity: 0; pointer-events: none;
+}
+.cs-fadeout.do-fade {
+  animation: fadeToBlack 0.5s ease forwards;
+}
+@keyframes fadeToBlack {
+  from { opacity:0; } to { opacity:1; }
+}
 </style>
 </head>
 <body>
 <div class="panel" id="panel">
+  <div id="hiddenCutscene">
+    <div class="cs-backdrop"></div>
+    <div class="cs-bar-top"></div>
+    <div class="cs-bar-bottom"></div>
+    <div class="cs-scanline"></div>
+    <div class="cs-burst"></div>
+    <div class="cs-beams" id="csBeams"></div>
+    <svg class="cs-cracks" id="csCracks" viewBox="0 0 620 400" preserveAspectRatio="xMidYMid slice">
+      <g stroke="#ff3333" stroke-width="1.5" fill="none" opacity="0.7">
+        <path d="M310,200 L270,140 L240,100"/>
+        <path d="M310,200 L350,130 L380,80"/>
+        <path d="M310,200 L240,230 L180,280"/>
+        <path d="M310,200 L380,260 L440,300"/>
+        <path d="M310,200 L290,260 L260,340"/>
+        <path d="M310,200 L330,270 L360,350"/>
+        <path d="M270,140 L230,160 L200,120"/>
+        <path d="M350,130 L390,150 L420,110"/>
+        <path d="M240,230 L210,210 L170,240"/>
+        <path d="M380,260 L400,240 L450,260"/>
+      </g>
+      <g stroke="#ff6666" stroke-width="0.8" fill="none" opacity="0.4">
+        <path d="M270,140 L250,125 L220,130"/>
+        <path d="M350,130 L370,118 L400,125"/>
+        <path d="M240,230 L220,250 L195,265"/>
+        <path d="M380,260 L410,275 L430,270"/>
+      </g>
+      <circle cx="310" cy="200" r="8" fill="#ff3333" opacity="0.9" filter="url(#csglow)"/>
+      <defs>
+        <filter id="csglow">
+          <feGaussianBlur stdDeviation="6" result="coloredBlur"/>
+          <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+    </svg>
+    <div class="cs-content" id="csContent">
+      <span class="cs-lock-icon" id="csLockIcon">🔓</span>
+      <div class="cs-warning" id="csWarning">⚠ HIDDEN STAGE UNLOCKED ⚠</div>
+      <div class="cs-hidden-badge" id="csBadge"><div class="cs-hidden-badge-text">✦ HIDDEN ROUND ✦</div></div>
+      <div class="cs-mystery" id="csMystery"><span id="csTypingText"></span><span class="cs-cursor" id="csCursor"></span></div>
+      <div class="cs-title-wrap">
+        <div id="csMainTitle" class="cs-char-wrap"></div>
+      </div>
+      <div class="cs-subtitle" id="csSubtitle">숨겨진 최후의 라운드가 공개됩니다</div>
+    </div>
+    <div class="cs-fadeout" id="csFadeout"></div>
+  </div>
   <div id="celebOverlay">
     <div class="celeb-box">
       <img class="celeb-char" id="celebChar" src="" alt="">
@@ -265,6 +796,8 @@ body { background: transparent; font-family: 'Noto Sans KR', sans-serif; padding
     <span class="live-text">IRA333</span>
   </div>
 </div>
+
+
 
 <script>
 const STREAMERS = {
@@ -352,13 +885,270 @@ let celebTimer = null;
 let currentFirstName = "";
 let finishTriggered = false;
 let finishApplied = false;
+let cutscenePlaying = false;
+
+/* ===== 히든 라운드 컷씬 ===== */
+
+function playCutscene(onComplete) {
+  if (cutscenePlaying) return;
+  cutscenePlaying = true;
+
+  const cs        = document.getElementById("hiddenCutscene");
+  const backdrop  = cs.querySelector(".cs-backdrop");
+  const scanline  = cs.querySelector(".cs-scanline");
+  const burst     = cs.querySelector(".cs-burst");
+  const cracks    = document.getElementById("csCracks");
+  const content   = document.getElementById("csContent");
+  const lockIcon  = document.getElementById("csLockIcon");
+  const warning   = document.getElementById("csWarning");
+  const badge     = document.getElementById("csBadge");
+  const typing    = document.getElementById("csTypingText");
+  const cursor    = document.getElementById("csCursor");
+  const mainTitle = document.getElementById("csMainTitle");
+  const subtitle  = document.getElementById("csSubtitle");
+  const fadeout   = document.getElementById("csFadeout");
+  const beamsWrap = document.getElementById("csBeams");
+
+  // ── 완전 초기화 ──
+  cs.style.display = "block";
+  backdrop.style.opacity = "0";
+  scanline.style.animation = "none"; scanline.style.opacity = "0"; scanline.style.transform = "scaleX(0)";
+  burst.style.animation = "none"; burst.style.opacity = "0";
+  cracks.style.animation = "none"; cracks.style.opacity = "0";
+  content.style.animation = "none"; content.style.opacity = "0"; content.style.transform = "translate(-50%,-50%) scale(0.95)";
+  lockIcon.style.animation = "none"; lockIcon.style.opacity = "0";
+  warning.style.animation = "none"; warning.style.opacity = "0";
+  badge.style.animation = "none"; badge.style.opacity = "0";
+  mainTitle.style.animation = "none"; mainTitle.style.opacity = "0"; mainTitle.innerHTML = "";
+  subtitle.style.animation = "none"; subtitle.style.opacity = "0";
+  fadeout.style.animation = "none"; fadeout.style.opacity = "0";
+  typing.textContent = "";
+  cursor.style.display = "none";
+  beamsWrap.innerHTML = "";
+  cs.classList.remove("bars-in");
+
+  // ── 유틸 ──
+  function go(el, props) { Object.assign(el.style, props); }
+  function transition(el, duration, props) {
+    el.style.transition = "all " + duration + "ms ease";
+    Object.assign(el.style, props);
+  }
+
+  let t = 50;
+
+  // 1) 배경 어둠
+  setTimeout(() => {
+    transition(backdrop, 300, { opacity: "1" });
+  }, t); t += 300;
+
+  // 2) 진동 (CSS class)
+  setTimeout(() => {
+    document.getElementById("panel").classList.add("shaking");
+    setTimeout(() => document.getElementById("panel").classList.remove("shaking"), 500);
+    // 레터박스
+    cs.classList.add("bars-in");
+  }, t); t += 400;
+
+  // 3) 스캔라인
+  setTimeout(() => {
+    go(scanline, { transition: "none", opacity: "1", transform: "scaleX(0)" });
+    requestAnimationFrame(() => {
+      scanline.style.transition = "transform 0.4s cubic-bezier(0.22,1,0.36,1), opacity 0.3s";
+      scanline.style.transform = "scaleX(1)";
+    });
+  }, t); t += 350;
+
+  // 4) 균열
+  setTimeout(() => {
+    cracks.style.transition = "opacity 0.4s ease";
+    cracks.style.opacity = "1";
+  }, t); t += 200;
+
+  // 5) 빛 폭발 + 빔
+  setTimeout(() => {
+    // burst
+    go(burst, { opacity: "1", background: "radial-gradient(circle at 50% 50%, rgba(255,80,80,0.95) 0%, rgba(200,0,0,0.7) 30%, transparent 70%)" });
+    setTimeout(() => { transition(burst, 600, { opacity: "0" }); }, 100);
+
+    // beams
+    ["0deg","45deg","90deg","135deg","160deg","20deg"].forEach((angle, i) => {
+      const beam = document.createElement("div");
+      beam.className = "cs-beam";
+      beam.style.cssText = "--angle:" + angle + ";animation-delay:" + (i * 0.04) + "s;";
+      beamsWrap.appendChild(beam);
+      requestAnimationFrame(() => requestAnimationFrame(() => beam.classList.add("shoot")));
+    });
+
+    // 별 파티클
+    const starEmojis = ["⭐","✨","💫","🌟","❤️‍🔥","🔥","💥"];
+    for (let i = 0; i < 10; i++) {
+      const star = document.createElement("div");
+      star.className = "cs-star";
+      const sx = (Math.random() - 0.5) * 280;
+      const sy = (Math.random() - 0.5) * 180;
+      const dur = 0.8 + Math.random() * 0.5;
+      star.style.cssText = "left:50%;top:50%;--sx:"+sx+"px;--sy:"+sy+"px;--dur:"+dur+"s;animation-delay:"+(i*0.05)+"s;";
+      star.textContent = starEmojis[Math.floor(Math.random()*starEmojis.length)];
+      cs.appendChild(star);
+      setTimeout(() => { if(star.parentNode) star.remove(); }, (dur + 0.3 + i*0.05) * 1000);
+    }
+  }, t); t += 250;
+
+  // 6) 콘텐츠 영역 페이드인
+  setTimeout(() => {
+    go(content, { transition: "opacity 0.4s ease, transform 0.4s ease", opacity: "1", transform: "translate(-50%,-50%) scale(1)" });
+  }, t); t += 200;
+
+  // 7) 자물쇠 아이콘
+  setTimeout(() => {
+    go(lockIcon, { opacity: "1", animation: "lockShake 0.5s ease forwards" });
+  }, t); t += 550;
+
+  // 8) 경고 텍스트
+  setTimeout(() => {
+    go(warning, { transition: "opacity 0.3s ease", opacity: "0.7" });
+  }, t); t += 450;
+
+  // 9) HIDDEN ROUND 배지
+  setTimeout(() => {
+    go(badge, { animation: "badgePop 0.5s cubic-bezier(0.34,1.6,0.64,1) forwards", opacity: "1" });
+  }, t); t += 600;
+
+  // 10) 타이핑
+  setTimeout(() => {
+    const typeText = "HIDDEN ROUND ACTIVATED";
+    cursor.style.display = "inline-block";
+    let i = 0;
+    const iv = setInterval(() => {
+      if (i < typeText.length) {
+        typing.textContent += typeText[i++];
+      } else {
+        clearInterval(iv);
+        setTimeout(() => { cursor.style.display = "none"; }, 400);
+      }
+    }, 55);
+  }, t); t += typeLength(22, 55) + 500;
+
+  // 11) 글자별 불꽃 소환
+  setTimeout(() => {
+    // 🔥 3라운드 공개 🔥 — fire 글자: 3라운드
+    const parts = [
+      { text: "⭐", type: "white" },
+      { text: " ", type: "white" },
+      { text: "3", type: "fire" },
+      { text: "라", type: "fire" },
+      { text: "운", type: "fire" },
+      { text: "드", type: "fire" },
+      { text: " ", type: "white" },
+      { text: "공", type: "white" },
+      { text: "개", type: "white" },
+      { text: " ", type: "white" },
+      { text: "⭐", type: "white" },
+    ];
+    mainTitle.innerHTML = "";
+    mainTitle.style.opacity = "1";
+    const tilts = [-12,-8,10,-6,14,-10,8,-4,12,-8,10];
+    parts.forEach((p, i) => {
+      const span = document.createElement("span");
+      span.className = "cs-char " + p.type;
+      span.textContent = p.text;
+      span.style.setProperty("--tilt", (tilts[i] || 0) + "deg");
+      mainTitle.appendChild(span);
+      // 순차 등장
+      setTimeout(() => {
+        span.style.animation = "charRise 0.55s cubic-bezier(0.22,1,0.36,1) forwards";
+        if (p.type === "fire") {
+          setTimeout(() => span.classList.add("risen"), 500);
+        }
+      }, i * 60);
+    });
+  }, t); t += parts_duration(11, 60, 550);
+
+  function parts_duration(count, interval, animDur) { return count * interval + animDur + 100; }
+
+  // 12) 부제
+  setTimeout(() => {
+    go(subtitle, { transition: "opacity 0.5s ease, transform 0.5s ease", opacity: "0.85", transform: "translateY(0)" });
+    subtitle.style.transform = "translateY(6px)";
+    requestAnimationFrame(() => {
+      subtitle.style.transform = "translateY(0)";
+    });
+  }, t); t += 1600;
+
+  // 13) 페이드아웃
+  setTimeout(() => {
+    go(fadeout, { transition: "opacity 0.5s ease", opacity: "1" });
+  }, t); t += 600;
+
+  // 14) 종료
+  setTimeout(() => {
+    cs.style.display = "none";
+    cs.classList.remove("bars-in");
+    cutscenePlaying = false;
+    if (onComplete) onComplete();
+  }, t);
+}
+
+function typeLength(chars, interval) { return chars * interval; }
+
+
+
+function revealR3Badges() {
+  // 상단 r3badge
+  const r3b = document.getElementById("r3badge");
+  r3b.style.display = "";
+  r3b.classList.remove("r3-header-done", "r3-header-in");
+  void r3b.offsetWidth;
+  r3b.classList.add("r3-header-in");
+  setTimeout(() => {
+    r3b.classList.remove("r3-header-in");
+    r3b.classList.add("r3-header-done");
+  }, 700);
+
+  // 각 플레이어 뱃지 — 순차 등장 (DOM 조작 없음, CSS만)
+  const badges = document.querySelectorAll(".rs-badge.rs-r3");
+  badges.forEach((el, i) => {
+    el.classList.remove("r3-impact", "r3-done");
+    el.style.display = "";
+    el.style.opacity = "0";
+    setTimeout(() => {
+      el.style.opacity = "";
+      void el.offsetWidth;
+      el.classList.add("r3-impact");
+      setTimeout(() => {
+        el.classList.remove("r3-impact");
+        el.classList.add("r3-done");
+      }, 750);
+    }, i * 110);
+  });
+}
+
+
+function hideR3Badges() {
+  const r3b = document.getElementById("r3badge");
+  r3b.style.display = "none";
+  r3b.classList.remove("r3-header-in", "r3-header-done");
+  document.querySelectorAll(".rs-badge.rs-r3").forEach(el => {
+    el.style.display = "none";
+    el.classList.remove("r3-impact", "r3-done", "locked", "decoding", "decoded");
+  });
+}
 
 function toggleRound3() {
-  round3Revealed = !round3Revealed;
-  document.getElementById("lockBtn").textContent = round3Revealed ? "🔓" : "🔒";
-  document.getElementById("r3badge").style.display = round3Revealed ? "" : "none";
-  document.querySelectorAll(".rs-r3").forEach(el => el.style.display = round3Revealed ? "" : "none");
+  if (round3Revealed) {
+    round3Revealed = false;
+    document.getElementById("lockBtn").textContent = "🔒";
+    hideR3Badges();
+  } else {
+    playCutscene(() => {
+      round3Revealed = true;
+      document.getElementById("lockBtn").textContent = "🔓";
+      revealR3Badges();
+    });
+  }
 }
+
+
 
 function animateRunnerToEnd(runnerEl, duration) {
   const startPct = 0;
@@ -630,7 +1420,6 @@ function render(data) {
     const s2 = row["👑2라운드"] || "-";
     const s3 = row["👑3라운드"] || "-";
     const pct = maxScore > 0 ? Math.min(93, Math.max(5, (total/maxScore)*88)) : 5;
-    const r3d = round3Revealed ? "" : "display:none";
     const div = document.createElement("div");
     div.className = "race-row";
     div.innerHTML =
@@ -644,7 +1433,7 @@ function render(data) {
         '<div class="round-scores">'+
           '<div class="rs-badge"><div class="rs-r">👑1라운드</div><div class="rs-v">'+s1+'</div></div>'+
           '<div class="rs-badge"><div class="rs-r">👑2라운드</div><div class="rs-v">'+s2+'</div></div>'+
-          '<div class="rs-badge rs-r3" style="'+r3d+'"><div class="rs-r">👑3라운드</div><div class="rs-v">'+s3+'</div></div>'+
+          '<div class="rs-badge rs-r3'+(round3Revealed ? ' r3-done' : '')+'" style="'+(round3Revealed ? '' : 'display:none')+'"><div class="rs-r">👑3라운드</div><div class="rs-v">'+s3+'</div></div>'+
         '</div>'+
       '</div>'+
       '<div class="track-wrap">'+
@@ -681,6 +1470,7 @@ setInterval(fetchData, 5000);
 </script>
 </body>
 </html>
+
 
 
 
