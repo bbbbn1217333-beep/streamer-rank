@@ -10,7 +10,8 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: transparent; font-family: 'Noto Sans KR', sans-serif; padding: 5px; width: 630px; }
+body { background: transparent; font-family: 'Noto Sans KR', sans-serif; padding: 0; width: 750px; overflow: hidden; }
+.scale-wrapper { width: 630px; transform-origin: top left; transform: scale(1.1905); padding: 5px; }
 .panel-wrap { border-radius: 10px; overflow: hidden; }
 .panel {
   background: linear-gradient(160deg, #1a0000 0%, #3d0000 40%, #1a0000 100%);
@@ -1064,6 +1065,7 @@ body { background: transparent; font-family: 'Noto Sans KR', sans-serif; padding
 </style>
 </head>
 <body>
+<div class="scale-wrapper">
 <div class="panel-wrap">
 <div class="panel" id="panel">
   <div id="hiddenCutscene">
@@ -2117,8 +2119,10 @@ async function fetchData() {
 fetchData();
 setInterval(fetchData, 5000);
 </script>
+</div>
 </body>
 </html>
+
 
 
 
