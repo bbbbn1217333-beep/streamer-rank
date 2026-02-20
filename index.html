@@ -2113,11 +2113,11 @@ function render(data) {
     const rank  = rankMap[i];
     const name  = row["🎙️스트리머"] || "?";
     const total = Number(row["📝최종 점수"]) || 0;
-    const s1 = row["👑1라운드"] || "-";
-    const s2 = row["👑2라운드"] || "-";
-    const s3 = row["👑3라운드"] || "-";
-    const s4 = row["👑4라운드"] || "-";
-    const s5 = row["👑5라운드"] || "-";
+    const _r1 = row["👑1라운드"]; const s1 = (_r1 !== undefined && _r1 !== null && _r1 !== "") ? String(_r1) : "-";
+    const _r2 = row["👑2라운드"]; const s2 = (_r2 !== undefined && _r2 !== null && _r2 !== "") ? String(_r2) : "-";
+    const _r3 = row["👑3라운드"]; const s3 = (_r3 !== undefined && _r3 !== null && _r3 !== "") ? String(_r3) : "-";
+    const _r4 = row["👑4라운드"]; const s4 = (_r4 !== undefined && _r4 !== null && _r4 !== "") ? String(_r4) : "-";
+    const _r5 = row["👑5라운드"]; const s5 = (_r5 !== undefined && _r5 !== null && _r5 !== "") ? String(_r5) : "-";
     const e1 = max1 && Number(s1)===max1 ? '👑' : '🚩';
     const e2 = max2 && Number(s2)===max2 ? '👑' : '🚩';
     const e3 = max3 && Number(s3)===max3 ? '👑' : '🚩';
