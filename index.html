@@ -409,9 +409,15 @@ body { background: transparent; font-family: 'Noto Sans KR', sans-serif; padding
   animation: firstRunnerAura 1.5s ease-in-out infinite !important;
 }
 .runner-icon.is-first::after {
-  content: '👑'; position: absolute; top: -8px; left: 50%;
+  content: '⭐'; position: absolute; top: -8px; left: 50%;
   transform: translateX(-50%); font-size: 7px;
   animation: bounce 0.8s ease infinite alternate;
+}
+/* 골인(finish-runner)시엔 👑으로 교체 + 크게 */
+.runner-icon.is-first.finish-runner::after {
+  content: '👑';
+  font-size: 13px;
+  top: -14px;
 }
 @keyframes bounce { from { transform: translateX(-50%) translateY(0); } to { transform: translateX(-50%) translateY(-3px); } }
 
@@ -2390,8 +2396,8 @@ function playFinishGaugeScene(winnerName, onComplete) {
 
   const TRACK_H  = 11;
   const ROW_H    = 60;
-  const CHAR_W   = 120;
-  const CHAR_H   = 140;
+  const CHAR_W   = 240;
+  const CHAR_H   = 260;
   const NAME_W   = 52;
 
   players.forEach((pl, pi) => {
@@ -2486,8 +2492,8 @@ function playFinishGaugeScene(winnerName, onComplete) {
   // 핵심: 절대 뒤로 가지 않음.
   // 각 플레이어의 키프레임을 "전체 최종 최대값" 기준으로 고정해서
   // 어떤 시점에도 앞으로만 이동. 역전은 자연스럽게 표현됨.
-  const TOTAL_MS       = 8000;
-  const FINAL_PAUSE_MS = 1800;
+  const TOTAL_MS       = 6600;
+  const FINAL_PAUSE_MS = 1000;
   let animCancelled    = false;
 
   // globalMax = 최종 누적 최대값 (이미 계산됨)
