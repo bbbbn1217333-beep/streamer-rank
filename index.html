@@ -57,20 +57,6 @@ body { background: transparent; font-family: 'Noto Sans KR', sans-serif; padding
 }
 .finish-btn:hover { transform: scale(1.05); }
 .finish-btn.active { background: linear-gradient(135deg, #ff4040, #ff0000); border-color: #ffaaaa; color: #fff; }
-.round-summary {
-  position: relative; z-index: 1;
-  display: flex; gap: 4px; padding: 2px 10px;
-  border-bottom: 1px solid rgba(107,0,0,0.5);
-}
-.round-badge {
-  flex: 1; background: rgba(0,0,0,0.3);
-  border: 1px solid #6b0000; border-radius: 5px;
-  padding: 1px 6px; text-align: center;
-}
-.round-badge .r-label { font-size: 14px; color: #ff6060; font-weight: 700; letter-spacing: 0.5px; }
-.round-badge .r-winner { display: flex; align-items: center; justify-content: center; gap: 5px; flex-wrap: wrap; }
-.round-badge .r-name { font-size: 14px; color: #ffb3b3; font-weight: 900; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 80px; }
-.round-badge .r-pt { font-size: 13px; color: #fff; font-weight: 900; white-space: nowrap; text-shadow: 0 0 6px rgba(255,50,50,0.4); }
 .race-section { position: relative; z-index: 1; padding: 1px 7px 1px; }
 .race-row { margin-bottom: 1px; }
 @keyframes fadeSlide { from { opacity:0; transform: translateX(-12px); } to { opacity:1; transform: translateX(0); } }
@@ -113,8 +99,11 @@ body { background: transparent; font-family: 'Noto Sans KR', sans-serif; padding
 .rs-badge .rs-r { font-size: 11px; color: #ff6060; font-weight: 700; display: block; }
 .rs-badge .rs-v { font-size: 18px; color: #ffb3b3; font-weight: 900; display: block; }
 
-/* 상단 라운드 요약 1등 강조 - 테두리만 */
-.round-badge.r-top { }
+/* 라운드별 1등 뱃지 골드 강조 */
+.rs-badge.rs-top { border-color: #c8a000; box-shadow: 0 0 5px rgba(255,200,0,0.4); }
+.rs-badge.rs-top .rs-v { color: #ffd700; text-shadow: 0 0 8px rgba(255,200,0,0.6); }
+
+
 
 /* ── 3라운드 뱃지 임팩트 이펙트 (GPU 가속) ── */
 .rs-badge.rs-r3,
@@ -1218,16 +1207,7 @@ body { background: transparent; font-family: 'Noto Sans KR', sans-serif; padding
     </div>
     <div style="width:80px"></div>
   </div>
-  <div class="round-summary" id="roundSummary" style="display:none">
-    <div class="round-badge"><div class="r-label">👑1라운드</div><div class="r-winner" id="r1winner">-</div></div>
-    <div class="round-badge"><div class="r-label">👑2라운드</div><div class="r-winner" id="r2winner">-</div></div>
-    <div class="round-badge"><div class="r-label">👑3라운드</div><div class="r-winner" id="r3winner">-</div></div>
-    <div class="round-badge"><div class="r-label">👑4라운드</div><div class="r-winner" id="r4winner">-</div></div>
-    <div class="round-badge" id="r5badge" style="display:none"><div class="r-label">👑5라운드</div><div class="r-winner" id="r5winner">-</div></div>
-  </div>
   <div class="race-section" id="raceSection">
-    <div class="empty">📡 데이터 로딩 중...</div>
-  </div>
   <div class="footer">
     <div class="live-dot"></div>
     <span class="live-text">IRA333</span>
@@ -1701,18 +1681,6 @@ function typeLength(chars, interval) { return chars * interval; }
 
 
 function revealR5Badges() {
-  // 상단 r5badge
-  const r5b = document.getElementById("r5badge");
-  r5b.style.display = "";
-  r5b.classList.remove("r3-header-done", "r3-header-in");
-  requestAnimationFrame(() => requestAnimationFrame(() => {
-    r5b.classList.add("r3-header-in");
-    setTimeout(() => {
-      r5b.classList.remove("r3-header-in");
-      r5b.classList.add("r3-header-done");
-    }, 700);
-  }));
-
   // 각 플레이어 뱃지 — 순차 등장 (DOM 조작 없음, CSS만)
   const badges = document.querySelectorAll(".rs-badge.rs-r5");
   badges.forEach((el, i) => {
@@ -1734,9 +1702,6 @@ function revealR5Badges() {
 
 
 function hideR5Badges() {
-  const r5b = document.getElementById("r5badge");
-  r5b.style.display = "none";
-  r5b.classList.remove("r3-header-in", "r3-header-done");
   document.querySelectorAll(".rs-badge.rs-r5").forEach(el => {
     el.style.display = "none";
     el.classList.remove("r3-impact", "r3-done", "locked", "decoding", "decoded");
@@ -2102,25 +2067,20 @@ function render(data) {
   prevJSON = json;
   currentFirstName = data[0]["🎙️스트리머"] || "";
 
-  const r1 = getRoundBest(data, "👑1라운드");
-  const r2 = getRoundBest(data, "👑2라운드");
-  const r3 = getRoundBest(data, "👑3라운드");
-  const r4 = getRoundBest(data, "👑4라운드");
-  const r5 = getRoundBest(data, "👑5라운드");
-  document.getElementById("roundSummary").style.display = "flex";
-  document.getElementById("r1winner").innerHTML = '<span class="r-name">'+r1.name+'</span>'+(r1.pt?'<span class="r-pt">'+r1.pt+'pt</span>':'');
-  document.getElementById("r2winner").innerHTML = '<span class="r-name">'+r2.name+'</span>'+(r2.pt?'<span class="r-pt">'+r2.pt+'pt</span>':'');
-  document.getElementById("r3winner").innerHTML = '<span class="r-name">'+r3.name+'</span>'+(r3.pt?'<span class="r-pt">'+r3.pt+'pt</span>':'');
-  document.getElementById("r4winner").innerHTML = '<span class="r-name">'+r4.name+'</span>'+(r4.pt?'<span class="r-pt">'+r4.pt+'pt</span>':'');
-  document.getElementById("r5winner").innerHTML = '<span class="r-name">'+r5.name+'</span>'+(r5.pt?'<span class="r-pt">'+r5.pt+'pt</span>':'');
-  // 1~4라운드 1등 상단 뱃지에 골드 강조
-  [["r1winner","👑1라운드"],["r2winner","👑2라운드"],["r3winner","👑3라운드"],["r4winner","👑4라운드"]].forEach(([id, key]) => {
-    const badge = document.getElementById(id).closest('.round-badge');
-    const hasData = data.some(r => r[key] && r[key] !== "-" && Number(r[key]) > 0);
-    badge.classList.toggle('r-top', hasData);
-  });
-
   const maxScore = Math.max(...data.map(r => Number(r["📝최종 점수"]) || 0));
+
+  // 각 라운드 최고점 계산
+  function getRoundMax(key) {
+    const vals = data.map(r => Number(r[key])||0);
+    const mx = Math.max(...vals);
+    return mx > 0 ? mx : null;
+  }
+  const max1 = getRoundMax("👑1라운드");
+  const max2 = getRoundMax("👑2라운드");
+  const max3 = getRoundMax("👑3라운드");
+  const max4 = getRoundMax("👑4라운드");
+  const max5 = getRoundMax("👑5라운드");
+
   const rankFillClasses  = ["fill-1","fill-2","fill-3","fill-o","fill-o","fill-o","fill-o"];
   const rankBadgeClasses = ["rank-1","rank-2","rank-3","rank-other","rank-other","rank-other","rank-other"];
   const section = document.getElementById("raceSection");
@@ -2140,11 +2100,21 @@ function render(data) {
     const s3 = row["👑3라운드"] || "-";
     const s4 = row["👑4라운드"] || "-";
     const s5 = row["👑5라운드"] || "-";
+    const e1 = max1 && Number(s1)===max1 ? '👑' : '🚩';
+    const e2 = max2 && Number(s2)===max2 ? '👑' : '🚩';
+    const e3 = max3 && Number(s3)===max3 ? '👑' : '🚩';
+    const e4 = max4 && Number(s4)===max4 ? '👑' : '🚩';
+    const e5 = max5 && Number(s5)===max5 ? '👑' : '🏁';
     const pct = maxScore > 0 ? Math.min(93, Math.max(5, (total/maxScore)*88)) : 5;
     const rankFillClass  = rankFillClasses[Math.min(rank-1, 6)];
     const rankBadgeClass = rankBadgeClasses[Math.min(rank-1, 6)];
     const div = document.createElement("div");
     div.className = "race-row";
+    const t1 = max1 && Number(s1)===max1 ? ' rs-top' : '';
+    const t2 = max2 && Number(s2)===max2 ? ' rs-top' : '';
+    const t3 = max3 && Number(s3)===max3 ? ' rs-top' : '';
+    const t4 = max4 && Number(s4)===max4 ? ' rs-top' : '';
+    const t5 = max5 && Number(s5)===max5 ? ' rs-top' : '';
     div.innerHTML =
       '<div class="race-top">'+
         '<div class="rank-badge '+rankBadgeClass+'">'+rank+'</div>'+
@@ -2154,11 +2124,11 @@ function render(data) {
           '<span style="display:inline-flex;align-items:baseline;gap:0"><span class="score-total">'+total.toLocaleString()+'</span><span class="score-label">pt</span></span>'+
         '</div>'+
         '<div class="round-scores">'+
-          '<div class="rs-badge"><div class="rs-r">🚩1라운드</div><div class="rs-v">'+s1+'</div></div>'+
-          '<div class="rs-badge"><div class="rs-r">🚩2라운드</div><div class="rs-v">'+s2+'</div></div>'+
-          '<div class="rs-badge"><div class="rs-r">🚩3라운드</div><div class="rs-v">'+s3+'</div></div>'+
-          '<div class="rs-badge"><div class="rs-r">🚩4라운드</div><div class="rs-v">'+s4+'</div></div>'+
-          '<div class="rs-badge rs-r5'+(round5Revealed ? ' r3-done' : '')+'" style="'+(round5Revealed ? '' : 'display:none')+'"><div class="rs-r">🏁5라운드</div><div class="rs-v">'+s5+'</div></div>'+
+          '<div class="rs-badge'+t1+'"><div class="rs-r">'+e1+'1라운드</div><div class="rs-v">'+s1+'</div></div>'+
+          '<div class="rs-badge'+t2+'"><div class="rs-r">'+e2+'2라운드</div><div class="rs-v">'+s2+'</div></div>'+
+          '<div class="rs-badge'+t3+'"><div class="rs-r">'+e3+'3라운드</div><div class="rs-v">'+s3+'</div></div>'+
+          '<div class="rs-badge'+t4+'"><div class="rs-r">'+e4+'4라운드</div><div class="rs-v">'+s4+'</div></div>'+
+          '<div class="rs-badge rs-r5'+t5+(round5Revealed ? ' r3-done' : '')+'" style="'+(round5Revealed ? '' : 'display:none')+'"><div class="rs-r">'+e5+'5라운드</div><div class="rs-v">'+s5+'</div></div>'+
         '</div>'+
       '</div>'+
       '<div class="track-wrap">'+
@@ -2274,9 +2244,9 @@ setInterval(fetchData, 5000);
       const w = arm.w;
       const a = c.alpha * (arm.sub ? 0.4 : 1);
 
-      // 굵은 배경색 계열 - 파인 느낌 (어두운 빨강 반투명)
+      // 굵은 배경색 계열 - 파인 느낌 (어두운 주황 반투명)
       ctx.globalAlpha = a * 0.5;
-      ctx.strokeStyle = arm.sub ? "rgba(60,0,0,0.7)" : "rgba(80,0,0,0.75)";
+      ctx.strokeStyle = arm.sub ? "rgba(80,35,0,0.7)" : "rgba(110,50,0,0.75)";
       ctx.lineWidth   = w * 2.8;
       ctx.lineCap     = "round";
       ctx.lineJoin    = "round";
@@ -2285,21 +2255,25 @@ setInterval(fetchData, 5000);
       for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y);
       ctx.stroke();
 
-      // 가는 코어 - 살짝 밝은 빨강으로 균열선 표시
-      ctx.globalAlpha = a * 0.55;
-      ctx.strokeStyle = arm.sub ? "rgba(120,10,10,0.65)" : "rgba(160,15,15,0.7)";
+      // 가는 코어 - 밝은 주황 글로우 균열선
+      ctx.globalAlpha = a * 0.75;
+      ctx.strokeStyle = arm.sub ? "rgba(255,140,30,0.65)" : "rgba(255,165,40,0.85)";
       ctx.lineWidth   = w * 0.9;
+      ctx.shadowColor = "rgba(255,140,0,0.9)";
+      ctx.shadowBlur  = arm.sub ? 4 : 7;
       ctx.beginPath();
       ctx.moveTo(pts[0].x, pts[0].y);
       for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y);
       ctx.stroke();
+      ctx.shadowBlur  = 0;
+      ctx.shadowColor = "transparent";
     }
 
     // 파편 조각
     if (c.chips) {
       for (const ch of c.chips) {
         ctx.globalAlpha = c.alpha * 0.4;
-        ctx.strokeStyle = "rgba(90,0,0,0.7)";
+        ctx.strokeStyle = "rgba(200,100,0,0.7)";
         ctx.lineWidth   = 1.5;
         ctx.lineCap     = "round";
         ctx.beginPath(); ctx.moveTo(ch.x1, ch.y1); ctx.lineTo(ch.x2, ch.y2); ctx.stroke();
@@ -2646,6 +2620,7 @@ setInterval(fetchData, 5000);
 </div>
 </body>
 </html>
+
 
 
 
