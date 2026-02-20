@@ -2725,8 +2725,8 @@ function spawnFlyingChars() {
   const cy = overlayH / 2;
   const radius = Math.min(overlayW, overlayH) * 0.32; // 공전 반지름
   const CHAR_SIZE = 360;
-  const ORBIT_MS  = 3200;  // 공전 시간 (뱅뱅 도는 시간)
-  const STAY_EXTRA = 600;  // 다 모인 후 잠깐 더 도는 시간
+  const ORBIT_MS  = 5500;  // 공전 시간 느리게
+  const STAY_EXTRA = 1200;  // 다 모인 후 잠깐 더 도는 시간
   const orbitImgs = [];
 
   targets.forEach((avatarEl, idx) => {
@@ -2764,8 +2764,8 @@ function spawnFlyingChars() {
   function orbitStep(now) {
     if (!orbitRunning) return;
     const elapsed = now - startTime;
-    // 처음엔 느리게, 점점 빨라지는 ease-in 느낌
-    const speedMult = Math.min(1 + elapsed / 2000, 2.2);
+    // 처음엔 느리게, 점점 살짝 빨라지는 느낌
+    const speedMult = Math.min(1 + elapsed / 4000, 1.5);
     const angle = elapsed * BASE_SPEED * speedMult;
 
     orbitImgs.forEach((img, idx) => {
