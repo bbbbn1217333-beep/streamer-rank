@@ -328,19 +328,69 @@ body { background: transparent; font-family: 'Noto Sans KR', sans-serif; padding
 .fill-3 { background: linear-gradient(90deg, #7a3010, #cd7f32); }
 .fill-o { background: linear-gradient(90deg, #3a0808, #6b0000); }
 
-@keyframes redFlash {
-  0%   { filter: brightness(1) saturate(1); }
-  40%  { filter: brightness(3) saturate(2.5); }
-  100% { filter: brightness(1.6) saturate(1.8); }
+/* ── 완주 게이지 네온 레드 펄스 ── */
+@keyframes neonRedPulse {
+  0%   {
+    background: linear-gradient(90deg, #aa0000, #ff0000, #ff3333, #ff0000, #aa0000);
+    box-shadow:
+      0 0 4px 1px rgba(255,0,0,0.85),
+      0 0 8px 3px rgba(255,0,0,0.4);
+  }
+  50%  {
+    background: linear-gradient(90deg, #ff0000, #ff4444, #ff7070, #ff4444, #ff0000);
+    box-shadow:
+      0 0 6px 2px rgba(255,50,50,1),
+      0 0 14px 5px rgba(255,0,0,0.55),
+      inset 0 0 6px rgba(255,120,120,0.3);
+  }
+  100% {
+    background: linear-gradient(90deg, #aa0000, #ff0000, #ff3333, #ff0000, #aa0000);
+    box-shadow:
+      0 0 4px 1px rgba(255,0,0,0.85),
+      0 0 8px 3px rgba(255,0,0,0.4);
+  }
 }
+
+/* 게이지바 배경 트랙 번쩍임 */
+@keyframes trackBgFlash {
+  0%,100% { background: #100808; }
+  50% { background: #200000; box-shadow: inset 0 0 8px rgba(255,0,0,0.2); }
+}
+
+/* 1등 러너 아이콘 빨강 후광 */
+@keyframes firstRunnerAura {
+  0%,100% { filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8)) drop-shadow(0 0 4px rgba(255,0,0,0.6)); }
+  50%     { filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8)) drop-shadow(0 0 9px rgba(255,80,80,0.9)) drop-shadow(0 0 18px rgba(255,0,0,0.5)); }
+}
+
+/* 완주 시 게이지 섬광 스윕 */
+@keyframes gaugeFlashSweep {
+  0%   { left: -20%; opacity: 0.9; }
+  100% { left: 120%; opacity: 0; }
+}
+
 .fill-1.finish-glow {
-  background: linear-gradient(90deg, #a80000, #ff2222, #ff8080, #ff4444, #ff2222) !important;
-  box-shadow:
-    0 0 18px 6px rgba(255, 50, 50, 0.95),
-    0 0 40px 14px rgba(200, 0, 0, 0.7),
-    0 0 70px 24px rgba(255, 0, 0, 0.4) !important;
-  animation: redFlash 0.8s ease-out 1 forwards !important;
+  background: linear-gradient(90deg, #aa0000, #ff0000, #ff3333, #ff0000, #aa0000) !important;
+  animation: neonRedPulse 1.5s ease-in-out infinite !important;
 }
+
+/* 트랙 배경 반응 */
+.fill-1.finish-glow ~ .track-bg,
+.track-wrap:has(.finish-glow) .track-bg {
+  animation: trackBgFlash 0.55s ease-in-out infinite;
+}
+
+/* 1등 runner 아이콘 빨강 후광 (is-first 클래스 이용) */
+.runner-icon.is-first.finish-runner img {
+  animation: firstRunnerAura 1.5s ease-in-out infinite !important;
+}
+
+/* 완주 시 트랙 wrap 전체 글로우 - 제거 */
+.track-wrap.finish-active {
+  /* 글로우 없음 */
+}
+
+/* 섬광 스윕 - 제거 */
 
 .finish-line { position: absolute; right: 0; top: 0; height: 100%; width: 6px; background: repeating-linear-gradient(90deg, #fff 0px, #fff 2px, #000 2px, #000 4px); border-radius: 0 5px 5px 0; opacity: 0.5; z-index: 2; }
 .runner-icon {
@@ -353,6 +403,10 @@ body { background: transparent; font-family: 'Noto Sans KR', sans-serif; padding
   width: 150px; height: 180px; object-fit: contain;
   image-rendering: auto;
   filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8));
+}
+/* finish-runner일 때 firstRunnerAura 오버라이드 */
+.runner-icon.is-first.finish-runner img {
+  animation: firstRunnerAura 1.5s ease-in-out infinite !important;
 }
 .runner-icon.is-first::after {
   content: '⭐'; position: absolute; top: -8px; left: 50%;
@@ -569,8 +623,101 @@ body { background: transparent; font-family: 'Noto Sans KR', sans-serif; padding
 #bgCrackCanvas.visible { opacity: 1; }
 
 /* ==============================
-   히든 라운드 컷씬 스타일
+   완주 게이지 풀샷 컷씬
 ============================== */
+#finishGaugeOverlay {
+  display: none;
+  position: absolute; inset: 0;
+  z-index: 18000;
+  pointer-events: none;
+  border-radius: 10px;
+  overflow: hidden;
+  background: rgba(0,0,0,0.82);
+}
+#finishGaugeOverlay.active { display: block; }
+
+#fgoInner {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 96%;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  overflow: visible;
+}
+#finishGaugeOverlay.active #fgoInner { opacity: 1; }
+
+/* 상단 라벨 */
+#fgoEventTitle {
+  text-align: center;
+  font-family: 'Pretendard','Noto Sans KR',sans-serif;
+  font-size: 13px; font-weight: 700; letter-spacing: 3px;
+  color: #ffb3b3;
+  text-shadow: 0 0 8px rgba(255,100,100,0.6);
+  margin-bottom: 2px;
+  opacity: 0;
+  transition: opacity 0.3s ease 0.1s;
+}
+#finishGaugeOverlay.active #fgoEventTitle { opacity: 1; }
+
+#fgoTitle {
+  text-align: center;
+  font-family: 'Pretendard','Noto Sans KR',sans-serif;
+  font-size: 22px; font-weight: 900; letter-spacing: 5px;
+  color: #ffd700;
+  text-shadow: 0 0 12px rgba(255,200,0,0.9), 0 0 24px rgba(255,150,0,0.6);
+  margin-bottom: 6px;
+  opacity: 0;
+  transition: opacity 0.3s ease 0.2s;
+}
+#finishGaugeOverlay.active #fgoTitle { opacity: 1; }
+
+/* 라운드 단계 라벨 - 미사용 */
+#fgoRoundLabel { display: none; }
+
+#fgoAllRaces {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  overflow: visible;
+  padding-top: 10px;
+}
+
+/* 라운드 구분선 마커 */
+.fgo-round-marker {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 12px;
+  line-height: 1;
+  z-index: 5;
+  pointer-events: none;
+  filter: drop-shadow(0 0 3px rgba(0,0,0,0.9));
+}
+/* 결승선 */
+.fgo-finish-line {
+  position: absolute;
+  right: 0; top: 0; bottom: 0;
+  width: 5px;
+  background: repeating-linear-gradient(180deg, #fff 0px, #fff 3px, #000 3px, #000 6px);
+  border-radius: 0 4px 4px 0;
+  opacity: 0.7;
+  z-index: 4;
+}
+
+/* 왕관 골인 애니메이션 */
+@keyframes crownBounceIn {
+  0%   { transform: translateX(-50%) translateY(-20px) scale(0) rotate(-30deg); opacity: 0; }
+  50%  { transform: translateX(-50%) translateY(2px) scale(1.3) rotate(10deg); opacity: 1; }
+  70%  { transform: translateX(-50%) translateY(-4px) scale(0.95) rotate(-5deg); }
+  85%  { transform: translateX(-50%) translateY(1px) scale(1.05) rotate(2deg); }
+  100% { transform: translateX(-50%) translateY(0) scale(1) rotate(0deg); opacity: 1; }
+}
+@keyframes crownFloat {
+  0%,100% { transform: translateX(-50%) translateY(0); }
+  50%     { transform: translateX(-50%) translateY(-5px); }
+}
+
 #hiddenCutscene {
   display: none;
   position: absolute;
@@ -1187,6 +1334,14 @@ body { background: transparent; font-family: 'Noto Sans KR', sans-serif; padding
 <div class="panel-wrap">
 <div class="panel" id="panel">
   <canvas id="bgCrackCanvas"></canvas>
+  <div id="finishGaugeOverlay">
+    <div id="fgoInner">
+      <div id="fgoEventTitle">📋 이라333배 메이플 개맞짱 컨텐츠 최종순위</div>
+  <div id="fgoTitle"></div>
+      <div id="fgoRoundLabel">▶ 1라운드</div>
+      <div id="fgoAllRaces"></div>
+    </div>
+  </div>
   <div id="hiddenCutscene">
   <div id="csShakeWrap" style="position:absolute;inset:0;pointer-events:none;">
     <div class="cs-alert-left"  id="csAlertL"></div>
@@ -1874,96 +2029,139 @@ function toggleRound5() {
 
 
 
-function animateRunnerToEnd(runnerEl, duration) {
-  const startPct = 0;
-  const endPct = 100;
+// 게이지바와 캐릭터가 완전히 동일한 easing/duration을 쓰도록 공유
+function easeFinish(t) {
+  // 앞부분 천천히, 뒤로 갈수록 가속
+  if (t < 0.6) return (t / 0.6) * 0.12;
+  const t2 = (t - 0.6) / 0.4;
+  return 0.12 + 0.88 * (t2 * t2 * t2);
+}
+
+function animateRunnerToEnd(runnerEl, duration, onDone) {
   const startTime = performance.now();
-  function easeInExpo(t) {
-    if (t < 0.65) return (t / 0.65) * 0.15;
-    const t2 = (t - 0.65) / 0.35;
-    return 0.15 + 0.85 * (t2 * t2 * t2);
-  }
   function step(now) {
-    const elapsed = now - startTime;
-    const t = Math.min(elapsed / duration, 1);
-    const progress = easeInExpo(t);
-    const currentPct = startPct + (endPct - startPct) * progress;
-    runnerEl.style.left = currentPct + "%";
+    const t = Math.min((now - startTime) / duration, 1);
+    const progress = easeFinish(t);
+    runnerEl.style.left = (progress * 100) + "%";
     if (t < 1) requestAnimationFrame(step);
+    else if (onDone) onDone();
   }
   requestAnimationFrame(step);
 }
 
-function animateGaugeFill(fillEl, duration) {
-  const startPct = 0;
-  const endPct = 100;
+function animateGaugeFill(fillEl, duration, onDone) {
   const startTime = performance.now();
-  function easeInExpo(t) {
-    if (t < 0.65) return (t / 0.65) * 0.15;
-    const t2 = (t - 0.65) / 0.35;
-    return 0.15 + 0.85 * (t2 * t2 * t2);
-  }
   function step(now) {
-    const elapsed = now - startTime;
-    const t = Math.min(elapsed / duration, 1);
-    const progress = easeInExpo(t);
-    fillEl.style.width = (startPct + (endPct - startPct) * progress) + "%";
+    const t = Math.min((now - startTime) / duration, 1);
+    const progress = easeFinish(t);
+    fillEl.style.width = (progress * 100) + "%";
     if (t < 1) requestAnimationFrame(step);
+    else if (onDone) onDone();
   }
   requestAnimationFrame(step);
+}
+
+// fgo 오버레이용 (CSS transition 활용)
+function animateFgoGauge(fillEl, charImg, duration) {
+  // CSS transition으로 처리 - 한 프레임 뒤에 width/left 변경
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    fillEl.style.width = "100%";
+    charImg.style.left = "calc(100% - 60px)";
+  }));
 }
 
 function applyFinishEffects(winnerName) {
   if (finishApplied) return;
   finishApplied = true;
 
-  const fill1 = document.querySelector(".track-fill.fill-1");
-  const firstRunner = document.querySelector(".runner-icon.is-first");
-
-  if (fill1) {
-    fill1.style.transition = "none";
-    fill1.style.width = "0%";
-    fill1.classList.add("finish-glow");
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        animateGaugeFill(fill1, 3400);
-      });
-    });
-  }
-
-  if (firstRunner) {
-    firstRunner.style.transition = "none";
-    firstRunner.style.left = "0%";
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        animateRunnerToEnd(firstRunner, 3400);
-      });
-    });
-  }
-
+  // 모든 달리기 애니메이션 중지
   Object.keys(activeAnims).forEach(k => {
     if (k === "__celeb__") return;
     clearInterval(activeAnims[k]);
     delete activeAnims[k];
   });
 
-  document.querySelectorAll(".avatar-img").forEach((el, i) => {
-    if (i !== 0) el.classList.add("frozen");
+  // 1등 제외한 플레이어만 frozen
+  document.querySelectorAll(".avatar-img").forEach(el => {
+    // avatar_0이 1등이므로 frozen 처리 (나중에 _finishRevealRunner에서 해제)
+    el.classList.add("frozen");
   });
-  document.querySelectorAll(".runner-icon").forEach((el, i) => {
-    if (i !== 0) el.classList.add("frozen");
+  document.querySelectorAll(".runner-icon").forEach(el => {
+    // is-first runner는 frozen 처리하되 나중에 _finishRevealRunner에서 해제
+    el.classList.add("frozen");
   });
 
-  const winnerAvatar = document.getElementById("avatar_0");
-  if (winnerAvatar && winnerName) startAvatarAnim(winnerAvatar, winnerName, 1, 0, true);
+  // 컷씬 끝나면 호출: 바깥 1등 골인 위치 + 꺄륵 포즈 + 게이지 100%
+  const fill1 = document.querySelector(".track-fill.fill-1");
+  const firstRunner = document.querySelector(".runner-icon.is-first");
+
+  window._finishRevealRunner = function() {
+    // 게이지 100%로
+    if (fill1) {
+      fill1.classList.add("finish-glow");
+      fill1.style.transition = "width 0.5s ease";
+      fill1.style.width = "100%";
+      const trackWrap = fill1.closest(".track-wrap");
+      if (trackWrap) trackWrap.classList.add("finish-active");
+    }
+    // 1등 runner frozen 완전 해제 + 골인 위치 + 꺄륵 포즈
+    if (firstRunner) {
+      firstRunner.classList.remove("frozen");
+      firstRunner.classList.add("finish-runner");
+      firstRunner.style.left = "100%";
+      firstRunner.style.opacity = "1";
+      const runnerImg = firstRunner.querySelector("img");
+      if (runnerImg) {
+        runnerImg.style.opacity = "1";
+        runnerImg.style.filter = "drop-shadow(0 2px 4px rgba(0,0,0,0.8))";
+        if (STREAMERS[winnerName]) {
+          let cFrame = 0;
+          runnerImg.src = buildUrl(winnerName, "A05", cFrame, "E09");
+          const ci = setInterval(() => {
+            cFrame = (cFrame + 1) % 2;
+            runnerImg.src = buildUrl(winnerName, "A05", cFrame, "E09");
+          }, 300);
+          const key = "runner_cheer_" + winnerName;
+          if (activeAnims[key]) clearInterval(activeAnims[key]);
+          activeAnims[key] = ci;
+        }
+      }
+    }
+    // 1등 아바타 frozen 완전 해제 + 선명하게 복구
+    const winnerAvatar = document.getElementById("avatar_0");
+    if (winnerAvatar && winnerName) {
+      winnerAvatar.classList.remove("frozen");
+      winnerAvatar.style.opacity = "1";
+      winnerAvatar.style.filter = "drop-shadow(0 1px 4px rgba(0,0,0,0.6))";
+      startAvatarAnim(winnerAvatar, winnerName, 1, 0, true);
+    }
+    // 2~7등 아바타 & runner: 반투명 + 흑백 명시 고정
+    document.querySelectorAll(".avatar-img.frozen").forEach(el => {
+      el.style.opacity = "0.35";
+      el.style.filter = "drop-shadow(0 1px 4px rgba(0,0,0,0.6)) grayscale(0.8)";
+    });
+    document.querySelectorAll(".runner-icon.frozen img").forEach(el => {
+      el.style.opacity = "0.3";
+      el.style.filter = "drop-shadow(0 2px 4px rgba(0,0,0,0.8)) grayscale(0.8)";
+    });
+  };
 }
 
 function clearFinishEffects() {
   finishTriggered = false;
   finishApplied = false;
-  document.querySelectorAll(".track-fill").forEach(el => el.classList.remove("finish-glow"));
+  window._finishRevealRunner = null;
+  document.querySelectorAll(".track-fill").forEach(el => {
+    el.classList.remove("finish-glow");
+    el.style.transition = "";
+  });
+  document.querySelectorAll(".track-wrap").forEach(el => el.classList.remove("finish-active"));
+  document.querySelectorAll(".runner-icon").forEach(el => {
+    el.classList.remove("frozen", "finish-runner");
+    el.style.opacity = "";
+  });
   document.querySelectorAll(".avatar-img").forEach(el => el.classList.remove("frozen"));
-  document.querySelectorAll(".runner-icon").forEach(el => el.classList.remove("frozen"));
+  document.querySelectorAll(".gauge-sweep").forEach(el => el.remove());
 }
 
 function playDrumroll(onReveal) {
@@ -2050,6 +2248,335 @@ function playDrumroll(onReveal) {
   }, elapsed);
 }
 
+function playFinishGaugeScene(winnerName, onComplete) {
+  const overlay     = document.getElementById("finishGaugeOverlay");
+  const fgoTitle    = document.getElementById("fgoTitle");
+  const fgoRoundLbl = document.getElementById("fgoRoundLabel");
+  const fgoAllRaces = document.getElementById("fgoAllRaces");
+
+  const raceRows = Array.from(document.querySelectorAll(".race-row"));
+  if (!raceRows.length) { if (onComplete) onComplete(); return; }
+
+  // ── 데이터 수집 ──
+  const players = [];
+  raceRows.forEach(row => {
+    const nameEl   = row.querySelector(".streamer-name");
+    const fillEl   = row.querySelector(".track-fill");
+    const runnerEl = row.querySelector(".runner-icon");
+    if (!nameEl || !fillEl) return;
+    const sname   = (nameEl.dataset && nameEl.dataset.sname) || nameEl.textContent.trim();
+    const isFirst = runnerEl && runnerEl.classList.contains("is-first");
+    const badges  = Array.from(row.querySelectorAll(".rs-badge"));
+    const scores  = [];
+    badges.forEach((b, bi) => {
+      if (bi >= 5) return;
+      const v = b.querySelector(".rs-v");
+      const n = v ? parseFloat(v.textContent) : NaN;
+      scores.push(isNaN(n) ? 0 : n);
+    });
+    while (scores.length < 5) scores.push(0);
+    players.push({ sname, isFirst, scores });
+  });
+  if (!players.length) { if (onComplete) onComplete(); return; }
+
+  // ── 라운드별 누적점수 → 게이지 위치(%) 계산 ──
+  // 5라운드 누적 최대값 = 전체 트랙 길이 기준
+  const NUM_ROUNDS = 5;
+  const totals = players.map(p => p.scores.reduce((a,b)=>a+b, 0));
+  const globalMax = Math.max(...totals, 1);
+
+  const cumScores = players.map(p => {
+    let cum = 0;
+    return p.scores.map(s => { cum += s; return cum; });
+  });
+
+  // 게이지 위치: 0~100% 범위 (1등은 최종에 정확히 100%)
+  const winnerIdx = players.findIndex(p => p.isFirst);
+  function toPct(cum, maxCum) {
+    if (maxCum <= 0) return 0;
+    return Math.min(100, Math.max(0, (cum / maxCum) * 100));
+  }
+  // 각 라운드 단계별 게이지 위치
+  // roundGauge[pi][r] = r라운드까지 누적 후 게이지%
+  const roundGauge = players.map((_, pi) =>
+    cumScores[pi].map(cum => toPct(cum, globalMax))
+  );
+
+  // ── 라운드 경계 마커 위치 계산 ──
+  // 각 라운드 끝 시점의 1등 게이지 위치를 마커로 사용
+  // (1등이 없으면 평균)
+  const markerPcts = [];
+  for (let r = 0; r < NUM_ROUNDS; r++) {
+    if (winnerIdx >= 0) {
+      markerPcts.push(roundGauge[winnerIdx][r]);
+    } else {
+      const avg = players.reduce((s,_,pi) => s+roundGauge[pi][r], 0) / players.length;
+      markerPcts.push(avg);
+    }
+  }
+  const ROUND_LABELS = ["1라운드","2라운드","3라운드","4라운드","5라운드"];
+
+  // ── UI 구성 ──
+  fgoTitle.textContent = "";
+  fgoRoundLbl.textContent = "";
+  fgoAllRaces.innerHTML = "";
+
+  // 마커 라벨 행 (게이지 위에 표시될 공유 라벨바) - 첫 번째 행 위에 붙임
+  // 각 행의 트랙 위에 마커+라벨을 직접 렌더링
+
+  const runnerDivs   = [];
+  const runnerImgs   = [];
+  const fillDivs     = [];
+  const runIntervals = [];
+  const crownEls     = [];
+
+  const TRACK_H  = 11;
+  const ROW_H    = 60;
+  const CHAR_W   = 120;
+  const CHAR_H   = 140;
+  const NAME_W   = 52;
+
+  players.forEach((pl, pi) => {
+    const miniRow = document.createElement("div");
+    miniRow.style.cssText =
+      `display:flex;align-items:center;gap:6px;height:${ROW_H}px;position:relative;`;
+
+    const nameSpan = document.createElement("span");
+    nameSpan.textContent = pl.sname;
+    nameSpan.style.cssText =
+      `font-size:12px;font-weight:900;`+
+      `color:${pl.isFirst?"#ffd700":"#ffb3b3"};`+
+      `width:${NAME_W}px;flex-shrink:0;text-align:right;white-space:nowrap;`+
+      `overflow:hidden;text-overflow:ellipsis;`+
+      `font-family:'Pretendard','Noto Sans KR',sans-serif;`+
+      `text-shadow:${pl.isFirst?"0 0 8px rgba(255,200,0,0.7)":"1px 1px 0 rgba(0,0,0,0.8)"};`;
+
+    const trackWrap = document.createElement("div");
+    trackWrap.style.cssText = "position:relative;flex:1;height:100%;overflow:visible;";
+
+    const trackBg = document.createElement("div");
+    trackBg.style.cssText =
+      `position:absolute;top:50%;transform:translateY(-50%);`+
+      `left:0;right:0;height:${TRACK_H}px;background:#100808;`+
+      `border-radius:5px;border:1px solid #4a1010;overflow:hidden;`+
+      (pl.isFirst ? "animation:trackBgFlash 0.55s ease-in-out infinite;" : "");
+
+    const fillDiv = document.createElement("div");
+    fillDiv.style.cssText = `height:100%;width:0%;border-radius:5px;`;
+    if (pl.isFirst) {
+      fillDiv.style.background = "linear-gradient(90deg,#aa0000,#ff0000,#ff3333,#ff0000,#aa0000)";
+      fillDiv.style.boxShadow  = "0 0 4px 1px rgba(255,0,0,0.85),0 0 8px 3px rgba(255,0,0,0.4)";
+      fillDiv.style.animation  = "neonRedPulse 1.5s ease-in-out infinite";
+    } else {
+      fillDiv.style.background = "linear-gradient(90deg,#3a0808,#6b0000)";
+    }
+    trackBg.appendChild(fillDiv);
+    fillDivs.push(fillDiv);
+
+    // 결승선
+    const finishLine = document.createElement("div");
+    finishLine.style.cssText =
+      `position:absolute;right:0;top:-4px;bottom:-4px;width:4px;`+
+      `background:repeating-linear-gradient(180deg,#fff 0,#fff 2px,#111 2px,#111 4px);`+
+      `border-radius:0 5px 5px 0;opacity:0.6;z-index:2;pointer-events:none;`;
+    trackBg.appendChild(finishLine);
+    trackWrap.appendChild(trackBg);
+
+    // 러너 컨테이너 - 트랙 위에 올라타도록
+    const runnerDiv = document.createElement("div");
+    runnerDiv.style.cssText =
+      `position:absolute;top:50%;left:0%;`+
+      `transform:translate(-50%,-100%);`+
+      `width:${Math.round(CHAR_W*0.18)}px;height:${Math.round(CHAR_H*0.22)}px;`+
+      `z-index:10;pointer-events:none;`;
+    runnerDivs.push(runnerDiv);
+
+    const runnerImg = document.createElement("img");
+    // 전원 동일한 선명도 - filter 동일 적용
+    runnerImg.style.cssText =
+      `position:absolute;top:50%;left:50%;`+
+      `width:${CHAR_W}px;height:${CHAR_H}px;`+
+      `object-fit:contain;`+
+      `transform:translate(-50%,-50%) scaleX(-1);`+
+      `filter:drop-shadow(0 2px 4px rgba(0,0,0,0.8));`;
+    if (STREAMERS[pl.sname]) runnerImg.src = buildUrl(pl.sname, "A02", 0, "E00");
+    runnerDiv.appendChild(runnerImg);
+    runnerImgs.push(runnerImg);
+
+    // 달리기 프레임은 runChronicle에서 속도비례로 직접 관리
+    runIntervals.push(null);
+
+    // 왕관 (1등용)
+    const crownEl = document.createElement("span");
+    crownEl.style.cssText =
+      `position:absolute;top:-30px;left:50%;`+
+      `font-size:20px;transform:translateX(-50%) scale(0);`+
+      `opacity:0;pointer-events:none;z-index:20;line-height:1;`;
+    crownEl.textContent = "👑";
+    runnerDiv.appendChild(crownEl);
+    crownEls.push(pl.isFirst ? crownEl : null);
+
+    trackWrap.appendChild(runnerDiv);
+    miniRow.appendChild(nameSpan);
+    miniRow.appendChild(trackWrap);
+    fgoAllRaces.appendChild(miniRow);
+  });
+
+  overlay.classList.add("active");
+
+  // ── 실시간 연속 달리기 애니메이션 ──
+  // 핵심: 절대 뒤로 가지 않음.
+  // 각 플레이어의 키프레임을 "전체 최종 최대값" 기준으로 고정해서
+  // 어떤 시점에도 앞으로만 이동. 역전은 자연스럽게 표현됨.
+  const TOTAL_MS       = 8000;
+  const FINAL_PAUSE_MS = 1800;
+  let animCancelled    = false;
+
+  // globalMax = 최종 누적 최대값 (이미 계산됨)
+  // 키프레임: [0%, R1누적/globalMax%, R2누적/globalMax%, ..., R5/globalMax%]
+  // → 절대 감소하지 않음 (누적점수는 단조증가)
+  // → 라운드별 상대적 앞뒤가 점수에 따라 자연스럽게 표현됨
+  const keyframesAbs = players.map((pl, pi) => {
+    const kf = [0];
+    for (let r = 0; r < NUM_ROUNDS; r++) {
+      const pct = pl.isFirst && r === NUM_ROUNDS - 1
+        ? 100
+        : Math.min(100, (cumScores[pi][r] / globalMax) * 100);
+      kf.push(pct);
+    }
+    return kf; // [0, R1%, R2%, R3%, R4%, R5%]
+  });
+
+  // 각 구간 사이를 선형 보간 (등속 - 빙판 없음)
+  function getPctAtT(pi, t) {
+    const kf   = keyframesAbs[pi];
+    const segs = NUM_ROUNDS; // 5구간
+    const pos  = t * segs;
+    const seg  = Math.min(Math.floor(pos), segs - 1);
+    const frac = pos - seg;
+    // linear: 그대로 보간 → 구간 경계에서 속도 변화만큼 자연스럽게 전환
+    return kf[seg] + (kf[seg + 1] - kf[seg]) * frac;
+  }
+
+  // 각 플레이어별 현재 구간 속도(pct/s) 계산용
+  function getSegSpeed(pi, t) {
+    const kf   = keyframesAbs[pi];
+    const segs = NUM_ROUNDS;
+    const pos  = t * segs;
+    const seg  = Math.min(Math.floor(pos), segs - 1);
+    // 이 구간에서 이동하는 % / 구간 시간(ms)
+    const segDelta = kf[seg + 1] - kf[seg];
+    const segDurMs = TOTAL_MS / segs;
+    return segDelta / segDurMs; // %/ms
+  }
+
+  // 달리기 프레임 인터벌: 속도에 반비례 (빠를수록 짧게)
+  // 기준: 100%를 TOTAL_MS에 달리면 200ms/frame
+  // 발 애니메이션: setInterval로 항상 일정하게 (rAF와 분리)
+  const FRAME_INTERVAL_MS = 220;
+  const runFrameTimers = players.map(() => ({ frame: 0, iv: null }));
+
+  function runChronicle() {
+    const t0 = performance.now();
+
+    // 발 프레임: 각 플레이어별 독립 setInterval - 절대 멈추지 않음
+    players.forEach((pl, pi) => {
+      if (!STREAMERS[pl.sname]) return;
+      const ft = runFrameTimers[pi];
+      ft.iv = setInterval(() => {
+        ft.frame = (ft.frame + 1) % 4;
+        // 해당 시점 구간의 점수 델타로 방향 결정
+        const t_now = Math.min((performance.now() - t0) / TOTAL_MS, 1);
+        const kf = keyframesAbs[pi];
+        const segs = NUM_ROUNDS;
+        const pos = t_now * segs;
+        const seg = Math.min(Math.floor(pos), segs - 1);
+        const delta = kf[seg + 1] - kf[seg]; // 음수면 뒤로
+        if (delta < 0) {
+          // 뒤로 달리기: scaleX 반전 (원래 scaleX(-1)이므로 1로)
+          runnerImgs[pi].style.transform = 'translate(-50%,-50%) scaleX(1)';
+        } else {
+          runnerImgs[pi].style.transform = 'translate(-50%,-50%) scaleX(-1)';
+        }
+        runnerImgs[pi].src = buildUrl(pl.sname, 'A02', ft.frame, 'E00');
+      }, FRAME_INTERVAL_MS);
+    });
+
+    function step(now) {
+      if (animCancelled) {
+        runFrameTimers.forEach(ft => { if (ft.iv) { clearInterval(ft.iv); ft.iv = null; } });
+        return;
+      }
+      const t = Math.min((now - t0) / TOTAL_MS, 1);
+      players.forEach((_, pi) => {
+        const pct = getPctAtT(pi, t);
+        fillDivs[pi].style.width  = pct + '%';
+        runnerDivs[pi].style.left = pct + '%';
+      });
+      if (t < 1) requestAnimationFrame(step);
+      else {
+        runFrameTimers.forEach(ft => { if (ft.iv) { clearInterval(ft.iv); ft.iv = null; } });
+        onGoal();
+      }
+    }
+    requestAnimationFrame(step);
+  }
+  function onGoal() {
+    if (animCancelled) return;
+    fgoRoundLbl.textContent = "";
+
+    // 달리기 중지 → 모두 현재 프레임 고정
+    runIntervals.forEach(iv => { if (iv) clearInterval(iv); });
+
+    // 1등 꺄륵 포즈
+    players.forEach((pl, pi) => {
+      if (pl.isFirst && STREAMERS[pl.sname]) {
+        let cf = 0;
+        runnerImgs[pi].src = buildUrl(pl.sname, "A05", cf, "E09");
+        const ci = setInterval(() => {
+          cf = (cf+1) % 2;
+          runnerImgs[pi].src = buildUrl(pl.sname, "A05", cf, "E09");
+        }, 300);
+        setTimeout(() => clearInterval(ci), FINAL_PAUSE_MS + 500);
+      }
+    });
+
+    // 왕관 등장
+    crownEls.forEach((el) => {
+      if (!el) return;
+      el.style.cssText =
+        `position:absolute;top:-28px;left:50%;font-size:20px;`+
+        `pointer-events:none;z-index:20;line-height:1;opacity:1;`+
+        `transform:translateX(-50%) scale(0);`+
+        `animation:crownBounceIn 0.6s cubic-bezier(0.34,1.5,0.64,1) forwards;`;
+      setTimeout(() => {
+        el.style.animation = "crownFloat 0.9s ease-in-out infinite";
+        el.style.opacity   = "1";
+        el.style.transform = "translateX(-50%)";
+      }, 700);
+    });
+
+    setTimeout(() => {
+      if (animCancelled) return;
+      overlay.style.transition = "opacity 0.4s ease";
+      overlay.style.opacity    = "0";
+      setTimeout(() => {
+        overlay.classList.remove("active");
+        overlay.style.opacity    = "";
+        overlay.style.transition = "";
+        animCancelled = true;
+        if (window._finishRevealRunner) {
+          window._finishRevealRunner();
+          window._finishRevealRunner = null;
+        }
+        if (onComplete) onComplete();
+      }, 420);
+    }, FINAL_PAUSE_MS);
+  }
+
+  setTimeout(runChronicle, 400);
+}
+
 function triggerFinish() {
   if (celebActive) {
     celebActive = false;
@@ -2057,11 +2584,12 @@ function triggerFinish() {
     clearTimeout(celebTimer);
     stopCelebAnim();
     document.getElementById("celebOverlay").classList.remove("active");
+    document.getElementById("finishGaugeOverlay").classList.remove("active");
     document.getElementById("finishBtn").classList.remove("active");
     document.getElementById("finishBtn").textContent = "🏆 완주!";
     document.querySelectorAll(".particle").forEach(p => p.remove());
-    // 5라운드 배지 애니메이션 재개
     document.querySelectorAll(".rs-badge").forEach(el => el.style.animationPlayState = "");
+    clearFinishEffects();
     return;
   }
 
@@ -2071,33 +2599,36 @@ function triggerFinish() {
   document.getElementById("finishBtn").classList.add("active");
   document.getElementById("finishBtn").textContent = "⏹ 종료";
 
-  // 5라운드 배지 무한 반복 애니메이션 일시정지 (렉 방지)
   document.querySelectorAll(".rs-badge.r5-first-done, .rs-badge.r3-done")
     .forEach(el => el.style.animationPlayState = "paused");
 
-  // 달리기 애니메이션을 두구두구와 동시에 시작 (duration = 두구두구 총 시간 ~3.5s)
-  applyFinishEffects(currentFirstName);
-
-  // 두구두구 빌드업 후 우승자 공개
+  // ① 두구두구 시작
   playDrumroll(() => {
     if (!celebActive) return;
-    document.getElementById("celebWinner").textContent = currentFirstName || "";
-    startCelebAnim(currentFirstName);
-    document.getElementById("celebOverlay").classList.add("active");
-    spawnFlyingChars();
-    spawnBurst();
-    window._celebInterval = setInterval(() => { if (celebActive) spawnBurst(); }, 600);
-    celebTimer = setTimeout(() => {
-      celebActive = false;
-      clearInterval(window._celebInterval);
-      stopCelebAnim();
-      document.getElementById("celebOverlay").classList.remove("active");
-      document.getElementById("finishBtn").classList.remove("active");
-      document.getElementById("finishBtn").textContent = "🏆 완주!";
-      document.querySelectorAll(".particle").forEach(p => p.remove());
-      // 5라운드 배지 애니메이션 재개
-      document.querySelectorAll(".rs-badge").forEach(el => el.style.animationPlayState = "");
-    }, 15000);
+
+    // ② 두구두구 끝 → 게이지 풀샷 컷씬 + 바깥 게이지 동시 시작
+    applyFinishEffects(currentFirstName);
+    playFinishGaugeScene(currentFirstName, () => {
+      if (!celebActive) return;
+
+      // ③ 우승자 공개
+      document.getElementById("celebWinner").textContent = currentFirstName || "";
+      startCelebAnim(currentFirstName);
+      document.getElementById("celebOverlay").classList.add("active");
+      spawnFlyingChars();
+      spawnBurst();
+      window._celebInterval = setInterval(() => { if (celebActive) spawnBurst(); }, 600);
+      celebTimer = setTimeout(() => {
+        celebActive = false;
+        clearInterval(window._celebInterval);
+        stopCelebAnim();
+        document.getElementById("celebOverlay").classList.remove("active");
+        document.getElementById("finishBtn").classList.remove("active");
+        document.getElementById("finishBtn").textContent = "🏆 완주!";
+        document.querySelectorAll(".particle").forEach(p => p.remove());
+        document.querySelectorAll(".rs-badge").forEach(el => el.style.animationPlayState = "");
+      }, 15000);
+    });
   });
 }
 
@@ -2190,7 +2721,7 @@ function getRoundBest(data, key) {
 function render(data) {
   if (!data || !data.length) {
     document.getElementById("raceSection").innerHTML = "<div class='empty'>😶 데이터 없음</div>";
-    document.getElementById("roundSummary").style.display = "none";
+    const _rs = document.getElementById("roundSummary"); if (_rs) _rs.style.display = "none";
     return;
   }
   data.sort((a, b) => Number(b["📝최종 점수"]) - Number(a["📝최종 점수"]));
@@ -2292,7 +2823,7 @@ function render(data) {
         '<div class="rank-badge '+rankBadgeClass+'">'+rank+'</div>'+
         '<div class="avatar-wrap"><img class="avatar-img" id="avatar_'+i+'" data-sname="'+name+'" src="" alt=""></div>'+
         '<div class="name-score">'+
-          '<span class="streamer-name">'+name+'</span>'+
+          '<span class="streamer-name" data-sname="'+name+'">'+name+'</span>'+
           '<span style="display:inline-flex;align-items:baseline;gap:0"><span class="score-total">'+total.toLocaleString()+'</span><span class="score-label">pt</span></span>'+
         '</div>'+
         '<div class="round-scores">'+
@@ -2771,4 +3302,3 @@ setInterval(fetchData, 5000);
 </div>
 </body>
 </html>
-
