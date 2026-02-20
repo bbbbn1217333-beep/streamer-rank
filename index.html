@@ -2060,6 +2060,8 @@ function triggerFinish() {
     document.getElementById("finishBtn").classList.remove("active");
     document.getElementById("finishBtn").textContent = "🏆 완주!";
     document.querySelectorAll(".particle").forEach(p => p.remove());
+    // 5라운드 배지 애니메이션 재개
+    document.querySelectorAll(".rs-badge").forEach(el => el.style.animationPlayState = "");
     return;
   }
 
@@ -2068,6 +2070,10 @@ function triggerFinish() {
   finishApplied = false;
   document.getElementById("finishBtn").classList.add("active");
   document.getElementById("finishBtn").textContent = "⏹ 종료";
+
+  // 5라운드 배지 무한 반복 애니메이션 일시정지 (렉 방지)
+  document.querySelectorAll(".rs-badge.r5-first-done, .rs-badge.r3-done")
+    .forEach(el => el.style.animationPlayState = "paused");
 
   // 달리기 애니메이션을 두구두구와 동시에 시작 (duration = 두구두구 총 시간 ~3.5s)
   applyFinishEffects(currentFirstName);
@@ -2089,6 +2095,8 @@ function triggerFinish() {
       document.getElementById("finishBtn").classList.remove("active");
       document.getElementById("finishBtn").textContent = "🏆 완주!";
       document.querySelectorAll(".particle").forEach(p => p.remove());
+      // 5라운드 배지 애니메이션 재개
+      document.querySelectorAll(".rs-badge").forEach(el => el.style.animationPlayState = "");
     }, 15000);
   });
 }
