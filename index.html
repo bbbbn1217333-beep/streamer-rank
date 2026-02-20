@@ -2169,11 +2169,14 @@ function spawnBurst() {
 }
 
 function getRoundBest(data, key) {
-  const valid = data.filter(r => r[key] && r[key] !== "-" && !isNaN(Number(r[key])));
+  const valid = data.filter(r => {
+    const v = r[key];
+    return v !== undefined && v !== null && v !== "" && v !== "-" && !isNaN(Number(v));
+  });
   if (!valid.length) return { name: "-", pt: "" };
   const best = valid.reduce((b, r) => Number(r[key]) > Number(b[key]) ? r : b);
   const pt = Number(best[key]);
-  return { name: best["🎙️스트리머"] || "-", pt: pt > 0 ? pt.toLocaleString() : "" };
+  return { name: best["🎙️스트리머"] || "-", pt: pt.toLocaleString() };
 }
 
 function render(data) {
@@ -2217,7 +2220,9 @@ function render(data) {
   prevJSON = json;
   currentFirstName = data[0]["🎙️스트리머"] || "";
 
-  const maxScore = Math.max(...data.map(r => Number(r["📝최종 점수"]) || 0));
+  const _allScores = data.map(r => Number(r["📝최종 점수"]) || 0);
+  const maxScore = Math.max(..._allScores);
+  const minScore = Math.min(..._allScores);
 
   // 각 라운드 최고점 계산
   function getRoundMax(key) {
@@ -2261,7 +2266,10 @@ function render(data) {
     const e3 = (max3 !== null && s3 !== "-" && Number(s3)===max3) ? '👑' : '🚩';
     const e4 = (max4 !== null && s4 !== "-" && Number(s4)===max4) ? '👑' : '🚩';
     const e5 = (max5 !== null && s5 !== "-" && Number(s5)===max5) ? '👑' : '🏁';
-    const pct = maxScore > 0 ? Math.min(93, Math.max(5, (total/maxScore)*88)) : 5;
+    const _scoreRange = maxScore - minScore;
+    const pct = _scoreRange > 0
+      ? Math.min(93, Math.max(5, 5 + ((total - minScore) / _scoreRange) * 88))
+      : 5;
     const rankFillClass  = rankFillClasses[Math.min(rank-1, 6)];
     const rankBadgeClass = rankBadgeClasses[Math.min(rank-1, 6)];
     const div = document.createElement("div");
