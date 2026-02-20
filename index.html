@@ -67,10 +67,10 @@ body { background: transparent; font-family: 'Noto Sans KR', sans-serif; padding
   border: 1px solid #6b0000; border-radius: 5px;
   padding: 1px 6px; text-align: center;
 }
-.round-badge .r-label { font-size: 14px; color: #c82a2a; font-weight: 700; letter-spacing: 0.5px; }
+.round-badge .r-label { font-size: 14px; color: #ff6060; font-weight: 700; letter-spacing: 0.5px; }
 .round-badge .r-winner { display: flex; align-items: center; justify-content: center; gap: 5px; flex-wrap: wrap; }
 .round-badge .r-name { font-size: 14px; color: #ffb3b3; font-weight: 900; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 80px; }
-.round-badge .r-pt { font-size: 13px; color: #ff6060; font-weight: 900; white-space: nowrap; }
+.round-badge .r-pt { font-size: 13px; color: #fff; font-weight: 900; white-space: nowrap; text-shadow: 0 0 6px rgba(255,50,50,0.4); }
 .race-section { position: relative; z-index: 1; padding: 1px 7px 1px; }
 .race-row { margin-bottom: 1px; }
 @keyframes fadeSlide { from { opacity:0; transform: translateX(-12px); } to { opacity:1; transform: translateX(0); } }
@@ -100,17 +100,21 @@ body { background: transparent; font-family: 'Noto Sans KR', sans-serif; padding
   z-index: 2;
 }
 .name-score { flex: 1; min-width: 0; display: flex; align-items: center; gap: 5px; }
+.score-total + .score-label { margin-left: 0; }
 .streamer-name {
   font-size: 16px; font-weight: 900; color: #ffb3b3;
   text-shadow: 1px 1px 0 rgba(0,0,0,0.8);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px;
 }
 .score-total { font-size: 18px; font-weight: 900; color: #fff; text-shadow: 0 0 6px rgba(255,50,50,0.4); flex-shrink: 0; }
-.score-label { font-size: 13px; color: #c82a2a; margin-left: 1px; font-weight: 700; }
+.score-label { font-size: 13px; color: #fff; margin-left: 0; font-weight: 700; text-shadow: 0 0 6px rgba(255,50,50,0.4); }
 .round-scores { display: flex; gap: 3px; margin-left: auto; flex-shrink: 0; }
 .rs-badge { background: rgba(0,0,0,0.4); border: 1px solid #5a2020; border-radius: 4px; padding: 1px 5px; text-align: center; min-width: 40px; }
-.rs-badge .rs-r { font-size: 11px; color: #c82a2a; font-weight: 700; display: block; }
+.rs-badge .rs-r { font-size: 11px; color: #ff6060; font-weight: 700; display: block; }
 .rs-badge .rs-v { font-size: 18px; color: #ffb3b3; font-weight: 900; display: block; }
+
+/* 상단 라운드 요약 1등 강조 - 테두리만 */
+.round-badge.r-top { }
 
 /* ── 3라운드 뱃지 임팩트 이펙트 (GPU 가속) ── */
 .rs-badge.rs-r3,
@@ -2108,6 +2112,13 @@ function render(data) {
   document.getElementById("r2winner").innerHTML = '<span class="r-name">'+r2.name+'</span>'+(r2.pt?'<span class="r-pt">'+r2.pt+'pt</span>':'');
   document.getElementById("r3winner").innerHTML = '<span class="r-name">'+r3.name+'</span>'+(r3.pt?'<span class="r-pt">'+r3.pt+'pt</span>':'');
   document.getElementById("r4winner").innerHTML = '<span class="r-name">'+r4.name+'</span>'+(r4.pt?'<span class="r-pt">'+r4.pt+'pt</span>':'');
+  document.getElementById("r5winner").innerHTML = '<span class="r-name">'+r5.name+'</span>'+(r5.pt?'<span class="r-pt">'+r5.pt+'pt</span>':'');
+  // 1~4라운드 1등 상단 뱃지에 골드 강조
+  [["r1winner","👑1라운드"],["r2winner","👑2라운드"],["r3winner","👑3라운드"],["r4winner","👑4라운드"]].forEach(([id, key]) => {
+    const badge = document.getElementById(id).closest('.round-badge');
+    const hasData = data.some(r => r[key] && r[key] !== "-" && Number(r[key]) > 0);
+    badge.classList.toggle('r-top', hasData);
+  });
 
   const maxScore = Math.max(...data.map(r => Number(r["📝최종 점수"]) || 0));
   const rankFillClasses  = ["fill-1","fill-2","fill-3","fill-o","fill-o","fill-o","fill-o"];
@@ -2140,7 +2151,7 @@ function render(data) {
         '<div class="avatar-wrap"><img class="avatar-img" id="avatar_'+i+'" data-sname="'+name+'" src="" alt=""></div>'+
         '<div class="name-score">'+
           '<span class="streamer-name">'+name+'</span>'+
-          '<span class="score-total">'+total.toLocaleString()+'</span><span class="score-label">pt</span>'+
+          '<span style="display:inline-flex;align-items:baseline;gap:0"><span class="score-total">'+total.toLocaleString()+'</span><span class="score-label">pt</span></span>'+
         '</div>'+
         '<div class="round-scores">'+
           '<div class="rs-badge"><div class="rs-r">🚩1라운드</div><div class="rs-v">'+s1+'</div></div>'+
@@ -2635,6 +2646,7 @@ setInterval(fetchData, 5000);
 </div>
 </body>
 </html>
+
 
 
 
