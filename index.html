@@ -649,6 +649,34 @@ body { background: transparent; font-family: 'Noto Sans KR', sans-serif; padding
 @keyframes mesoFall { 0% { transform: translateY(0) rotate(0deg) scale(1); opacity:1; } 80% { opacity:1; } 100% { transform: translateY(var(--fall)) rotate(var(--rot)) scale(0.5); opacity:0; } }
 .sparkle { font-size: 12px; animation: sparkleFly var(--dur) ease-out forwards; }
 @keyframes sparkleFly { 0% { transform: translate(0,0) scale(0) rotate(0deg); opacity:1; } 50% { transform: translate(var(--mx),var(--my)) scale(1.2) rotate(180deg); opacity:1; } 100% { transform: translate(calc(var(--mx)*1.5),calc(var(--my)*1.5 + 30px)) scale(0) rotate(360deg); opacity:0; } }
+/* ── 우승자 왕관 애니메이션 ── */
+.winner-crown {
+  position: fixed; /* 오버레이 기준 아닌 뷰포트 기준으로 하늘에서 떨어지게 */
+  font-size: 56px;
+  line-height: 1;
+  pointer-events: none;
+  z-index: 99999;
+  opacity: 0;
+  transform-origin: 50% 100%; /* 왕관 밑단 기준으로 흔들기 */
+}
+@keyframes crownFall {
+  0%   { opacity: 1; transform: translateY(0px) rotate(-10deg) scale(1.1); }
+  18%  { transform: translateY(0px) rotate(6deg) scale(1.0); }
+  34%  { transform: translateY(0px) rotate(-4deg) scale(1.02); }
+  50%  { transform: translateY(0px) rotate(2deg) scale(0.99); }
+  65%  { transform: translateY(0px) rotate(-1deg) scale(1.005); }
+  80%  { transform: translateY(0px) rotate(0.5deg); }
+  100% { transform: translateY(0px) rotate(0deg) scale(1); }
+}
+@keyframes crownSwing {
+  0%,100% { transform: translateX(-50%) rotate(-6deg); }
+  50%     { transform: translateX(-50%) rotate(6deg); }
+}
+@keyframes crownGlow {
+  0%,100% { filter: drop-shadow(0 0 10px rgba(255,210,0,0.9)) drop-shadow(0 0 22px rgba(255,160,0,0.7)); }
+  50%     { filter: drop-shadow(0 0 22px rgba(255,240,0,1))   drop-shadow(0 0 48px rgba(255,190,0,1)); }
+}
+
 /* ── 공동우승 레이아웃: 하나의 박스 ── */
 .celeb-co-wrap {
   display: flex;
@@ -1691,6 +1719,110 @@ function startAvatarAnim(imgEl, name, rank, total, hasAnyScore) {
   }, 300);
 }
 
+// ── 왕관 낙하 함수: 매 프레임 아바타 위치 추적해서 머리 위에 붙임 ──
+function dropCrownOnEl(targetEl, fontSize, removeAll) {
+  if (!targetEl) return;
+
+  // 단독우승(removeAll=true)일 때만 기존 왕관 전체 제거
+  // 공동우승은 각자 독립 왕관 유지
+  if (removeAll) {
+    document.querySelectorAll(".winner-crown").forEach(c => {
+      c._trackStop = true; c.remove();
+    });
+  }
+
+  const crown = document.createElement("div");
+  crown.className = "winner-crown";
+  crown.textContent = "👑";
+  crown.style.cssText = `font-size:${fontSize||56}px;position:fixed;z-index:99999;pointer-events:none;opacity:1;transform-origin:50% 100%;`;
+  document.body.appendChild(crown);
+
+  const crownH = (fontSize || 56);
+
+  function getHeadPos() {
+    const rect = targetEl.getBoundingClientRect();
+    const cRect = crown.getBoundingClientRect();
+    const cH = cRect.height || crownH;
+    // 왕관 top = 캐릭터 이미지 상단 10% 지점 - 왕관 높이 (머리에 딱 얹히도록)
+    return {
+      x: rect.left + rect.width * 0.5,
+      y: rect.top  + rect.height * 0.45 - cH,
+    };
+  }
+
+  const startY = -(window.innerHeight * 0.3 + crownH * 2);
+
+  // 낙하 phase
+  const fallDur = 480;
+  const fallStart = performance.now();
+
+  function animFall(now) {
+    if (crown._trackStop) return;
+    const t = Math.min((now - fallStart) / fallDur, 1);
+    const ease = 1 - Math.pow(1 - t, 4);
+    const { x, y } = getHeadPos();
+    const curY = startY + (y - startY) * ease;
+    const rot  = -12 + 18 * ease;
+    crown.style.left      = x + "px";
+    crown.style.top       = curY + "px";
+    crown.style.transform = `translateX(-50%) rotate(${rot}deg)`;
+    if (t < 1) { requestAnimationFrame(animFall); }
+    else        { animSettle(performance.now()); }
+  }
+
+  // 안착 흔들 phase
+  const bounceDur = 420;
+  function animSettle(startT) {
+    const keys = [
+      {t:0,    r:0,   s:1.0 },
+      {t:0.15, r:16,  s:0.86},
+      {t:0.32, r:-11, s:1.07},
+      {t:0.48, r:7,   s:0.96},
+      {t:0.62, r:-4,  s:1.02},
+      {t:0.75, r:2,   s:0.99},
+      {t:0.86, r:-1,  s:1.00},
+      {t:1.0,  r:0,   s:1.0 },
+    ];
+    function lerp(a,b,f){return a+(b-a)*f;}
+    function getKV(prog) {
+      for(let i=1;i<keys.length;i++){
+        if(prog<=keys[i].t){
+          const f=(prog-keys[i-1].t)/(keys[i].t-keys[i-1].t);
+          return {r:lerp(keys[i-1].r,keys[i].r,f), s:lerp(keys[i-1].s,keys[i].s,f)};
+        }
+      }
+      return {r:0,s:1};
+    }
+    function frame(now) {
+      if (crown._trackStop) return;
+      const prog = Math.min((now - startT) / bounceDur, 1);
+      const {r, s} = getKV(prog);
+      const { x, y } = getHeadPos();
+      crown.style.left      = x + "px";
+      crown.style.top       = y + "px";
+      crown.style.transform = `translateX(-50%) rotate(${r}deg) scale(${s})`;
+      if (prog < 1) { requestAnimationFrame(frame); }
+      else          { trackLoop(); }
+    }
+    requestAnimationFrame(frame);
+  }
+
+  // 안착 후 아바타 바운스 따라다니기 루프
+  function trackLoop() {
+    crown.style.animation = "crownSwing 2.4s ease-in-out infinite, crownGlow 1.8s ease-in-out infinite";
+    function posOnly() {
+      if (crown._trackStop || !crown.parentNode) return;
+      const { x, y } = getHeadPos();
+      crown.style.left = x + "px";
+      crown.style.top  = y + "px";
+      requestAnimationFrame(posOnly);
+    }
+    requestAnimationFrame(posOnly);
+  }
+
+  requestAnimationFrame(animFall);
+}
+
 function startCelebAnim(winners) {
   // winners: 배열 (단독이어도 배열로)
   if (!Array.isArray(winners)) winners = [winners];
@@ -1837,6 +1969,18 @@ function startCelebAnim(winners) {
         frame = (frame + 1) % anim.frames;
       }, 300);
     }
+    // 단독우승 왕관 드롭 - boxPop 애니(0.5s) 끝난 뒤 위치 잡기
+    setTimeout(() => {
+      const el = document.getElementById("celebChar");
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      // rect가 유효할 때만 실행 (display:none이면 width/height=0)
+      if (rect.width === 0 || rect.height === 0) {
+        setTimeout(() => dropCrownOnEl(el, 56, true), 300);
+      } else {
+        dropCrownOnEl(el, 56, true);
+      }
+    }, 900);
   } else {
     // 공동 우승 - 하나의 박스에 캐릭터들 나란히
     celebSingle.style.display = "none";
@@ -1870,7 +2014,12 @@ function startCelebAnim(winners) {
           frame = (frame + 1) % anim.frames;
         }, 300);
       }
+
       charsRow.appendChild(img);
+
+      // 왕관 드롭 (DOM 붙은 뒤 위치 계산)
+      const crownSize = winners.length >= 5 ? 36 : 48;
+      setTimeout(() => { dropCrownOnEl(img, crownSize); }, 700 + wi * 150);
     });
     charBox.appendChild(charsRow);
 
@@ -1918,6 +2067,13 @@ function startCelebAnim(winners) {
 function stopCelebAnim() {
   Object.keys(activeAnims).filter(k => k.startsWith("__celeb__")).forEach(k => {
     clearInterval(activeAnims[k]); delete activeAnims[k];
+  });
+  // 왕관 제거
+  document.querySelectorAll(".winner-crown").forEach(c => {
+    c._trackStop = true;
+    c.style.transition = "opacity 0.3s ease";
+    c.style.opacity = "0";
+    setTimeout(() => c.remove(), 350);
   });
 }
 
