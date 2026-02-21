@@ -1605,14 +1605,15 @@ body { background: transparent; font-family: 'Noto Sans KR', sans-serif; padding
   <div class="header">
     <div class="header-btns">
       <button class="finish-btn" id="finishBtn" onclick="triggerFinish()">🏆 완주!</button>
-      <button class="lock-btn"   id="lockBtn"   onclick="toggleRound5()">🔒</button>
     </div>
     <div class="header-center">
       <span class="header-glove">🤜🏻</span>
       <span class="header-title">이라333배 메이플 개맞짱 컨텐츠</span>
       <span class="header-glove">🤛🏻</span>
     </div>
-    <div style="width:80px"></div>
+    <div style="width:80px; display:flex; justify-content:flex-end; align-items:center;">
+      <button class="lock-btn" id="lockBtn" onclick="toggleRound5()">🔒</button>
+    </div>
   </div>
   <div class="race-section" id="raceSection">
   </div>
