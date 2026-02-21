@@ -10,14 +10,15 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: transparent; font-family: 'Noto Sans KR', sans-serif; padding: 0; width: 850px; overflow: hidden; }
-.scale-wrapper { width: 630px; transform-origin: top left; transform: scale(1.3492); padding: 5px; }
+body { background: transparent; font-family: 'Noto Sans KR', sans-serif; padding: 0; width: 920px; overflow: hidden; }
+.scale-wrapper { width: 682px; transform-origin: top left; transform: scale(1.3489); padding: 10px; }
 .panel-wrap { border-radius: 10px; overflow: hidden; }
 .panel {
   background: linear-gradient(160deg, #1a0000 0%, #3d0000 40%, #1a0000 100%);
   border-radius: 10px; border: 2px solid #c82a2a;
   box-shadow: 0 0 0 1px #6b0000, 0 0 24px rgba(200,42,42,0.3), inset 0 1px 0 rgba(255,100,100,0.12);
   position: relative;
+  overflow: hidden;
 }
 .header {
   position: relative; z-index: 10;
@@ -57,7 +58,7 @@ body { background: transparent; font-family: 'Noto Sans KR', sans-serif; padding
 }
 .finish-btn:hover { transform: scale(1.05); }
 .finish-btn.active { background: linear-gradient(135deg, #ff4040, #ff0000); border-color: #ffaaaa; color: #fff; }
-.race-section { position: relative; z-index: 1; padding: 1px 7px 1px; }
+.race-section { position: relative; z-index: 1; padding: 6px 7px 6px; }
 .race-row { margin-bottom: 1px; }
 @keyframes fadeSlide { from { opacity:0; transform: translateX(-12px); } to { opacity:1; transform: translateX(0); } }
 .race-row:nth-child(1)  { animation: fadeSlide 0.3s 0.00s both; }
@@ -1523,6 +1524,229 @@ body { background: transparent; font-family: 'Noto Sans KR', sans-serif; padding
 <div class="scale-wrapper">
 <div class="panel-wrap">
 <div class="panel" id="panel">
+
+  <!-- ══ 배경 균열 레이어 — IRA333 글자=균열선 ══ -->
+  <canvas id="bgCrackCanvas"
+    style="position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;"></canvas>
+  <script>
+  (function() {
+    function drawCracks() {
+      const canvas = document.getElementById('bgCrackCanvas');
+      const panel2 = document.getElementById('panel');
+      const W = panel2.offsetWidth  || 630;
+      const H = panel2.offsetHeight || 420;
+      canvas.width  = W;
+      canvas.height = H;
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, W, H);
+
+      // ── 1. IRA333 을 글자 마스크로 렌더 ──
+      const fontSize = Math.round(W * 0.19);
+      ctx.save();
+      ctx.font = `900 ${fontSize}px 'Pretendard','Noto Sans KR',sans-serif`;
+      ctx.textAlign    = 'center';
+      ctx.textBaseline = 'middle';
+
+      // destination-in 합성: 이후 그리는 것이 글자 안에만 보임
+      // 먼저 균열 텍스처를 그리고 → 글자 모양으로 clip
+
+      // 오프스크린 캔버스에 균열 텍스처 그리기
+      const oc  = document.createElement('canvas');
+      oc.width  = W;
+      oc.height = H;
+      const ot  = oc.getContext('2d');
+      ot.globalCompositeOperation = 'destination-over';
+
+      // 균열선 그리기 함수
+      function crack(ctx2, x1,y1, angle, len, depth, maxDepth) {
+        if (depth > maxDepth || len < 4) return;
+        const x2 = x1 + Math.cos(angle) * len;
+        const y2 = y1 + Math.sin(angle) * len;
+        const t  = depth / maxDepth;
+        ctx2.beginPath();
+        ctx2.moveTo(x1, y1);
+        // 약간 지그재그
+        const mx = (x1+x2)/2 + (Math.random()-0.5)*len*0.35;
+        const my = (y1+y2)/2 + (Math.random()-0.5)*len*0.35;
+        ctx2.quadraticCurveTo(mx, my, x2, y2);
+        ctx2.strokeStyle = `rgba(70,5,5,${0.55-t*0.15})`;
+        ctx2.lineWidth   = Math.max(0.4, 2.2 - depth*0.35);
+        ctx2.lineCap     = 'round';
+        ctx2.stroke();
+
+        // 가지 분기
+        const branches = depth < 2 ? 3 : (Math.random() < 0.55 ? 2 : 1);
+        for (let b = 0; b < branches; b++) {
+          const spread = (Math.random()-0.5) * (depth < 2 ? 0.7 : 1.1);
+          crack(ctx2, x2, y2,
+            angle + spread,
+            len * (0.52 + Math.random()*0.28),
+            depth+1, maxDepth);
+        }
+      }
+
+      // 씨드 고정 (매번 같은 모양)
+      // 여러 시작점에서 균열 발사
+      const cx = W / 2;
+      const cy = H / 2;
+      const seeds = [
+        // 글자 I 영역
+        { x: cx - W*0.27, y: cy - H*0.05, a: -Math.PI/2,    len: H*0.20, d: 10 },
+        { x: cx - W*0.27, y: cy + H*0.05, a:  Math.PI/2,    len: H*0.18, d: 10 },
+        { x: cx - W*0.27, y: cy,          a:  Math.PI*0.1,   len: W*0.05, d: 9 },
+        { x: cx - W*0.25, y: cy - H*0.10, a: -Math.PI*0.6,   len: H*0.12, d: 9 },
+        { x: cx - W*0.25, y: cy + H*0.10, a:  Math.PI*0.6,   len: H*0.12, d: 9 },
+        { x: cx - W*0.28, y: cy - H*0.12, a: -Math.PI*0.3,   len: H*0.10, d: 8 },
+        { x: cx - W*0.28, y: cy + H*0.12, a:  Math.PI*0.3,   len: H*0.10, d: 8 },
+        { x: cx - W*0.26, y: cy,          a:  Math.PI*0.9,   len: W*0.04, d: 8 },
+        { x: cx - W*0.26, y: cy - H*0.06, a: -Math.PI*0.15,  len: W*0.04, d: 7 },
+        { x: cx - W*0.24, y: cy + H*0.04, a:  Math.PI*0.4,   len: W*0.04, d: 7 },
+        { x: cx - W*0.28, y: cy - H*0.03, a: -Math.PI*0.8,   len: H*0.08, d: 7 },
+        { x: cx - W*0.28, y: cy + H*0.03, a:  Math.PI*0.8,   len: H*0.08, d: 7 },
+        { x: cx - W*0.26, y: cy - H*0.14, a: -Math.PI*0.1,   len: H*0.07, d: 6 },
+        { x: cx - W*0.26, y: cy + H*0.14, a:  Math.PI*0.1,   len: H*0.07, d: 6 },
+        // 글자 R 영역
+        { x: cx - W*0.16, y: cy - H*0.12, a: -Math.PI/4,    len: H*0.20, d: 10 },
+        { x: cx - W*0.11, y: cy - H*0.02, a:  Math.PI/5,    len: W*0.07, d: 10 },
+        { x: cx - W*0.14, y: cy + H*0.10, a:  Math.PI*0.6,  len: H*0.18, d: 10 },
+        { x: cx - W*0.18, y: cy - H*0.08, a: -Math.PI*0.5,   len: H*0.14, d: 9 },
+        { x: cx - W*0.13, y: cy - H*0.10, a: -Math.PI*0.2,   len: H*0.12, d: 9 },
+        { x: cx - W*0.10, y: cy + H*0.04, a:  Math.PI*0.4,   len: W*0.06, d: 9 },
+        { x: cx - W*0.15, y: cy + H*0.04, a:  Math.PI*0.8,   len: W*0.05, d: 8 },
+        { x: cx - W*0.12, y: cy - H*0.06, a: -Math.PI*0.7,   len: H*0.10, d: 8 },
+        { x: cx - W*0.17, y: cy + H*0.08, a:  Math.PI*0.2,   len: W*0.05, d: 8 },
+        { x: cx - W*0.11, y: cy - H*0.12, a: -Math.PI*0.3,   len: H*0.10, d: 7 },
+        { x: cx - W*0.19, y: cy + H*0.02, a:  Math.PI*0.5,   len: W*0.04, d: 7 },
+        { x: cx - W*0.14, y: cy - H*0.02, a: -Math.PI*0.9,   len: H*0.08, d: 7 },
+        { x: cx - W*0.10, y: cy + H*0.10, a:  Math.PI*0.7,   len: H*0.08, d: 6 },
+        { x: cx - W*0.16, y: cy + H*0.14, a:  Math.PI*0.4,   len: H*0.07, d: 6 },
+        // 글자 A 영역
+        { x: cx - W*0.02, y: cy - H*0.14, a: -Math.PI/3,    len: H*0.22, d: 10 },
+        { x: cx + W*0.03, y: cy - H*0.14, a: -Math.PI*2/3,  len: H*0.22, d: 10 },
+        { x: cx + W*0.00, y: cy,          a:  Math.PI*0.0,   len: W*0.06, d: 9 },
+        { x: cx - W*0.05, y: cy - H*0.08, a: -Math.PI*0.4,   len: H*0.14, d: 9 },
+        { x: cx + W*0.05, y: cy - H*0.08, a: -Math.PI*0.6,   len: H*0.14, d: 9 },
+        { x: cx - W*0.03, y: cy - H*0.04, a:  Math.PI*0.5,   len: W*0.05, d: 8 },
+        { x: cx + W*0.03, y: cy - H*0.04, a: -Math.PI*0.5,   len: W*0.05, d: 8 },
+        { x: cx + W*0.00, y: cy - H*0.10, a:  Math.PI*0.15,  len: W*0.04, d: 8 },
+        { x: cx - W*0.04, y: cy + H*0.02, a:  Math.PI*0.7,   len: W*0.04, d: 7 },
+        { x: cx + W*0.04, y: cy + H*0.02, a: -Math.PI*0.7,   len: W*0.04, d: 7 },
+        { x: cx - W*0.06, y: cy - H*0.12, a: -Math.PI*0.2,   len: H*0.10, d: 7 },
+        { x: cx + W*0.06, y: cy - H*0.12, a: -Math.PI*0.8,   len: H*0.10, d: 7 },
+        { x: cx + W*0.00, y: cy - H*0.05, a: -Math.PI*0.5,   len: W*0.04, d: 7 },
+        { x: cx - W*0.02, y: cy - H*0.12, a:  Math.PI*0.3,   len: H*0.08, d: 6 },
+        { x: cx + W*0.02, y: cy - H*0.12, a: -Math.PI*0.3,   len: H*0.08, d: 6 },
+        // 글자 3 (1) 영역
+        { x: cx + W*0.10, y: cy - H*0.08, a:  Math.PI/6,    len: H*0.12, d: 5 },
+        { x: cx + W*0.10, y: cy + H*0.08, a: -Math.PI/6,    len: H*0.12, d: 5 },
+        // 글자 3 (2) 영역
+        { x: cx + W*0.19, y: cy - H*0.08, a:  Math.PI/6,    len: H*0.12, d: 5 },
+        { x: cx + W*0.19, y: cy + H*0.08, a: -Math.PI/6,    len: H*0.12, d: 5 },
+        // 글자 3 (3) 영역
+        { x: cx + W*0.28, y: cy - H*0.08, a:  Math.PI/6,    len: H*0.12, d: 5 },
+        { x: cx + W*0.28, y: cy + H*0.08, a: -Math.PI/6,    len: H*0.12, d: 5 },
+      ];
+
+      // 난수 시드 고정용 (항상 같은 패턴)
+      let _seed = 42;
+      const rnd = () => { _seed = (_seed * 1664525 + 1013904223) & 0xffffffff; return ((_seed >>> 0) / 0xffffffff); };
+      const origRandom = Math.random;
+      Math.random = rnd;
+
+      seeds.forEach(s => {
+        crack(ot, s.x, s.y, s.a, s.len, 0, s.d);
+      });
+
+      Math.random = origRandom;
+
+      // ── 2. 글자 모양 마스크 적용 ──
+      // 메인 캔버스에 글자 clip path
+      ctx.save();
+      // 글자를 clip 경로로
+      ctx.beginPath();
+      ctx.font = `900 ${fontSize}px 'Pretendard','Noto Sans KR',sans-serif`;
+      ctx.textAlign    = 'center';
+      ctx.textBaseline = 'middle';
+
+      // 글자를 채워서 마스크로 사용
+      ctx.fillStyle = 'white';
+      ctx.fillText('IRA333', W/2, H/2);
+
+      // globalCompositeOperation으로 글자 안에만 균열 보이게
+      ctx.globalCompositeOperation = 'source-in';
+      ctx.drawImage(oc, 0, 0);
+      ctx.restore();
+
+      // ── 3. 글자 테두리 (균열 느낌 외곽선) ──
+      ctx.save();
+      ctx.font = `900 ${fontSize}px 'Pretendard','Noto Sans KR',sans-serif`;
+      ctx.textAlign    = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.globalAlpha  = 0.22;
+      ctx.strokeStyle  = '#880000';
+      ctx.lineWidth    = 1.2;
+      ctx.shadowColor  = '#660000';
+      ctx.shadowBlur   = 8;
+      ctx.strokeText('IRA333', W/2, H/2);
+      ctx.restore();
+
+      // ── 4. 글자 바깥으로 뻗어나오는 균열 가지 ──
+      ctx.save();
+      ctx.globalAlpha = 0.35;
+      const extCracks = [
+        { x1: cx-W*0.30, y1: cy-H*0.17, x2: cx-W*0.38, y2: cy-H*0.28 },
+        { x1: cx-W*0.30, y1: cy+H*0.17, x2: cx-W*0.38, y2: cy+H*0.28 },
+        { x1: cx-W*0.23, y1: cy-H*0.17, x2: cx-W*0.18, y2: cy-H*0.30 },
+        { x1: cx+W*0.31, y1: cy-H*0.14, x2: cx+W*0.40, y2: cy-H*0.26 },
+        { x1: cx+W*0.31, y1: cy+H*0.14, x2: cx+W*0.40, y2: cy+H*0.26 },
+        { x1: cx+W*0.26, y1: cy-H*0.17, x2: cx+W*0.22, y2: cy-H*0.30 },
+        { x1: cx-W*0.05, y1: cy-H*0.18, x2: cx-W*0.08, y2: cy-H*0.32 },
+        { x1: cx+W*0.05, y1: cy+H*0.18, x2: cx+W*0.08, y2: cy+H*0.32 },
+      ];
+      extCracks.forEach((c, i) => {
+        const t = i / extCracks.length;
+        ctx.beginPath();
+        ctx.moveTo(c.x1, c.y1);
+        const mx = (c.x1+c.x2)/2 + (Math.sin(c.x1)*8);
+        const my = (c.y1+c.y2)/2 + (Math.cos(c.y1)*6);
+        ctx.quadraticCurveTo(mx, my, c.x2, c.y2);
+        ctx.strokeStyle = `rgba(${80+Math.round(t*30)},${5+Math.round(t*8)},${5+Math.round(t*8)},0.65)`;
+        ctx.lineWidth   = 0.9;
+        ctx.lineCap     = 'round';
+        ctx.stroke();
+        // 미세 가지
+        ctx.beginPath();
+        ctx.moveTo(c.x2, c.y2);
+        ctx.lineTo(c.x2 + (c.x2-c.x1)*0.3 + 6, c.y2 + (c.y2-c.y1)*0.2 - 4);
+        ctx.strokeStyle = `rgba(${60+Math.round(t*20)},${4+Math.round(t*6)},${4+Math.round(t*6)},0.45)`;
+        ctx.lineWidth   = 0.5;
+        ctx.stroke();
+      });
+      ctx.restore();
+    }
+
+    // 폰트 로드 후 그리기
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(drawCracks);
+    } else {
+      setTimeout(drawCracks, 300);
+    }
+
+    // 패널 크기 변화 대응 (데이터 로드 후 표 커질 때 포함)
+    window.addEventListener('resize', drawCracks);
+    const panel = document.getElementById('panel');
+    if (window.ResizeObserver) {
+      new ResizeObserver(drawCracks).observe(panel);
+    } else {
+      // fallback: 주기적으로 크기 체크
+      let lastH = 0;
+      setInterval(() => {
+        const h = panel.offsetHeight;
+        if (h !== lastH) { lastH = h; drawCracks(); }
+      }, 300);
+    }
+  })();
+  </script>
   <div id="finishGaugeOverlay">
     <div id="fgoInner">
       <div id="fgoEventTitle">
