@@ -552,13 +552,27 @@ body { background: transparent; font-family: 'Noto Sans KR', sans-serif; padding
   width: min(480px, 70%);
   flex-shrink: 1;
   border-radius: 12px;
+  border: 4px solid #ff4444;
+  animation: winnerGlow 1.2s ease-in-out infinite;
+  overflow: visible;
+}
+/* A: Canvas 스포트라이트 */
+.celeb-spotlight-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 10002;
+}
+@keyframes winnerBounce {
+  0%,100% { transform: scaleX(-1) translateY(0px); }
+  50%     { transform: scaleX(-1) translateY(-10px); }
 }
 .celeb-char {
-  width: 100%; height: auto; aspect-ratio: 1/1; object-fit: contain; border-radius: 12px;
-  transform: scaleX(-1);
-  border: 4px solid #ff4444;
+  width: 100%; height: auto; aspect-ratio: 1/1; object-fit: contain; border-radius: 10px;
   image-rendering: auto;
-  animation: winnerGlow 1.2s ease-in-out infinite;
+  animation: winnerBounce 0.75s ease-in-out infinite;
   display: block;
 }
 .celeb-name {
@@ -685,10 +699,10 @@ body { background: transparent; font-family: 'Noto Sans KR', sans-serif; padding
   height: 300px;
   flex-shrink: 1;
   object-fit: contain;
-  transform: scaleX(-1);
   image-rendering: auto;
   display: block;
   margin: 0 -110px;
+  animation: winnerBounce 0.75s ease-in-out infinite;
 }
 .celeb-co-name {
   font-size: clamp(14px, 3vw, 24px);
@@ -1686,6 +1700,121 @@ function startCelebAnim(winners) {
     clearInterval(activeAnims[k]); delete activeAnims[k];
   });
 
+  // ── 스포트라이트 공용 함수 (단독/공동 둘 다 사용) ──
+  document.querySelectorAll(".celeb-spotlight, .celeb-spotlight-floor, .celeb-spotlight-canvas").forEach(el => el.remove());
+
+  const _slColors = [
+    [255,50,50],[255,180,0],[50,255,120],[50,150,255],[200,50,255]
+  ];
+  function _lerpColor(a, b, f) {
+    return a.map((v,i) => Math.round(v + (b[i]-v)*f));
+  }
+  function injectSpotlight(targetWrap, winnerCount) {
+    if (!targetWrap) return;
+    const canvas = document.createElement("canvas");
+    canvas.className = "celeb-spotlight-canvas";
+    targetWrap.appendChild(canvas);
+    const ctx = canvas.getContext("2d");
+    const fourBeam = (winnerCount >= 5); // 5명 이상이면 4빔 모드
+
+    function _resizeCanvas() {
+      canvas.width  = targetWrap.offsetWidth  || 360;
+      canvas.height = targetWrap.offsetHeight || 420;
+    }
+    _resizeCanvas();
+
+    function _drawBeam(ox, oy, tx, ty, beamW, c, alpha) {
+      const dx = tx - ox, dy = ty - oy;
+      const len = Math.hypot(dx, dy);
+      const nx = -dy / len, ny = dx / len;
+      const tipHalf = 8, tailHalf = beamW;
+      const grad = ctx.createLinearGradient(ox, oy, tx, ty);
+      grad.addColorStop(0,   `rgba(${c[0]},${c[1]},${c[2]},${alpha})`);
+      grad.addColorStop(0.5, `rgba(${c[0]},${c[1]},${c[2]},${(alpha*0.45).toFixed(2)})`);
+      grad.addColorStop(1,   `rgba(${c[0]},${c[1]},${c[2]},0.0)`);
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(ox + nx*tipHalf, oy + ny*tipHalf);
+      ctx.lineTo(ox - nx*tipHalf, oy - ny*tipHalf);
+      ctx.lineTo(tx - nx*tailHalf, ty - ny*tailHalf);
+      ctx.lineTo(tx + nx*tailHalf, ty + ny*tailHalf);
+      ctx.closePath();
+      ctx.fillStyle = grad;
+      ctx.filter = "blur(14px)";
+      ctx.fill();
+      ctx.filter = "none";
+      ctx.restore();
+      const cg = ctx.createRadialGradient(ox, oy, 0, ox, oy, 55);
+      cg.addColorStop(0,   `rgba(${c[0]},${c[1]},${c[2]},0.65)`);
+      cg.addColorStop(0.5, `rgba(${c[0]},${c[1]},${c[2]},0.2)`);
+      cg.addColorStop(1,   `rgba(${c[0]},${c[1]},${c[2]},0.0)`);
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(ox, oy, 55, 0, Math.PI*2);
+      ctx.fillStyle = cg;
+      ctx.fill();
+      ctx.restore();
+    }
+
+    let _t = 0;
+    function _draw() {
+      const W = canvas.width, H = canvas.height;
+      ctx.clearRect(0, 0, W, H);
+      const cycle = _slColors.length;
+
+      // 빔 1,2 색 (기존 좌하단·우하단 코너빔)
+      const idx1 = Math.floor(_t) % cycle;
+      const c1 = _lerpColor(_slColors[idx1], _slColors[(idx1+1)%cycle], _t - Math.floor(_t));
+      const _t2 = _t + 1.5;
+      const idx2 = Math.floor(_t2) % cycle;
+      const c2 = _lerpColor(_slColors[idx2], _slColors[(idx2+1)%cycle], _t2 - Math.floor(_t2));
+
+      const targetX = W * 0.5;
+      const targetY = H * 0.28;
+
+      // 기존 2빔: 좌하단 코너 → 아바타, 우하단 코너 → 아바타
+      _drawBeam(0, H, targetX, targetY, 95, c1, 0.62);
+      _drawBeam(W, H, targetX, targetY, 95, c2, 0.62);
+
+      // 5명 이상: 네모박스 하단 양 대각선 안쪽에서 반대방향(바깥 대각선)으로 째는 빔 2개 추가
+      if (fourBeam) {
+        const _t3 = _t + 0.8;
+        const idx3 = Math.floor(_t3) % cycle;
+        const c3 = _lerpColor(_slColors[idx3], _slColors[(idx3+1)%cycle], _t3 - Math.floor(_t3));
+        const _t4 = _t + 2.3;
+        const idx4 = Math.floor(_t4) % cycle;
+        const c4 = _lerpColor(_slColors[idx4], _slColors[(idx4+1)%cycle], _t4 - Math.floor(_t4));
+
+        // 좌하단 코너 바로 안쪽(18%)에서 → 왼쪽 상단 바깥으로 째기
+        const innerLeftX = W * 0.38, innerLeftY = H;
+        _drawBeam(innerLeftX, innerLeftY, W * -0.1, H * 0.05, 80, c3, 0.55);
+        // 우하단 코너 바로 안쪽(62%)에서 → 오른쪽 상단 바깥으로 째기
+        const innerRightX = W * 0.62, innerRightY = H;
+        _drawBeam(innerRightX, innerRightY, W * 1.1, H * 0.05, 80, c4, 0.55);
+      }
+
+      // 집광 글로우 (아바타 위치)
+      const cm = _lerpColor(c1, c2, 0.5);
+      const sg = ctx.createRadialGradient(targetX, targetY, 0, targetX, targetY, 80);
+      sg.addColorStop(0,   `rgba(${cm[0]},${cm[1]},${cm[2]},0.45)`);
+      sg.addColorStop(0.5, `rgba(${cm[0]},${cm[1]},${cm[2]},0.15)`);
+      sg.addColorStop(1,   `rgba(${cm[0]},${cm[1]},${cm[2]},0.0)`);
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(targetX, targetY, 80, 0, Math.PI*2);
+      ctx.fillStyle = sg;
+      ctx.fill();
+      ctx.restore();
+
+      _t += 0.010;
+      requestAnimationFrame(_draw);
+    }
+    _draw();
+  }
+
+  // 단독우승: celebSingle에 바로 주입 (1명)
+  injectSpotlight(document.getElementById("celebSingle"), 1);
+
   const celebBox = document.getElementById("celebBox");
   const celebSingle = document.getElementById("celebSingle");
 
@@ -1780,6 +1909,9 @@ function startCelebAnim(winners) {
 
     coWrap.appendChild(charBox);
     celebBox.appendChild(coWrap);
+    // 공동우승 박스에도 동일하게 대각선 2빔 스포트라이트 주입
+    // DOM에 붙은 후 한 프레임 뒤에 크기를 읽어야 정확함
+    requestAnimationFrame(() => injectSpotlight(charBox, winners.length));
   }
 }
 
@@ -3013,7 +3145,7 @@ function spawnFlyingChars() {
       setTimeout(() => {
         img.style.opacity = "0.65";
         img.style.transition = "opacity 0.5s ease";
-        img.style.animation = "ghostFloat " + floatDur + "s " + floatDelay + "s ease-in-out infinite";
+        // ghostFloat 애니메이션 제거 (고정 위치 유지)
 
         // 날기(A40)+울음(E03) 4프레임 순환
         if (sname && STREAMERS[sname]) {
